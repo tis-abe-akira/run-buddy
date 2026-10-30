@@ -18,12 +18,20 @@
 
     <properties>
         <java.version>25</java.version>
+        <springdoc.version>3.2.0</springdoc.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
+        <!-- Serves the OpenAPI spec at /v3/api-docs; the frontend generates its API types from it. -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>
