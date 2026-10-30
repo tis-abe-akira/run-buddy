@@ -3,3 +3,8 @@
 .idea/
 *.iml
 .vscode/
+
+# Build outputs
+target/
+node_modules/
+dist/
