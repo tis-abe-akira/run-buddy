@@ -8,7 +8,8 @@
 | [0002](0002-monorepo-frontend-backend.md) | frontend / backend のモノレポ構成にする | Accepted |
 | [0003](0003-backend-spring-boot-java.md) | backend に Spring Boot 4 / Java 25 / Maven を使う | Accepted |
 | [0004](0004-ports-and-adapters-for-external-services.md) | 外部サービス連携をポート&アダプタで分離し、Garminは最初ダミーにする | Accepted |
-| [0005](0005-frontend-framework.md) | frontend に Vite + TanStack Router（SPA）を使う | Proposed |
+| [0005](0005-frontend-framework.md) | frontend に Vite + TanStack Router（SPA）を使う | Accepted |
+| [0006](0006-design-system.md) | frontend のデザインを DESIGN.md のトークンで統一する | Accepted |
 
 ## テンプレート
 

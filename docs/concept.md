@@ -37,7 +37,7 @@ flowchart LR
 | ラン実績 | `RunResult` | 1回のランの記録。日時、距離、時間、平均ペース、平均心拍など |
 | 月次計画 | `MonthlyPlan` | ある年月（`YearMonth`）のトレーニング計画。目標の月間距離と、予定ワークアウトの集まり |
 | 予定ワークアウト | `PlannedWorkout` | 計画に入っている1回分の練習。日付、種別（Easy / Tempo / Interval / Long など）、目標距離 |
-| 達成状況 | `PlanAchievement` | 月次計画と実績を突き合わせた結果（達成率、計画との差） |
+| 達成状況 | `PlanAchievement`（`DailyProgress` は日ごとの計画・実績と累積） | 月次計画と実績を突き合わせた結果（達成率、計画との差） |
 | アクティビティ取得元 | `ActivitySource` | 実績を取ってくる外部サービスを抽象化したポート。Garminはその実装の一つ |
 
 用語は、実装に合わせてここで更新していきます（ドキュメントとコードで同じ言葉を使うため）。
@@ -63,7 +63,7 @@ flowchart LR
 
 | フェーズ | ゴール | 主な内容 |
 |---|---|---|
-| **Phase 1** | ダミーデータで一通りの流れを確認する | ダミーの `ActivitySource`、Result取り込み、MonthlyPlan の CRUD、計画と実績の比較API、frontend のダッシュボードとPlan入力 |
+| **Phase 1**（実装済み） | ダミーデータで一通りの流れを確認する | ダミーの `ActivitySource`、Result取り込み、MonthlyPlan の CRUD、計画と実績の比較API、frontend のダッシュボードとPlan入力 |
 | Phase 2 | AIに相談できるようにする | 実績と計画をコンテキストにして次月の計画案を出す |
 | Phase 3 | スプレッドシートと連携する | 月次Plan / Resultのエクスポート（と、必要ならインポート） |
 | Phase 4 | 実際のGarminとつなぐ | 認証、レート制限への対応、差分同期 |

@@ -1,6 +1,6 @@
 # ADR-0005: frontend に Vite + TanStack Router（SPA）を使う
 
-- ステータス: **Proposed**（オーナーの判断待ち）
+- ステータス: Accepted
 - 日付: 2026-10-30
 
 ## コンテキスト
@@ -22,12 +22,12 @@ frontend の役割は、ダッシュボード（計画と実績の可視化）�
 | 情報量・AIの得意さ | とても多い | Next.js よりは少ないが、十分ある。API は安定している |
 | テスト | サーバーコンポーネントの単体テストはやや面倒 | 普通の React コンポーネントなので Vitest + Testing Library で素直にテストできる |
 
-## 決定（案）
+## 決定
 
 **Vite + React + TypeScript + TanStack Router（file-based routing）+ TanStack Query** の SPA にする。
 
 - 型の生成: backend の OpenAPI（springdoc）から TypeScript の型を作り、API の契約を両側で守る。
-- テスト: Vitest + Testing Library。API は MSW でモックする。
+- テスト: Vitest + Testing Library。表示用コンポーネントは props だけを受け取るようにし、ネットワークなしでテストする。ルートとAPIを含めた結合テストが必要になったら MSW を導入する。
 - TanStack Start（SSR 版）は、SSR が必要になるまで使わない。
 
 ## 結果（トレードオフ）

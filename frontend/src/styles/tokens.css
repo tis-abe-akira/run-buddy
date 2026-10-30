@@ -1,0 +1,65 @@
+/*
+ * Design tokens from DESIGN.md. Names mirror the YAML keys (colors.primary -> --color-primary).
+ * Components must use these variables, never raw hex values.
+ */
+:root {
+  /* colors */
+  --color-primary: #cc785c;
+  --color-primary-active: #a9583e;
+  --color-primary-disabled: #e6dfd8;
+  --color-ink: #141413;
+  --color-body: #3d3d3a;
+  --color-body-strong: #252523;
+  --color-muted: #6c6a64;
+  --color-muted-soft: #8e8b82;
+  --color-hairline: #e6dfd8;
+  --color-hairline-soft: #ebe6df;
+  --color-canvas: #faf9f5;
+  --color-surface-soft: #f5f0e8;
+  --color-surface-card: #efe9de;
+  --color-surface-cream-strong: #e8e0d2;
+  --color-surface-dark: #181715;
+  --color-surface-dark-elevated: #252320;
+  --color-surface-dark-soft: #1f1e1b;
+  --color-on-primary: #ffffff;
+  --color-on-dark: #faf9f5;
+  --color-on-dark-soft: #a09d96;
+  --color-accent-teal: #5db8a6;
+  --color-accent-amber: #e8a55a;
+  --color-success: #5db872;
+  --color-warning: #d4a017;
+  --color-error: #c64545;
+
+  /*
+   * Chart series (not in DESIGN.md). Validated with the dataviz palette checker against canvas:
+   * coral = actual, deep teal = planned (accent-teal is too light for a 2px line).
+   * CVD separation is 7.2, so the planned line is also dashed and every series is labelled.
+   */
+  --chart-actual: var(--color-primary);
+  --chart-planned: #1f9e8a;
+  --chart-grid: var(--color-hairline);
+
+  /* typography: font stacks (substitutes, see CLAUDE.md) */
+  --font-display: 'Cormorant Garamond', 'Shippori Mincho', 'Tiempos Headline', Garamond, serif;
+  --font-sans: Inter, 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* rounded */
+  --rounded-xs: 4px;
+  --rounded-sm: 6px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --rounded-xl: 16px;
+  --rounded-pill: 9999px;
+  --rounded-full: 9999px;
+
+  /* spacing */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 96px;
+}
