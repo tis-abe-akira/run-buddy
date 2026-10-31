@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e22ff112c47414ec48bf79a84db9141da1f0950cfe19ed84acd07c0391720348",
+  "claims": [
+    {
+      "id": "claim_313cb1cbcc9a47f5a7bc4e9a0b8cc690",
+      "statement": "Local development setup requires JDK 25 for backend, Node.js 22.12+ for frontend, and Docker Compose v2 for PostgreSQL and Testcontainers DB tests.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L23-L28",
+          "version": "repo-lines-v1:sha256:c33ab7ae38626cc3af6d0d5f07345beaf5ea97f565a74a7eba3aa25a91db5e8e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY0ZjE4YWJlMDk3OWE5MjMzYzBmYTJjY2ZkM2UzZDBlMTJhMDliMzk2MTlmYjZjMGZhMzM1YjQ0YmQ0NTg4MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGY0MjY3Njc1OTRlMzhkMjlhYWM3NDM2N2E0ZWYxNTNlODllMGY1ODllZDRhYmU3ZmYyZmE4ZDVhNjA2OWM0MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTFmMzdiNDliYjBlZGVhYTI0NzE1NmMzY2RlNjQwYzUxOWI1YmQxNWZkOTQzZmI0YWRlNjhiZjhmYjRhZGUwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e5f4d1da052d4328a19c244601447411",
+      "statement": "The application supports configuration via root .env for Gemini API key, activity source (dummy or garmin), Garmin API key, log level, bind address, and PostgreSQL port.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L59-L67",
+          "version": "repo-lines-v1:sha256:e82391a6d92235c350a12aab82f17cd4513e751d41072a2d45f6741470b979f3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTE0OGY2ZGVjYjRlZTgyM2VlOGZhN2JhMzQ1MTkzOTJlYjQyMDkxM2EzMDY0NDQxY2MwOWQ4Nzc3OGRkMzA4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWVjNDljNWNhZTIwZjIzMzZkMTg5ZGUxMWNkOWVkZjA4MTllZDg4NzFkOTVmNWRjYWU1MzJhMWU5ODUwY2YwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGViZjM5MGViNGEwYjE1Y2ZlMTg1M2Y2ZmU1MzljMzk0MWQxMzA1ZTQ5MzRjMzFjZmQxNDIyZjgyN2EzMGJkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce1c2d19fa924b74befebca1ffc9ba46",
+      "statement": "PostgreSQL startup via docker compose up -d --wait creates the runbuddy_app role, while Flyway applies database migrations upon backend startup.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L76-L80",
+          "version": "repo-lines-v1:sha256:b99b1ef59843cfb958d2a5b9d47408ba960a836d708caed531747d13eb6e3c03:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRlMmY1MzI4ZWU2ZTgwNTBlOGFhZmQ4ZGM4NjlhMDY5Y2Q5NTg0ZWRhYWY1NGZlNTg5ZDczYzNiN2RjZDc5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RjYjU2NWE0Y2Y3OWVjMjg2NDk3MGQwYjE1NDJiNmIyZTQ2Y2VmM2Y1YmIzMDYzNDY3MTk0NzZjNjI5M2M2NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWZmMjNiOGMxNWZiMDY3NzA3MGQxYTc1YTFjZjMwZjM0ZjY5NjFkMjYwY2IwMDEwZTZiODAxNzQ4YzAzY2I1MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjcwNGYzMGE2MzE0N2JlOGFjODhiZjUwZDcyMmM0MDA3NDM1NzZmNmMxZWFmMTM1ZGQyN2MyNzgzYWFhMGRiMiJ9"
+        },
+        {
+          "resource": "repo://docs/guides/database.md#L30-L35",
+          "version": "repo-lines-v1:sha256:bd008af34d673a149cb25767b8c77aa24a3b18e872a81a19834de64cd70c5d00:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM5MzdlMmRlODRmOTQ0NDQ4NmMyZjZjZGIyZjdkN2Y4ZjAwZGRmMzkxZDlhNTNjMjIxZjBjYjI5MDQyMDVkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM0NzgwYTA0YzE1M2JmMzJkY2IxYWEzNjhkYjM0NjUxMzRjNDJkNjg3MDIxNDA4OWNhZjJkMjcxNjIxNWJlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjAzNGFkOTc0NzNhYzYwMTZjMTg2YTRiYzU3ZGZhOWQxOWViNGQ5NDdhYWVjOGMxYzAxMzVlNzAwNWQwODdlZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzdiNDMxZDkwMzBiZTNmYjUzNDk3NzgxZDk1Y2ZkODI1ZDBkNDU3ZGE4MDhmYjE0YzYzNjI1NmFlYThiMTkzOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e810b2085b3b41b898e27224d3c20238",
+      "statement": "Backend execution with the -Papp profile packages the built frontend into static resources for single-origin serving at http://localhost:8080.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L143-L149",
+          "version": "repo-lines-v1:sha256:4b554b21bd9e48a08fb7895e3f2d700236f061077913c1453d8afe2f7772e086:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzYyMjc2ZjQ3MzFkMjFlODVhN2I2YTY1M2RiMTdkNzFmMTAyY2EyMDE5ODRhODU0N2ZjMzIyZjcwZmY2MmRkNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEyNGU5YWUzYmY0ZGM5MGI0ODNmODc2NmRlNjg2MTlmYTc0ODU4NGUyNjhjNGM2ODJhZDAzZGYwZGJlN2VhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGUyZjU4YzIzMDBiNjdkMjA3NmZhNjFjYWJmMGNlNmE1NjA3ZWEwMDJjN2Q4OWI2MTg4NzAyNGQ0ZWQwYWNiMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDczMzdlMzUxOTY0MzZjNWJiMjU4N2VmMzFhZDRiMzdjYjJhYzNjNjliOTI5NjZiYWJjMDgwMjE2MzU1ZjFmYSJ9"
+        },
+        {
+          "resource": "repo://docs/guides/tailscale.md#L32-L39",
+          "version": "repo-lines-v1:sha256:7b123a084fcf5a7ad092713499c742c837b47da94ce602227d6fdb2b5980ab80:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDllMTY2MDEzNDg5YzM5OGMyNWQzOTVlN2U1MTk5Mjk1YzU4ZDFjNmMzZWJkNWQ2YWNlODZhNzliOTI2MTEyMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjE5NGEyZDY2Mjg5YWM3MjE5MGE5NmZiMTNlNDBjNGNkN2ZiYjdlNWM2M2RjMTNhY2I1ZGQ4MTc3ZmQ0ZDQ2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzhiNDM3MTkwMGZmNDg4NTJhNTU2NTNhZDQyZDc2ZTViMzg3NTAyMzk2MjNjMWRjOWJiZTdlOTFiN2VlNGUyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGM2MmNjN2U3NGFjNzRkMDk3YzUzZDI3NjQ2NzMyNjc1ODhiODg2MjUzZDZhODRhMDFkZDBjZjVjNzY2NjAzMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_189475eaa09447419335fee20378fd1a",
+      "statement": "Database tests extending DatabaseTest use Testcontainers to run PostgreSQL in postgres:17-alpine with the runbuddy_app role enforcing Row Level Security, isolating each test method with a fresh user context via TestCurrentUser.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java#L13-L24",
+          "version": "repo-lines-v1:sha256:d278e4bbd8de587ca2130ad0a9cae08e8bd83a170ea9dfd5cc2734adb370b891:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5OGFmZjRlNjIwMWEwNzk0Y2ZiNmVjMjFjNmRhMDM5N2ZkMGZjYzI5ZGY5NGNiZWMyNDUzMTVhZDcwZGY0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyYTdlNGI0ZjMxNmUxMGE5NDM2NWM1NTUxNjRlNzZhNDkzN2RmZTQ0Njc2NTNlYWE5ZDZlYTM1ODE3YTg5NjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/PostgresTestConfiguration.java#L20-L35",
+          "version": "repo-lines-v1:sha256:ccaa6edd6cc61952a3f704bfd7ca1f965ebecdb8ba80e88d43869e6590b534f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYjQ1MjVmOTFjNzdhZTRmYWUwYTA1MjIyYWMwMDUxNTM4ODdiMzIzMWEyNWI5NmY3N2VkZmJjMjU3NjhmNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1Y2RlZjgwODVhZTc0YWI2MzZkNjQ1OWY1YzZkNWZiZmIwZGIyNjRmMWIwZDc1YmFjNTE5YzliM2Y2NzE3YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhYzg5NmI4YWJkYmMxNTE3OGNjMmRiNDhhODk1YTNmNjcyMTBlMGRmOThkNWMwNTExYmM0Y2QyYThlMTQ3N2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxN2FmOTRiMTE4ZDJmNmJhNGQ0MTIyZWMxZWIyZTI4NWJkNTBmNmIyODU5OTI1NTQxNjQyNzdkMGRkMGMyYjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0fbe58fe85794869a3cc0f440a2f7f0f",
+      "statement": "Live integration tests such as GeminiLiveTest and GarminLiveTest are skipped during regular test execution unless explicitly passed external API credentials as environment variables.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L226-L238",
+          "version": "repo-lines-v1:sha256:55d9fdeca04295fda83171185fbb927c83f76d829bd32a1275e8a9b23dc1703e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZTJmNTMyOGVlNmU4MDUwZThhYWZkOGRjODY5YTA2OWNkOTU4NGVkYWFmNTRmZTU4OWQ3M2MzYjdkY2Q3OTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhM2E0YzgyN2MwZTQyMjIzYmZmNDg1YzU1OWYyZmY3ODRmYWI0YWY5ZmI0ODJhNGJkOTU4YjAyZDg3MThhZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3YjgzOTU3ZDRkNWMxYjMzYTJjYjg5NjBhMzNlZGJmMjI4MTU1ZDkzZDY3YWVhZGY1OTU0ZDBhNWI1OTc1YTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a0115feb80024c7b8406e77ee40705c5",
+      "statement": "Frontend testing is executed using Vitest and React Testing Library, and TypeScript API client contracts are generated from backend OpenAPI specs via openapi-typescript.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/package.json#L6-L14",
+          "version": "repo-lines-v1:sha256:15d59b9dd1c59a110a8e7b759d255525b2939126ab099b1e16f05cf819a2777a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MzNkNTk0OWMwM2E0MGNhOTUyNDkxNjEwYTY2NTk2NDRiM2FhNDY2MzYyZjc5OTAyMGRiZjE5ODE1NDdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQ1YTQxYTI5YWI0NGUxZGJjNmIyOGJjMTRhZTE1YWFhOGQwMTM0NjU4NTc0YzgzNDA5MmFjMmNiY2M4NTQ3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGQxODYzNDI4NjM0ODg0NjAyN2Y5YWVlNmYzZmFkYTBmMGY2Mzg3MzRmMWNhMWRlYmYxYzIzMzNiOTU3YWRiYSJ9"
+        },
+        {
+          "resource": "repo://frontend/vite.config.ts#L13-L17",
+          "version": "repo-lines-v1:sha256:379ffbfeb89de43131755350cb51f91f2d6f55844e949f51f65f1f8e7cb129ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzNmRmN2E1YTNhYWYxODBjZmZkMWQ2NWM2NDZlZjZhZWEzNTJjYzI3Nzc0Njg2MTk5Y2Q4ZmIzZTg5OWM3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTdiZDYyYjY4MWRiOTQ0YjBiMTgwMTA2YWViMWFjNmZhOTQzZjdlOWU3YjcxZTkxYjhmNmEyOGJjMTczMDJhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODU4MGI3NjUxOGRhZTk3OWZhZWJkMDIzNjdhMjkyOTJhNTBkOTc2MDkyMjUxYTM4YTZjZTMwODgwYmE0MjgyNSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-31T19:40:47.036Z"
+  }
+}

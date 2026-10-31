@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/overview.md": {
+      "pageVersion": "sha256:c9367852648b750ea76e9642f95cf360c4a2554d73c0d22bbca868bd4b4f1ea6",
+      "completedBy": "openwiki/0.7.2",
+      "completedRunId": "594f947f-a3a6-4c02-bd1c-342e1bbe50ce",
+      "gitHead": "910b2819881c3596b48ee55d9f8326568ddc0c73",
+      "sourceFingerprint": "sha256:b2d0b7b203b1a32473820b95ac548aa4de628ae05734171e31bcdae52ea25300"
+    },
+    "/openwiki/architecture/patterns.md": {
+      "pageVersion": "sha256:11ff6d164bb00da0bd6bab4527aa7f3c934881ddbff64c7b1bad97bfeacd8f26",
+      "completedBy": "openwiki/0.7.2",
+      "completedRunId": "594f947f-a3a6-4c02-bd1c-342e1bbe50ce",
+      "gitHead": "910b2819881c3596b48ee55d9f8326568ddc0c73",
+      "sourceFingerprint": "sha256:b2d0b7b203b1a32473820b95ac548aa4de628ae05734171e31bcdae52ea25300"
+    },
+    "/openwiki/architecture/persistence-rls.md": {
+      "pageVersion": "sha256:b2df42986ae6a7bb8fdf153dc9d60bd18c4fac775a6fea36153bf09ea58c11ac",
+      "completedBy": "openwiki/0.7.2",
+      "completedRunId": "594f947f-a3a6-4c02-bd1c-342e1bbe50ce",
+      "gitHead": "910b2819881c3596b48ee55d9f8326568ddc0c73",
+      "sourceFingerprint": "sha256:b2d0b7b203b1a32473820b95ac548aa4de628ae05734171e31bcdae52ea25300"
+    },
+    "/openwiki/quickstart.md": {
+      "pageVersion": "sha256:e22ff112c47414ec48bf79a84db9141da1f0950cfe19ed84acd07c0391720348",
+      "completedBy": "openwiki/0.7.2",
+      "completedRunId": "594f947f-a3a6-4c02-bd1c-342e1bbe50ce",
+      "gitHead": "910b2819881c3596b48ee55d9f8326568ddc0c73",
+      "sourceFingerprint": "sha256:b2d0b7b203b1a32473820b95ac548aa4de628ae05734171e31bcdae52ea25300"
+    },
+    "/openwiki/tutorials/add-feature.md": {
+      "pageVersion": "sha256:b634aa4831cf2798161d54654d7a951ade2a4951d2f9476c607999695f483e98",
+      "completedBy": "openwiki/0.7.2",
+      "completedRunId": "594f947f-a3a6-4c02-bd1c-342e1bbe50ce",
+      "gitHead": "910b2819881c3596b48ee55d9f8326568ddc0c73",
+      "sourceFingerprint": "sha256:b2d0b7b203b1a32473820b95ac548aa4de628ae05734171e31bcdae52ea25300"
+    }
+  }
+}
