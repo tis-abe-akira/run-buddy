@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import type { Dashboard, ImportResult, Run } from '../api/client'
 import { formatKm, formatPace, formatRate } from '../lib/format'
 import { formatMonth, shiftMonth, type Month } from '../lib/month'
+import { ExportLink } from './ExportLink'
 import { MonthSwitcher } from './MonthSwitcher'
 import { ProgressChart } from './ProgressChart'
 import { RunsTable } from './RunsTable'
@@ -42,6 +43,7 @@ export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMon
             <button type="button" className="button button-primary" onClick={onImport} disabled={importing}>
               {importing ? '取り込み中…' : 'Garminから取り込む'}
             </button>
+            <ExportLink month={month} />
             {dummySource && <span className="badge-pill">ダミーデータ</span>}
             {lastImport && !importing && (
               <span className="body-sm muted" role="status">

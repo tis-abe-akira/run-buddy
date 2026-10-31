@@ -22,6 +22,11 @@ export function daysInMonth(month: Month): number {
   return new Date(year, monthValue, 0).getDate()
 }
 
+/** Every date of the month as ISO strings: "2026-11-01" ... "2026-11-30". */
+export function daysOf(month: Month): string[] {
+  return Array.from({ length: daysInMonth(month) }, (_, i) => `${month}-${String(i + 1).padStart(2, '0')}`)
+}
+
 /** "2026年11月" */
 export function formatMonth(month: Month): string {
   const [year, monthValue] = parts(month)
