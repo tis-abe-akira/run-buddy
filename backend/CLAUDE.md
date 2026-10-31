@@ -27,8 +27,10 @@ changing the structure.
   (`V2__...sql`, ...). Never edit a migration that has been merged.
 - **After changing a migration, regenerate jOOQ:** `./scripts/generate-jooq.sh` (needs Docker),
   then fix the compile errors it produces; they list every place the change affects.
-- **Never edit `persistence/jooq/generated` by hand.** CI regenerates it and fails on any diff
-  (`docs/ci/ci.yml`, to be installed as `.github/workflows/ci.yml`).
+- **Never edit `persistence/jooq/generated` by hand.** CI (`.github/workflows/ci.yml`)
+  regenerates it and fails on any diff.
+- Claude's GitHub App cannot push changes under `.github/workflows/`. To change CI, propose the
+  edit and let the owner commit it.
 - Write queries with the jOOQ DSL and the generated tables. For SQL the DSL cannot express, use
   jOOQ's plain SQL API (`dsl.resultQuery(...)`) rather than another library.
 
