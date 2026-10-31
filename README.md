@@ -246,6 +246,7 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 | `POST /api/runs/{YYYY-MM}/import` | ActivitySource（ダミーか Garmin）から取り込む。何度呼んでも重複しない。失敗すると ProblemDetail の `reason` に `CREDENTIALS_REJECTED` / `RATE_LIMITED` / `UNAVAILABLE` |
 | `GET /api/activity-source` | 今の取り込み元（`dummy` / `garmin`） |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |
+| `GET /api/export/{YYYY-MM}.csv` | その月のプランと実績を日別の CSV でダウンロードする（1日1行＋合計行。UTF-8 BOM 付きなので Excel でもそのまま開ける）。ダッシュボードの「CSV でエクスポート」ボタンから使う |
 | `GET /api/advisor/providers` | 使える AI プロバイダとモデルの一覧 |
 | `POST /api/advisor/consultations` | AI に相談する（会話の履歴を毎回送る。プラン案は保存しない） |
 | `GET /v3/api-docs` | OpenAPI 定義（frontend の型生成に使う） |
