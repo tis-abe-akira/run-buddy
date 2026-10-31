@@ -47,7 +47,7 @@ jobs:
           [ -n "$GEMINI_API_KEY" ] || missing="$missing GEMINI_API_KEY"
           [ -n "$OPENWIKI_PR_TOKEN" ] || missing="$missing OPENWIKI_PR_TOKEN"
           if [ -n "$missing" ]; then
-            echo "::warning::OpenWiki skipped: repository secrets missing:$missing (see docs/guides/openwiki.md)"
+            echo "::warning::OpenWiki skipped: GitHub repository secrets missing (Settings > Secrets and variables > Actions):$missing (see docs/guides/openwiki.md)"
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"

@@ -31,20 +31,31 @@ Claude はワークフローのファイルを push できないので、次の�
    cp docs/ci/openwiki-update.yml docs/ci/openwiki-pages.yml .github/workflows/
    ```
 
-2. **Gemini のキーを登録する:** Settings → Secrets and variables → Actions → New repository secret
-   - Name: `GEMINI_API_KEY`、Value: AI Studio のキー（アプリで使っているものと同じでよい）
-3. **PR を作るためのトークンを登録する:** GitHub の Settings（個人）→ Developer settings → Personal access tokens →
-   Fine-grained tokens → Generate new token
-   - Repository access: Only select repositories → `run-buddy`
-   - Permissions: **Contents: Read and write**、**Pull requests: Read and write**
-   - 作ったトークンを、リポジトリの Secrets に `OPENWIKI_PR_TOKEN` として登録します。
+キーやトークンは、**GitHub リポジトリの Secrets**（GitHub の run-buddy リポジトリの設定画面にある、Actions 用の秘密の値）に登録します。
+手元の `.env` や、Claude のクラウド環境の設定ではありません。CI（GitHub Actions）はここからしか値を読めません。
+
+2. **Gemini のキーを GitHub リポジトリの Secrets に登録する:**
+   GitHub の run-buddy リポジトリの **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+   - Name: `GEMINI_API_KEY`、Secret: AI Studio のキー（アプリで使っているものと同じでよい）
+3. **PR を作るためのトークン（PAT）を作り、GitHub リポジトリの Secrets に登録する:**
+   1. GitHub の右上のアイコン → **Settings**（リポジトリではなく、個人の設定）→ いちばん下の **Developer settings** →
+      **Personal access tokens** → **Fine-grained tokens** → **Generate new token**
+      - Repository access: **Only select repositories** → `tis-abe-akira/run-buddy` だけ
+      - Permissions: **Contents: Read and write**、**Pull requests: Read and write**（ほかは付けない）
+      - 表示された `github_pat_...` をコピーする（この画面でしか見られない）
+   2. 手順 2 と同じ画面（GitHub の run-buddy リポジトリの Settings → Secrets and variables → Actions）で
+      **New repository secret** → Name: `OPENWIKI_PR_TOKEN`、Secret: コピーしたトークン
    - 理由: Actions 標準の `GITHUB_TOKEN` で作った PR では、他のワークフローが動きません。
      main のルールセットは `backend` と `frontend` のチェックを必須にしているので、それでは PR をマージできなくなります。
-   - トークンには有効期限があります。切れたら作り直して Secret を更新してください。
-4. **GitHub Pages を有効にする:** Settings → Pages → Build and deployment → Source: **GitHub Actions**
-5. **初回を実行する:** Actions → OpenWiki Update → Run workflow（mode: `update` のままで初回の生成も行います）。
+   - トークンには有効期限があります。切れたら作り直して（または Regenerate して）、GitHub リポジトリの Secrets の
+     `OPENWIKI_PR_TOKEN` を上書きしてください。
+4. **GitHub Pages を有効にする:** GitHub の run-buddy リポジトリの **Settings** → **Pages** → Build and deployment →
+   Source: **GitHub Actions**
+5. **初回を実行する:** GitHub の run-buddy リポジトリの **Actions** → **OpenWiki Update** → **Run workflow**
+   （mode: `update` のままで初回の生成も行います）。
 
-Secret が足りないときは、OpenWiki Update は警告を出して何もせずに終わります（失敗にはしません）。
+GitHub リポジトリの Secrets に `GEMINI_API_KEY` か `OPENWIKI_PR_TOKEN` がないときは、OpenWiki Update は警告を出して
+何もせずに終わります（失敗にはしません）。
 
 ## 生成された Wiki を取り込む
 
@@ -54,7 +65,7 @@ Secret が足りないときは、OpenWiki Update は警告を出して何もせ
 
 **Gemini のレート制限（429）で途中で止まったとき:** PR の本文に `result: failure` と出ます。
 それまでに書けたページは PR に入っているので、そのままマージしてください。次の実行がその続きから進みます
-（Actions → OpenWiki Update → Run workflow で、すぐに続きを実行することもできます）。
+（GitHub の Actions → OpenWiki Update → Run workflow で、すぐに続きを実行することもできます）。
 
 PR をマージする前に main に別の push があると、OpenWiki は main を基準にもう一度実行して、同じ PR を上書きします。
 Wiki の PR は溜めずに早めにマージすると、無駄な実行が減ります。
@@ -90,7 +101,7 @@ npx openwiki@0.7.2 visualize openwiki
 - **書いてほしい内容を変える:** `openwiki/INSTRUCTIONS.md` を直して main に入れると、OpenWiki Update が動きます。
   構成を大きく変えたときは、Actions → OpenWiki Update → Run workflow で mode: **`init`** を選ぶと、Wiki 全体を書き直します
   （INSTRUCTIONS.md はそのまま残ります）。
-- **モデルを変える:** Settings → Secrets and variables → Actions → Variables に `OPENWIKI_MODEL_ID`（例: Gemini のモデル ID）を作ります。
+- **モデルを変える:** GitHub の run-buddy リポジトリの Settings → Secrets and variables → Actions → **Variables** タブに `OPENWIKI_MODEL_ID`（例: Gemini のモデル ID）を作ります。
   なければ OpenWiki の Gemini の既定のモデルを使います。
 - **OpenWiki のバージョン:** ワークフローとこのガイドでは `0.7.2` に固定しています。上げるときは両方を変えます。
 
