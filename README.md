@@ -43,8 +43,8 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=memory
 ```
 
-永続化は jOOQ（既定）、Spring Data JDBC、JdbcClient を `runbuddy.persistence=jooq|jdbc|jdbcclient` で切り替えられます（[ADR-0007](docs/adr/0007-persistence-library.md) のスパイク中）。
-マイグレーションを変更したら、jOOQ のコードを生成し直します（Docker が必要です）。
+永続化には jOOQ を使います（[ADR-0007](docs/adr/0007-persistence-library.md)）。
+マイグレーションを変更したら、jOOQ のコードを生成し直します（Docker が必要です。CI は生成コードに差分があると失敗します）。
 
 ```bash
 cd backend
@@ -78,6 +78,11 @@ npm run dev
 ```
 
 http://localhost:5173 を開きます。詳しくは [frontend/README.md](frontend/README.md)。
+
+## AI エージェント向けのルール
+
+- [backend/CLAUDE.md](backend/CLAUDE.md)
+- [frontend/CLAUDE.md](frontend/CLAUDE.md)
 
 ## ドキュメント
 

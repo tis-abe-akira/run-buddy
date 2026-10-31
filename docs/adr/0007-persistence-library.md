@@ -1,6 +1,6 @@
 # ADR-0007: 永続化ライブラリの選定（PostgreSQL + RLS）
 
-- ステータス: **Proposed**（スパイク完了。推奨は jOOQ。オーナーの承認待ち）
+- ステータス: Accepted（2026-10-31 承認。jOOQ を採用）
 - 追記: 2026-10-31 に Spring の `JdbcClient`（ORMを使わない素のSQL）も同じ条件で比較した
 - 日付: 2026-10-31
 
@@ -154,7 +154,7 @@ PostgreSQL の `log_statement=all` で数えた。BEGIN / COMMIT / set_config �
 2. **アプリのSQLは `user_id` に一切触れない。** 絞り込みは RLS と列の既定値に任せている。コードは簡潔になるが、**RLS の設定を誤るとすぐに情報漏えいにつながる**。そのため、RLS の契約テスト（別のユーザーから見えないこと、同じキーでも衝突しないこと）は削除・スキップしないこと。
 3. **アプリは所有者ではないロール（`runbuddy_app`）で接続する。** Testcontainers の既定ユーザーはスーパーユーザーで RLS を素通りするので、テストでもアプリ用のロールを使う必要がある。
 
-## 結論（案）
+## 決定
 
 **jOOQ を採用する。** 理由は次のとおり。
 
@@ -173,9 +173,8 @@ JdbcClient は最も素直で書きやすい（観点①③）。ただ、「間
   - マイグレーションを変更したらコードを生成し直す。
   - DB アクセスはトランザクションの中で行う。
 
-承認されたら、次を行う。
+承認後に次を行った。
 
-- Spring Data JDBC 版と JdbcClient 版のアダプタ、および不要になる依存を削除する。
-- `runbuddy.persistence` の選択肢を `jooq` と `memory` だけにする。
-- 上の仕組み（CI と `backend/CLAUDE.md`）を入れる。
-- この ADR を Accepted にする。
+- Spring Data JDBC 版と JdbcClient 版のアダプタ、および不要になった依存を削除した。比較に使ったコードは git の履歴（コミット `a8ff5d6`）に残っている。
+- `runbuddy.persistence` の選択肢を `jooq` と `memory` だけにした。
+- 上の仕組み（CI の定義と `backend/CLAUDE.md`）を入れた。CI の定義は `docs/ci/ci.yml` にある。Claude の GitHub App にはワークフローファイルを push する権限がないため、`.github/workflows/ci.yml` への配置はオーナーが行う。

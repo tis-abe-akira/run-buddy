@@ -1,0 +1,46 @@
+# Copy to .github/workflows/ci.yml to enable. (Claude cannot push workflow files: its GitHub App lacks the "workflows" permission.)
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Test (database tests use Testcontainers)
+        run: mvn -B test
+      - name: jOOQ classes match the migrations
+        run: |
+          ./scripts/generate-jooq.sh
+          if [ -n "$(git status --porcelain -- src/main/java/com/example/runbuddy/persistence/jooq/generated)" ]; then
+            git status --porcelain -- src/main/java/com/example/runbuddy/persistence/jooq/generated
+            echo "::error::Generated jOOQ classes are out of date. Run backend/scripts/generate-jooq.sh and commit the result."
+            exit 1
+          fi
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm test

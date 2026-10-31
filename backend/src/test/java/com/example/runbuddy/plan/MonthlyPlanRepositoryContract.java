@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * What every {@link MonthlyPlanRepository} must do, whatever stores the data. Implemented by the
- * test of each adapter (in memory, jOOQ, Spring Data JDBC), so all of them pass the same tests.
+ * test of each adapter (in memory, jOOQ), so all of them pass the same tests.
  */
 public interface MonthlyPlanRepositoryContract {
 
