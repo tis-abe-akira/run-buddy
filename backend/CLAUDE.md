@@ -60,3 +60,11 @@ changing the structure.
   repositories, one short transaction per call.
 - Tests must not call real providers except the `*LiveTest` classes, which are skipped unless the
   provider's API key is set. Use `ScriptedChatModel` or the fake advisor elsewhere.
+
+## Local settings
+
+- Local settings and secrets live in the repository root's `.env` (template: `.env.example`),
+  read by docker compose and by the backend through `spring.config.import`. Never commit `.env`
+  or put a key in any tracked file; add new settings to `.env.example` with an empty value.
+- Live tests that call real providers are gated on an OS environment variable, not on `.env`, so
+  a plain `./mvnw test` never spends money.

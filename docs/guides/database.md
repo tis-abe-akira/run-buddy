@@ -141,12 +141,4 @@ docker compose down -v
 docker compose up -d --wait
 ```
 
-**5432 番が使えない:** 環境変数 `RUNBUDDY_DB_PORT` で別のポートにできます。PostgreSQL と backend の両方に同じ値を指定してください。`docker compose exec` はポート番号に関係なく使えます。
-
-```bash
-RUNBUDDY_DB_PORT=5433 docker compose up -d --wait
-```
-
-```bash
-cd backend && RUNBUDDY_DB_PORT=5433 ./mvnw spring-boot:run
-```
+**5432 番が使えない:** リポジトリのルートの `.env` に `RUNBUDDY_DB_PORT=5433` のように書きます。Docker Compose と backend の両方が `.env` を読むので、どちらも同じポートを使います。`docker compose exec` はポート番号に関係なく使えます。

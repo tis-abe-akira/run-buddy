@@ -46,7 +46,24 @@ git clone https://github.com/tis-abe-akira/run-buddy.git
 cd run-buddy
 ```
 
-### 2. PostgreSQL を起動する
+### 2. 設定ファイル `.env` を作る（任意）
+
+ローカルの設定と秘密情報は、リポジトリのルートの `.env` に書きます。ひな形をコピーして、必要な行だけ埋めます。`.env` は Git に入りません。
+
+```bash
+cp .env.example .env
+```
+
+| 設定 | 内容 |
+|---|---|
+| `GEMINI_API_KEY` | AI 相談で Gemini を使うときの API キー（空なら開発用の Fake だけが使える） |
+| `RUNBUDDY_DB_PORT` | PostgreSQL のポート（既定 5432。別の PostgreSQL と重なるときに変える） |
+
+- `.env` は Docker Compose と backend の両方が読みます。backend は Spring Boot の `spring.config.import` で読み込みます。
+- 値は `KEY=value` の形で書きます。引用符（`"`）や `export` は付けません。
+- 本物の環境変数を設定すると、`.env` より優先されます。
+
+### 3. PostgreSQL を起動する
 
 リポジトリの**ルート**（`compose.yaml` がある場所）で実行します。`--wait` を付けると、PostgreSQL が接続を受け付けられるようになるまで待ってから戻ります。
 
@@ -56,7 +73,7 @@ docker compose up -d --wait
 
 `Container run-buddy-postgres-1 Healthy` と出れば準備完了です。初回の起動時に、アプリ用のロール `runbuddy_app` が作られます（`backend/db/init`）。テーブルは backend の起動時に Flyway が作ります。
 
-### 3. backend を起動する（ターミナル 1）
+### 4. backend を起動する（ターミナル 1）
 
 ```bash
 cd backend
@@ -69,7 +86,7 @@ cd backend
 curl http://localhost:8080/health
 ```
 
-### 4. frontend を起動する（ターミナル 2）
+### 5. frontend を起動する（ターミナル 2）
 
 ```bash
 cd frontend
@@ -79,7 +96,7 @@ npm run dev
 
 http://localhost:5173 を開きます。
 
-### 5. 画面で一通り試す
+### 6. 画面で一通り試す
 
 1. **ダッシュボード:** 「Garminから取り込む」を押す（Phase 1 はダミーデータ）。今月のランが取り込まれ、グラフと記録が表示されます。前の月（‹）に移動して、その月も取り込めます。
 2. **プラン:** 上部の「プラン」で、月間目標と予定ワークアウトを入力して保存します。ダッシュボードに計画の線と達成率が出ます。
@@ -87,14 +104,11 @@ http://localhost:5173 を開きます。
 
 ### Gemini で相談する（任意）
 
-[Google AI Studio](https://aistudio.google.com/) で API キーを取得し、環境変数に入れて backend を起動し直します。画面のプロバイダに「Gemini」が出ます。
+[Google AI Studio](https://aistudio.google.com/) で API キーを取得し、`.env` の `GEMINI_API_KEY=` に書いて backend を起動し直します。画面のプロバイダに「Gemini」が出て、既定になります。
 
-```bash
-cd backend
-GEMINI_API_KEY=取得したキー ./mvnw spring-boot:run
-```
-
-相談内容とランの記録が Google に送信され、利用料がかかることがあります。
+- モデルの候補は `gemini-2.5-flash`（既定、速い）と `gemini-3.5-flash`（遅いが分析が詳しい）です。
+- 相談内容とランの記録は Google に送信されます。利用料がかかることがあります。
+- 無料枠には1分あたりの利用上限があり、AI がツールを呼ぶたびに1回分を使います。「利用上限に達しました」と出たら、1分ほど待ってから送り直してください。
 
 ### テストを流す
 
@@ -138,19 +152,13 @@ docker compose down -v
   docker compose logs postgres
   ```
 
-- **`port 5432 is already allocated`、または `docker compose ps` の PORTS が `0.0.0.0:5432->5432/tcp` ではなく `5432/tcp` だけになっている:** Mac の 5432 番を別のプログラムが使っています（`lsof -nP -iTCP:5432 -sTCP:LISTEN` で確認できます）。環境変数 `RUNBUDDY_DB_PORT` で別のポートを使えます。PostgreSQL と backend の両方に同じ値を指定してください。
+- **`port 5432 is already allocated`、または `docker compose ps` の PORTS が `0.0.0.0:5432->5432/tcp` ではなく `5432/tcp` だけになっている:** Mac の 5432 番を別のプログラムが使っています（`lsof -nP -iTCP:5432 -sTCP:LISTEN` で確認できます）。`.env` に `RUNBUDDY_DB_PORT=5433` と書き、PostgreSQL を作り直してから backend を起動し直します（Compose と backend の両方が `.env` を読むので、どちらにも反映されます）。
 
   ```bash
-  docker compose down
+  docker compose down && docker compose up -d --wait
   ```
 
-  ```bash
-  RUNBUDDY_DB_PORT=5433 docker compose up -d --wait
-  ```
-
-  ```bash
-  cd backend && RUNBUDDY_DB_PORT=5433 ./mvnw spring-boot:run
-  ```
+- **`.env` に書いた値が効かない:** 同じ名前の環境変数がシェルに設定されていると、そちらが優先されます（`env | grep GEMINI` で確認できます）。また、値を引用符で囲むと、引用符まで値に含まれてしまいます。
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
 - **DB の中身を見たい:** [データベースガイド](docs/guides/database.md#中身を見る)を参照してください（`psql` を手元に入れなくても見られます）。
 - **`release version 25 not supported`:** JDK 25 で動いていません。`JAVA_HOME` を JDK 25 に向けます。
@@ -174,9 +182,11 @@ DB の中身の見方、RLS の仕組み、スキーマの変え方は **[デー
 - **Fake（開発用）:** API キーがなくても使えるルールベースの相談相手です（`runbuddy.ai.fake.enabled=true`）。本番では無効にしてください。
 - **実際の Gemini を呼ぶテスト:** `GEMINI_API_KEY` があるときだけ動きます。
 
+本物の Gemini を呼ぶテストは、`.env` に API キーがあっても普段の `./mvnw test` では動きません（毎回 API を呼んで、利用料や利用上限を消費しないようにするため）。動かすときは、環境変数でキーを渡します。
+
 ```bash
 cd backend
-GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest
+GEMINI_API_KEY=$(grep '^GEMINI_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dtest=GeminiLiveTest
 ```
 
 ### API
