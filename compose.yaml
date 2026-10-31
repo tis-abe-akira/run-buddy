@@ -1,4 +1,5 @@
-# Local PostgreSQL for the backend:  docker compose up -d
+# Local PostgreSQL for the backend:  docker compose up -d --wait
+# --wait returns once the healthcheck passes, so the backend can start right after.
 services:
   postgres:
     image: postgres:17-alpine
@@ -8,6 +9,12 @@ services:
       POSTGRES_PASSWORD: runbuddy
     ports:
       - "5432:5432"
+    healthcheck:
+      # Over TCP, so it does not pass while the image's temporary init-time server is running.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U runbuddy -d runbuddy"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
     volumes:
       - ./backend/db/init:/docker-entrypoint-initdb.d:ro
       - postgres-data:/var/lib/postgresql/data

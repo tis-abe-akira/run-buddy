@@ -48,11 +48,13 @@ cd run-buddy
 
 ### 2. PostgreSQL を起動する
 
+リポジトリの**ルート**（`compose.yaml` がある場所）で実行します。`--wait` を付けると、PostgreSQL が接続を受け付けられるようになるまで待ってから戻ります。
+
 ```bash
-docker compose up -d
+docker compose up -d --wait
 ```
 
-初回の起動時に、アプリ用のロール `runbuddy_app` が作られます（`backend/db/init`）。テーブルは backend の起動時に Flyway が作ります。
+`Container run-buddy-postgres-1 Healthy` と出れば準備完了です。初回の起動時に、アプリ用のロール `runbuddy_app` が作られます（`backend/db/init`）。テーブルは backend の起動時に Flyway が作ります。
 
 ### 3. backend を起動する（ターミナル 1）
 
@@ -123,6 +125,18 @@ docker compose down -v
 ```
 
 ### うまく動かないとき
+
+- **`Connection to localhost:5432 refused`（backend の起動時）:** PostgreSQL が動いていません。リポジトリのルートで状態を確認します。
+
+  ```bash
+  docker compose ps
+  ```
+
+  一覧が空なら `docker compose up -d --wait` を実行します（Docker Desktop が起動していることも確認してください）。`Exited` や `unhealthy` なら、ログで原因を確認します。
+
+  ```bash
+  docker compose logs postgres
+  ```
 
 - **`port 5432 is already allocated`:** 手元で別の PostgreSQL が動いています。止めるか、`compose.yaml` のポートを `"5433:5432"` に変え、backend を `SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/runbuddy ./mvnw spring-boot:run` で起動します。
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
