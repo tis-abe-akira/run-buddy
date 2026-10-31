@@ -33,8 +33,8 @@ B のなかで決めたこと:
 ## 決定
 
 - `openwiki/INSTRUCTIONS.md`（方針）と `.openwikiignore`（読ませないパス）をリポジトリに置く。
-- `docs/ci/openwiki-update.yml`（生成して PR を作る）と `docs/ci/openwiki-pages.yml`（Pages に公開する）を用意し、
-  オーナーが `.github/workflows/` に置く。手順は [docs/guides/openwiki.md](../guides/openwiki.md)。
+- `.github/workflows/openwiki-update.yml`（生成して PR を作る）と `.github/workflows/openwiki-pages.yml`（Pages に公開する）。
+  Claude の GitHub App はワークフローを push できないので、Claude が `docs/ci/` に用意し、オーナーが移動した。手順は [docs/guides/openwiki.md](../guides/openwiki.md)。
 - `openwiki/` の生成物は手で直さない。直したいときは INSTRUCTIONS.md かソースを直す。
 
 ## 結果（トレードオフ）

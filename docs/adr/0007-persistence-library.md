@@ -177,4 +177,4 @@ JdbcClient は最も素直で書きやすい（観点①③）。ただ、「間
 
 - Spring Data JDBC 版と JdbcClient 版のアダプタ、および不要になった依存を削除した。比較に使ったコードは git の履歴（コミット `a8ff5d6`）に残っている。
 - `runbuddy.persistence` の選択肢を `jooq` と `memory` だけにした。
-- 上の仕組み（CI の定義と `backend/CLAUDE.md`）を入れた。CI の定義は `docs/ci/ci.yml` にある。Claude の GitHub App にはワークフローファイルを push する権限がないため、`.github/workflows/ci.yml` への配置はオーナーが行う。
+- 上の仕組み（CI の定義と `backend/CLAUDE.md`）を入れた。CI の定義は `.github/workflows/ci.yml`（Claude の GitHub App にはワークフローファイルを push する権限がないため、配置はオーナーが行った）。

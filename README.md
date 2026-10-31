@@ -12,8 +12,7 @@ run-buddy/
 ├── docs/
 │   ├── concept.md   コンセプト・ドメイン用語・ロードマップ
 │   ├── adr/         Architecture Decision Records
-│   ├── guides/      手順書（DB、Tailscale、OpenWiki）
-│   └── ci/          オーナーが .github/workflows/ に置くワークフロー
+│   └── guides/      手順書（DB、Tailscale、OpenWiki）
 └── openwiki/   OpenWiki が生成する Wiki（INSTRUCTIONS.md だけ人が書く）
 ```
 

@@ -1,5 +1,4 @@
-# Copy to .github/workflows/openwiki-update.yml to enable (see docs/guides/openwiki.md).
-# Claude cannot push workflow files: its GitHub App lacks the "workflows" permission.
+# Set up as described in docs/guides/openwiki.md (secrets, GitHub Pages).
 #
 # Regenerates the OpenWiki pages after every change to main and opens (or updates) one PR,
 # branch openwiki/update. Merging that PR publishes the wiki through openwiki-pages.yml.

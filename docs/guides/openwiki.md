@@ -25,10 +25,11 @@ flowchart LR
 
 Claude はワークフローのファイルを push できないので、次の作業は手で行います。
 
-1. **ワークフローを置く:** `docs/ci/` の2つのファイルを `.github/workflows/` にコピーして main に入れます（PR 経由）。
+1. **ワークフローを置く:** Claude が `docs/ci/` に用意した2つのファイルを `.github/workflows/` に**移動**して main に入れます（PR 経由）。
+   コピーではなく移動にして、同じファイルが2か所に残らないようにします。
 
    ```bash
-   cp docs/ci/openwiki-update.yml docs/ci/openwiki-pages.yml .github/workflows/
+   git mv docs/ci/openwiki-update.yml docs/ci/openwiki-pages.yml .github/workflows/
    ```
 
 キーやトークンは、**GitHub リポジトリの Secrets**（GitHub の run-buddy リポジトリの設定画面にある、Actions 用の秘密の値）に登録します。
