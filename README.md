@@ -59,6 +59,7 @@ cp .env.example .env
 | `GEMINI_API_KEY` | AI 相談で Gemini を使うときの API キー（空なら開発用の Fake だけが使える） |
 | `RUNBUDDY_ACTIVITY_SOURCE` | ランの記録をどこから取り込むか。`dummy`（既定、生成したデータ）か `garmin` |
 | `GARMIN_API_KEY` | Garmin Connect Personal API のキー（`RUNBUDDY_ACTIVITY_SOURCE=garmin` のとき必須） |
+| `RUNBUDDY_LOG_LEVEL` | backend のログの詳しさ。`INFO`（既定。取り込み元、取り込みごとの件数、AI の回答）か `DEBUG`（Garmin へのページごとのリクエストなども出る） |
 | `RUNBUDDY_DB_PORT` | PostgreSQL のポート（既定 5432。別の PostgreSQL と重なるときに変える） |
 
 - `.env` は Docker Compose と backend の両方が読みます。backend は Spring Boot の `spring.config.import` で読み込みます。
@@ -180,7 +181,7 @@ docker compose down -v
   docker compose down && docker compose up -d --wait
   ```
 
-- **Garmin を選んだのにダミーのデータが取り込まれる:** backend の起動ログの `Activity source:` の行を見てください。`dummy` と出ていれば、`RUNBUDDY_ACTIVITY_SOURCE=garmin` が読まれていません（`.env` の書き間違い、同じキーが2行ある、シェルに同じ名前の環境変数がある、など）。`curl http://localhost:8080/api/activity-source` でも確かめられます。取り込むたびに `Import 2026-10: 29 runs from GarminActivitySource, ...` のようなログが出るので、どこから取ったかも分かります。garmin なのにダミーのランが見える場合は、以前に取り込んだダミーのデータが DB に残っています（`docker compose down -v` で作り直します）。
+- **Garmin を選んだのにダミーのデータが取り込まれる:** backend の起動ログの `Activity source:` の行を見てください。`dummy` と出ていれば、`RUNBUDDY_ACTIVITY_SOURCE=garmin` が読まれていません（`.env` の書き間違い、同じキーが2行ある、シェルに同じ名前の環境変数がある、など）。`curl http://localhost:8080/api/activity-source` でも確かめられます。取り込むたびに `Import 2026-10: 29 runs from GarminActivitySource, ...` のようなログが出るので、どこから取ったかも分かります。garmin なのにダミーのランが見える場合は、以前に取り込んだダミーのデータが DB に残っています。`docker compose down -v` で作り直すか、[ダミーのランだけを消す](docs/guides/database.md#ダミーのランだけを消す)手順で消します。
 - **`.env` に書いた値が効かない:** 同じ名前の環境変数がシェルに設定されていると、そちらが優先されます（`env | grep GEMINI` で確認できます）。また、値を引用符で囲むと、引用符まで値に含まれてしまいます。
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
 - **DB の中身を見たい:** [データベースガイド](docs/guides/database.md#中身を見る)を参照してください（`psql` を手元に入れなくても見られます）。

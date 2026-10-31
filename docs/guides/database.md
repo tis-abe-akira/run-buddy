@@ -129,6 +129,22 @@ backend を次に起動したとき、Flyway が新しいマイグレーショ�
 
 詳しくは [backend/CLAUDE.md](../../backend/CLAUDE.md) を参照してください。
 
+## ダミーのランだけを消す
+
+ダミー（`RUNBUDDY_ACTIVITY_SOURCE=dummy`）で取り込んだあとに Garmin に切り替えると、同じ月にダミーのランと Garmin のランが両方残り、合計距離が二重になります（ADR-0009）。どちらから取り込んだかは `activity_id` の先頭で分かります（`dummy-…` / `garmin-…`）。
+
+取り込み元ごとの件数を確かめます。
+
+```bash
+docker compose exec postgres psql -U runbuddy -d runbuddy -c "select user_id, split_part(activity_id, '-', 1) as source, count(*) from run_result group by 1, 2 order by 1, 2;"
+```
+
+ダミーのランだけを消します。所有者の `runbuddy` で接続しているので、RLS に関係なく全ユーザーのダミーのランが消えます。プランや Garmin のランはそのまま残ります。
+
+```bash
+docker compose exec postgres psql -U runbuddy -d runbuddy -c "delete from run_result where activity_id like 'dummy-%';"
+```
+
 ## 作り直す・ポートを変える
 
 **データをすべて消して作り直す:**

@@ -64,7 +64,7 @@ flowchart LR
 | フェーズ | ゴール | 主な内容 |
 |---|---|---|
 | **Phase 1**（実装済み） | ダミーデータで一通りの流れを確認する | ダミーの `ActivitySource`、Result取り込み、MonthlyPlan の CRUD、計画と実績の比較API、frontend のダッシュボードとPlan入力 |
-| Phase 2 | AIに相談できるようにする | 実績と計画をコンテキストにして次月の計画案を出す |
+| **Phase 2**（実装済み） | AIに相談できるようにする | 実績と計画をツールで読み、次月の計画案を出す。プロバイダとモデルは相談ごとに選ぶ（今は Gemini と開発用の Fake）（[ADR-0008](adr/0008-ai-integration.md)） |
 | Phase 3 | スプレッドシートと連携する | 月次Plan / Resultのエクスポート（と、必要ならインポート） |
 | **Phase 4**（取り込みを実装済み） | 実際のGarminとつなぐ | Personal API での取り込み（[ADR-0009](adr/0009-garmin-personal-api.md)）。定期実行・差分同期は未実装 |
 
