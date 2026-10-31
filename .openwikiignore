@@ -1,0 +1,20 @@
+# Paths OpenWiki does not read (see docs/guides/openwiki.md).
+
+# Local settings and secrets. .env is untracked, but never let the agent read it.
+.env
+.env.*
+!.env.example
+
+# Generated code: the wiki explains how it is generated, not what it contains.
+backend/src/main/java/com/example/runbuddy/persistence/jooq/generated/
+frontend/src/api/schema.gen.ts
+frontend/src/routeTree.gen.ts
+
+# Build outputs, dependencies and lockfiles
+**/target/
+**/node_modules/
+**/dist/
+frontend/package-lock.json
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd

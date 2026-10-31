@@ -9,9 +9,12 @@ Garminのランニング記録（Result）と毎月のトレーニング計画�
 run-buddy/
 ├── backend/    Spring Boot 4 / Java 25 / Maven の REST API
 ├── frontend/   Vite + React + TanStack Router のダッシュボード・Plan入力
-└── docs/
-    ├── concept.md   コンセプト・ドメイン用語・ロードマップ
-    └── adr/         Architecture Decision Records
+├── docs/
+│   ├── concept.md   コンセプト・ドメイン用語・ロードマップ
+│   ├── adr/         Architecture Decision Records
+│   ├── guides/      手順書（DB、Tailscale、OpenWiki）
+│   └── ci/          オーナーが .github/workflows/ に置くワークフロー
+└── openwiki/   OpenWiki が生成する Wiki（INSTRUCTIONS.md だけ人が書く）
 ```
 
 ## ローカルで動かす
@@ -267,3 +270,4 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 - [ADR 一覧](docs/adr/README.md)
 - [データベースガイド](docs/guides/database.md)（中身の見方、RLS、スキーマの変え方）
 - [スマホや別の端末から使う（Tailscale）](docs/guides/tailscale.md)
+- [Wiki の自動生成（OpenWiki）](docs/guides/openwiki.md)（アーキテクチャの解説とチュートリアル。公開先: https://tis-abe-akira.github.io/run-buddy/ ）

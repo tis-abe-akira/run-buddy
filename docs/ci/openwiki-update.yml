@@ -1,0 +1,134 @@
+# Copy to .github/workflows/openwiki-update.yml to enable (see docs/guides/openwiki.md).
+# Claude cannot push workflow files: its GitHub App lacks the "workflows" permission.
+#
+# Regenerates the OpenWiki pages after every change to main and opens (or updates) one PR,
+# branch openwiki/update. Merging that PR publishes the wiki through openwiki-pages.yml.
+name: OpenWiki Update
+
+on:
+  push:
+    branches: [main]
+    # Later patterns win: everything, except the generated wiki itself (merging the wiki PR
+    # must not start another run), but a change to the brief does start one.
+    paths:
+      - '**'
+      - '!openwiki/**'
+      - '!AGENTS.md'
+      - 'openwiki/INSTRUCTIONS.md'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'update = only what changed since the last run; init = rewrite the whole wiki (after a big change to INSTRUCTIONS.md)'
+        type: choice
+        options: [update, init]
+        default: update
+
+# One run at a time; a push during a run queues the next one instead of cancelling it,
+# so pages already written are not thrown away.
+concurrency:
+  group: openwiki-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check the secrets
+        id: secrets
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENWIKI_PR_TOKEN: ${{ secrets.OPENWIKI_PR_TOKEN }}
+        run: |
+          missing=""
+          [ -n "$GEMINI_API_KEY" ] || missing="$missing GEMINI_API_KEY"
+          [ -n "$OPENWIKI_PR_TOKEN" ] || missing="$missing OPENWIKI_PR_TOKEN"
+          if [ -n "$missing" ]; then
+            echo "::warning::OpenWiki skipped: repository secrets missing:$missing (see docs/guides/openwiki.md)"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository
+        if: steps.secrets.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          # Full history: `--update` diffs HEAD against the commit it last documented.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        if: steps.secrets.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install OpenWiki
+        if: steps.secrets.outputs.ready == 'true'
+        # mermaid + jsdom let OpenWiki validate the Mermaid diagrams INSTRUCTIONS.md asks for.
+        run: npm install --global openwiki@0.7.2 mermaid@11.16.0 jsdom@29.1.1
+
+      - name: Run OpenWiki
+        id: openwiki
+        if: steps.secrets.outputs.ready == 'true'
+        # A failed run still opens the PR with the pages finished so far; the next run continues.
+        continue-on-error: true
+        env:
+          OPENWIKI_PROVIDER: gemini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Optional: set the repository variable OPENWIKI_MODEL_ID to choose a Gemini model.
+          MODEL_ID: ${{ vars.OPENWIKI_MODEL_ID }}
+          MODE: ${{ inputs.mode || 'update' }}
+          # One page at a time with patient retries, so Gemini's rate limit (429) does not end the run.
+          OPENWIKI_PAGE_CONCURRENCY: '1'
+          OPENWIKI_PROVIDER_RETRY_ATTEMPTS: '8'
+          OPENWIKI_TELEMETRY_DISABLED: '1'
+        run: |
+          if [ -n "$MODEL_ID" ]; then export OPENWIKI_MODEL_ID="$MODEL_ID"; fi
+          openwiki code --"$MODE" --language ja --print
+
+      - name: Remove transient OpenWiki run state
+        if: ${{ !cancelled() && steps.secrets.outputs.ready == 'true' }}
+        run: rm -f -- openwiki/.run.json
+
+      - name: List the paths to commit
+        id: paths
+        if: ${{ !cancelled() && steps.secrets.outputs.ready == 'true' }}
+        # AGENTS.md only when present: `git add` of a missing path fails and then stages nothing.
+        run: |
+          paths=openwiki
+          if [ -e AGENTS.md ]; then paths="$paths,AGENTS.md"; fi
+          echo "list=$paths" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update the wiki pull request
+        id: create-pr
+        if: ${{ !cancelled() && steps.secrets.outputs.ready == 'true' }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # A personal access token, not GITHUB_TOKEN: pull requests opened with GITHUB_TOKEN do
+          # not start other workflows, so the required backend/frontend checks would never run.
+          token: ${{ secrets.OPENWIKI_PR_TOKEN }}
+          add-paths: ${{ steps.paths.outputs.list }}
+          branch: openwiki/update
+          delete-branch: true
+          commit-message: 'docs: update OpenWiki'
+          title: 'docs: update OpenWiki'
+          body: |
+            Automated OpenWiki update (mode: ${{ inputs.mode || 'update' }}, result: ${{ steps.openwiki.outcome }}).
+
+            If the result is `failure` (often Gemini's rate limit), this PR holds the pages finished
+            before the failure. Merge it to keep them; the next run continues from there.
+
+            Merging publishes the wiki to GitHub Pages (openwiki-pages.yml).
+
+      - name: Report the pull request
+        if: ${{ !cancelled() && steps.create-pr.outputs.pull-request-url != '' }}
+        run: echo "::notice title=OpenWiki pull request::${{ steps.create-pr.outputs.pull-request-url }}"
+
+      - name: Fail when OpenWiki failed
+        if: ${{ steps.openwiki.outcome == 'failure' }}
+        run: exit 1

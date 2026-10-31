@@ -1,0 +1,72 @@
+# Copy to .github/workflows/openwiki-pages.yml to enable (see docs/guides/openwiki.md).
+# Claude cannot push workflow files: its GitHub App lacks the "workflows" permission.
+#
+# Exports the wiki in openwiki/ as a static site (OpenWiki's graph + reader) and publishes it
+# to GitHub Pages. Needs Settings → Pages → Source: "GitHub Actions". No API key: the export
+# only reads the Markdown that is already committed.
+name: OpenWiki Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'openwiki/**'
+  workflow_dispatch:
+
+concurrency:
+  group: openwiki-pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      has-wiki: ${{ steps.check.outputs.has-wiki }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that a wiki has been generated
+        id: check
+        run: |
+          if [ -f openwiki/index.md ]; then
+            echo "has-wiki=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::openwiki/index.md not found yet: merge the first OpenWiki pull request, then run this again."
+            echo "has-wiki=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.has-wiki == 'true'
+        with:
+          node-version: '22'
+
+      - name: Export the static wiki
+        if: steps.check.outputs.has-wiki == 'true'
+        env:
+          OPENWIKI_TELEMETRY_DISABLED: '1'
+        run: npx --yes openwiki@0.7.2 visualize openwiki --export _site
+
+      - uses: actions/configure-pages@v5
+        if: steps.check.outputs.has-wiki == 'true'
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.check.outputs.has-wiki == 'true'
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.has-wiki == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

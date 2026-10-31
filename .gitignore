@@ -11,3 +11,6 @@ dist/
 
 # Local settings and secrets (see .env.example)
 .env
+
+# OpenWiki static export (docs/guides/openwiki.md)
+/site/
