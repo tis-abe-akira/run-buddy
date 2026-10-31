@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c9367852648b750ea76e9642f95cf360c4a2554d73c0d22bbca868bd4b4f1ea6",
+  "pageVersion": "sha256:ba5e73f7c450e9a13786404bb0ff8a18e3f522e0d059b37c346667e7c76dfee5",
   "claims": [
     {
       "id": "claim_8028c37f138e4593af340b51a32dbd83",
@@ -22,7 +22,7 @@
     },
     {
       "id": "claim_6067fef4cec549438d0752fdd1f9d832",
-      "statement": "バックエンドは Spring Boot 4.1.2 および Java 25 を採用し、Package by Feature (plan, activity, dashboard, advisor, export, shared, persistence, web) 構造で構成されている。",
+      "statement": "バックエンドは Spring Boot 4.1.2 および Java 25 を採用し、Package by Feature (plan, activity, day, dashboard, advisor, export, shared, persistence, web) 構造で構成されている。",
       "evidence": [
         {
           "resource": "repo://backend/pom.xml#L10-L20",
@@ -39,8 +39,8 @@
       "statement": "ドメインコアのモデルおよびリポジトリインターフェースは標準 Java のみで実装されており、Spring Framework、jOOQ、Spring AI 等の外部フレームワークへのコンパイル時依存を持たない。",
       "evidence": [
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunResult.java#L1-L48",
-          "version": "repo-lines-v1:sha256:9059fbf7548e1ff76a68c21fd34e726bfa316f5fde5e907153d5afc72821fc1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MmQ4ODA2YjIyZjBlNmYwOGEyZTU0MWNiN2M2YzU1MzQ0NjYxZmZkNzE2NzdkMjc0ZWI4MDk4ZTM5YzY0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunResult.java#L1-L61",
+          "version": "repo-lines-v1:sha256:649584f6945df0778d46332154250f225b56cade21e1bb297ee862df4643b325:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MmQ4ODA2YjIyZjBlNmYwOGEyZTU0MWNiN2M2YzU1MzQ0NjYxZmZkNzE2NzdkMjc0ZWI4MDk4ZTM5YzY0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java#L1-L17",
@@ -97,10 +97,24 @@
           "version": "repo-lines-v1:sha256:8c067b20d94884a0cb37b154499462acfabf215c6a38661b1b00eeeb16035bc2:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTExYzRjNWJhZjFkZTEwMTZiOTNjZDIwOWUzZjQ1M2ViNGZlNTk3MGJiODdlOTYzMGZkMGRlNjk3ZTk0YWI0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjE4ODUzZjI2ODNlY2Q1YWM3NjMxZWMwZjA1Y2ExMGM3MTgwZTA5NzAwMWE3MGMxMmFjOTU3NmQxZTg1MTAyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWUwODE5Y2M3MjM3YWFkYmY2NjI0NWMwY2Q2ODgwYmMyN2NiNmNlZWQzMzJlZjZlOTI0MDRhZTdmYThhMzg2ZSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_ed5181d105124294ba9882c6c226cfad",
+      "statement": "DayController は指定日付の計画（MonthlyPlan）と走行実績（RunResult）を取得し、日単位のドメイン集約オブジェクト DayDetail を生成して API レスポンス（DayResponse）として返却する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayController.java#L28-L39",
+          "version": "repo-lines-v1:sha256:accfddfa8fb4ad670b8bdfb31190b6258415da2cef71d734540fd2cdc1e42cde:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0YWFmMDY4Y2RmY2JiYjc3M2JiYzVjYmQyMTk4OGNmMzZkMGMzNWYzYjhkYjVmMWQ2NTk1MDU5MGQzMTMyYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyMzgxNWUzM2NiNjY5NjI3NTQ3NWI3ZDg1MWRjNjg3ZjE0M2JjYzdmODI2ZTA3OGI4NjRmMzBmYTBiMjQzY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYmIxMjc3NzkxOTE4ZmZjOGRiZDBhYjA2ZjI3MmE3MWRiOGIwNjM0Y2MzOWJlMWYxNDEzMGQwMWRmOTU5MDQifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayDetail.java#L16-L37",
+          "version": "repo-lines-v1:sha256:4b9c3ea8333f7edd7b5db7506dcc8d6b30b0c2246019f8a676d17e2d1d0bcacb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZjJhZjgzOWRhMTYwYjU3OGExNGVkZDUyNmI2NDlhYTAwNGZkOGY1ODIwODRlZWUxNWIyZDdkZmFiODAxMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhMDRhYmIwYTU4YmRmNmIwM2E2MjYzZGYyYjE5ZDc3ZDZlMDkwZmY1YWViMmQ4ZjIyYmMwYzAzODJlYWMxMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T19:40:47.036Z"
+    "at": "2026-10-31T22:55:43.691Z"
   }
 }
