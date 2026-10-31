@@ -16,6 +16,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
+import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
 import java.io.IOException;
 import java.time.Clock;
@@ -71,6 +72,10 @@ class GarminActivitySourceTest {
         assertThat(first.averageHeartRate()).isEqualTo(121);
         assertThat(runs.get(1).averageHeartRate()).isEqualTo(131);
         assertThat(runs.get(2).heartRate()).isEmpty();
+        // Cadence in steps per minute, stride in cm, climb in m, all rounded; missing values stay missing.
+        assertThat(first.metrics()).isEqualTo(new RunMetrics(140, 166, 178, 105, 23));
+        assertThat(runs.get(1).metrics()).isEqualTo(new RunMetrics(null, 172, 194, 97, 0));
+        assertThat(runs.get(2).metrics()).isEqualTo(RunMetrics.NONE);
         server.verify();
     }
 

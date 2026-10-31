@@ -86,6 +86,31 @@ public class RunResult extends TableImpl<RunResultRecord> {
      */
     public final TableField<RunResultRecord, Integer> AVERAGE_HEART_RATE = createField(DSL.name("average_heart_rate"), SQLDataType.INTEGER, this, "");
 
+    /**
+     * The column <code>public.run_result.max_heart_rate</code>.
+     */
+    public final TableField<RunResultRecord, Integer> MAX_HEART_RATE = createField(DSL.name("max_heart_rate"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.run_result.average_cadence</code>.
+     */
+    public final TableField<RunResultRecord, Integer> AVERAGE_CADENCE = createField(DSL.name("average_cadence"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.run_result.max_cadence</code>.
+     */
+    public final TableField<RunResultRecord, Integer> MAX_CADENCE = createField(DSL.name("max_cadence"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.run_result.average_stride_length_cm</code>.
+     */
+    public final TableField<RunResultRecord, Integer> AVERAGE_STRIDE_LENGTH_CM = createField(DSL.name("average_stride_length_cm"), SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.run_result.elevation_gain_meters</code>.
+     */
+    public final TableField<RunResultRecord, Integer> ELEVATION_GAIN_METERS = createField(DSL.name("elevation_gain_meters"), SQLDataType.INTEGER, this, "");
+
     private RunResult(Name alias, Table<RunResultRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -133,8 +158,13 @@ public class RunResult extends TableImpl<RunResultRecord> {
     @Override
     public List<Check<RunResultRecord>> getChecks() {
         return Arrays.asList(
+            Internal.createCheck(this, DSL.name("run_result_average_cadence_check"), "((average_cadence > 0))", true),
+            Internal.createCheck(this, DSL.name("run_result_average_stride_length_cm_check"), "((average_stride_length_cm > 0))", true),
             Internal.createCheck(this, DSL.name("run_result_distance_meters_check"), "((distance_meters > 0))", true),
-            Internal.createCheck(this, DSL.name("run_result_duration_millis_check"), "((duration_millis > 0))", true)
+            Internal.createCheck(this, DSL.name("run_result_duration_millis_check"), "((duration_millis > 0))", true),
+            Internal.createCheck(this, DSL.name("run_result_elevation_gain_meters_check"), "((elevation_gain_meters >= 0))", true),
+            Internal.createCheck(this, DSL.name("run_result_max_cadence_check"), "((max_cadence > 0))", true),
+            Internal.createCheck(this, DSL.name("run_result_max_heart_rate_check"), "((max_heart_rate > 0))", true)
         );
     }
 

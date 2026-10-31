@@ -33,6 +33,7 @@ Phase 4（concept.md UC-6）では、ダミーの `ActivitySource`（ADR-0004）
   - `startTimeLocal`（`yyyy-MM-dd HH:mm:ss`、**記録した場所の現地時刻で、UTC オフセットなし**）。`startTimeGMT` も同じ形式で UTC の時刻。一覧の要素には**タイムゾーン名の項目がない**（日本時間なら GMT との差は 9 時間）。
   - `activityType` = `{typeId, typeKey, parentTypeId}`。ランニングは `{1, "running", 17}`。`parentTypeId` は親の `typeId` を指し、17 は「自分が親」という意味（Swagger の説明）。
   - `distance`（メートル、double）、`duration`（タイマーの時間で秒、double。一時停止は含まない。`elapsedDuration` は経過時間）、`averageHR`（bpm、double。ない場合は null）
+  - 2026-10-31 追加: `maxHR`（bpm）、`averageRunningCadenceInStepsPerMinute` / `maxRunningCadenceInStepsPerMinute`（両足の歩数/分）、`avgStrideLength`（cm）、`elevationGain`（m）。いずれも double で、実データ（2026-10 のラン 25 件）ではすべてに値があった。取り込み時に四捨五入して `RunMetrics` に入れる。0 や「最大 < 平均」はその値だけを捨て、ランは残す。
 - 位置（`startLatitude` など）、所有者の氏名（`ownerFullName`）、地名（`locationName`）といった個人情報も入っている。run-buddy はこれらを読まない。
 
 **レート制限**: Swagger にも FAQ にも書かれていない。今回の確認（約 15 リクエスト）では、レート制限に関係するレスポンスヘッダーは見当たらなかった。

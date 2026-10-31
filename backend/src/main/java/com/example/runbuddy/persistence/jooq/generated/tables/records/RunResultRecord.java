@@ -104,6 +104,76 @@ public class RunResultRecord extends UpdatableRecordImpl<RunResultRecord> {
         return (Integer) get(5);
     }
 
+    /**
+     * Setter for <code>public.run_result.max_heart_rate</code>.
+     */
+    public void setMaxHeartRate(Integer value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>public.run_result.max_heart_rate</code>.
+     */
+    public Integer getMaxHeartRate() {
+        return (Integer) get(6);
+    }
+
+    /**
+     * Setter for <code>public.run_result.average_cadence</code>.
+     */
+    public void setAverageCadence(Integer value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>public.run_result.average_cadence</code>.
+     */
+    public Integer getAverageCadence() {
+        return (Integer) get(7);
+    }
+
+    /**
+     * Setter for <code>public.run_result.max_cadence</code>.
+     */
+    public void setMaxCadence(Integer value) {
+        set(8, value);
+    }
+
+    /**
+     * Getter for <code>public.run_result.max_cadence</code>.
+     */
+    public Integer getMaxCadence() {
+        return (Integer) get(8);
+    }
+
+    /**
+     * Setter for <code>public.run_result.average_stride_length_cm</code>.
+     */
+    public void setAverageStrideLengthCm(Integer value) {
+        set(9, value);
+    }
+
+    /**
+     * Getter for <code>public.run_result.average_stride_length_cm</code>.
+     */
+    public Integer getAverageStrideLengthCm() {
+        return (Integer) get(9);
+    }
+
+    /**
+     * Setter for <code>public.run_result.elevation_gain_meters</code>.
+     */
+    public void setElevationGainMeters(Integer value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>public.run_result.elevation_gain_meters</code>.
+     */
+    public Integer getElevationGainMeters() {
+        return (Integer) get(10);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -127,7 +197,7 @@ public class RunResultRecord extends UpdatableRecordImpl<RunResultRecord> {
     /**
      * Create a detached, initialised RunResultRecord
      */
-    public RunResultRecord(String userId, String activityId, LocalDateTime startedAt, Long distanceMeters, Long durationMillis, Integer averageHeartRate) {
+    public RunResultRecord(String userId, String activityId, LocalDateTime startedAt, Long distanceMeters, Long durationMillis, Integer averageHeartRate, Integer maxHeartRate, Integer averageCadence, Integer maxCadence, Integer averageStrideLengthCm, Integer elevationGainMeters) {
         super(RunResult.RUN_RESULT);
 
         setUserId(userId);
@@ -136,6 +206,11 @@ public class RunResultRecord extends UpdatableRecordImpl<RunResultRecord> {
         setDistanceMeters(distanceMeters);
         setDurationMillis(durationMillis);
         setAverageHeartRate(averageHeartRate);
+        setMaxHeartRate(maxHeartRate);
+        setAverageCadence(averageCadence);
+        setMaxCadence(maxCadence);
+        setAverageStrideLengthCm(averageStrideLengthCm);
+        setElevationGainMeters(elevationGainMeters);
         resetTouchedOnNotNull();
     }
 }

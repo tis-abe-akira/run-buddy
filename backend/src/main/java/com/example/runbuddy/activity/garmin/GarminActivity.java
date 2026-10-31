@@ -1,5 +1,6 @@
 package com.example.runbuddy.activity.garmin;
 
+import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.shared.Distance;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,6 +18,11 @@ import java.util.Optional;
  * @param distance       meters
  * @param duration       timer duration in seconds (pauses excluded), what Garmin Connect shows as "Time"
  * @param averageHR      beats per minute, absent for manual entries and runs without a heart rate sensor
+ * @param maxHR          beats per minute
+ * @param averageRunningCadenceInStepsPerMinute steps per minute, both feet
+ * @param maxRunningCadenceInStepsPerMinute     steps per minute, both feet
+ * @param avgStrideLength centimeters
+ * @param elevationGain  meters
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 record GarminActivity(
@@ -25,7 +31,12 @@ record GarminActivity(
         ActivityType activityType,
         Double distance,
         Double duration,
-        Double averageHR) {
+        Double averageHR,
+        Double maxHR,
+        Double averageRunningCadenceInStepsPerMinute,
+        Double maxRunningCadenceInStepsPerMinute,
+        Double avgStrideLength,
+        Double elevationGain) {
 
     /** Garmin's key for running; its subtypes (trail_running, ...) name it as their parent. */
     static final String RUNNING = "running";
@@ -61,7 +72,33 @@ record GarminActivity(
         }
         Integer heartRate = averageHR == null ? null : (int) Math.round(averageHR);
         return Optional.of(new RunResult(
-                "garmin-" + activityId, startedAt(), meters, time, heartRate));
+                "garmin-" + activityId, startedAt(), meters, time, heartRate, metrics(heartRate)));
+    }
+
+    /**
+     * Garmin's optional measurements, rounded. A value the domain would reject (0 for a sensor that
+     * was not there, a maximum below its average) is dropped on its own, so it never costs the run.
+     */
+    private RunMetrics metrics(Integer averageHeartRate) {
+        Integer averageCadence = positive(averageRunningCadenceInStepsPerMinute);
+        return new RunMetrics(
+                atLeast(positive(maxHR), averageHeartRate),
+                averageCadence,
+                atLeast(positive(maxRunningCadenceInStepsPerMinute), averageCadence),
+                positive(avgStrideLength),
+                elevationGain == null || elevationGain < 0 ? null : (int) Math.round(elevationGain));
+    }
+
+    private static Integer positive(Double value) {
+        if (value == null) {
+            return null;
+        }
+        int rounded = (int) Math.round(value);
+        return rounded > 0 ? rounded : null;
+    }
+
+    private static Integer atLeast(Integer maximum, Integer average) {
+        return maximum != null && average != null && maximum < average ? null : maximum;
     }
 
     /** Wall-clock time where the run happened, which is what the dashboard's days are made of. */
