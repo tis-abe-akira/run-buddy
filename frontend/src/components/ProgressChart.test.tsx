@@ -43,6 +43,14 @@ describe('ProgressChart', () => {
     expect(screen.queryByText(/^実績 /)).not.toBeInTheDocument()
   })
 
+  it('shades Saturdays and Sundays behind the lines', () => {
+    const { container } = render(<ProgressChart days={tenDays()} targetKm={40} elapsedDays={10} />)
+
+    // 2026-11-01 is a Sunday, 11-07 a Saturday and 11-08 a Sunday.
+    const bands = [...container.querySelectorAll('rect[data-weekend]')].map((r) => r.getAttribute('data-weekend'))
+    expect(bands).toEqual(['2026-11-01', '2026-11-07', '2026-11-08'])
+  })
+
   it('offers the data as a table', async () => {
     const user = userEvent.setup()
     render(<ProgressChart days={tenDays()} targetKm={40} elapsedDays={10} />)

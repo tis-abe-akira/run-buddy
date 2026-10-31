@@ -1,3 +1,5 @@
+import { weekdayOf } from './weekday'
+
 /** 213.12 -> "213.1" */
 export function formatKm(km: number): string {
   return km.toLocaleString('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -30,7 +32,11 @@ export function formatRate(rate: number | null): string {
 
 /** "2026-11-03" or "2026-11-03T06:30:00" -> "11/3（火）" */
 export function formatDay(iso: string): string {
+  return `${formatDate(iso)}（${weekdayOf(iso)?.label ?? ''}）`
+}
+
+/** "2026-11-03" -> "11/3" */
+export function formatDate(iso: string): string {
   const date = new Date(`${iso.slice(0, 10)}T00:00:00`)
-  const weekday = '日月火水木金土'[date.getDay()]
-  return `${date.getMonth() + 1}/${date.getDate()}（${weekday}）`
+  return `${date.getMonth() + 1}/${date.getDate()}`
 }

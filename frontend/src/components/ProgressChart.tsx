@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
 import type { DashboardDay } from '../api/client'
 import { formatDay, formatKm } from '../lib/format'
+import { isWeekend } from '../lib/weekday'
+import { DayLabel } from './DayLabel'
 
 type Props = {
   days: DashboardDay[]
@@ -52,6 +54,17 @@ export function ProgressChart({ days, targetKm, elapsedDays }: Props) {
     ...(hasPlan ? [{ key: 'planned', y: y(lastDay.cumulativePlannedKm), text: `計画 ${formatKm(lastDay.cumulativePlannedKm)}` }] : []),
   ])
 
+  // One band per Saturday and Sunday, one day wide and centred on the day, kept inside the plot.
+  const dayWidth = days.length > 1 ? plotWidth / (days.length - 1) : plotWidth
+  const weekendBands = days.flatMap((d, i) => {
+    if (!isWeekend(d.date)) {
+      return []
+    }
+    const left = Math.max(x(i) - dayWidth / 2, MARGIN.left)
+    const right = Math.min(x(i) + dayWidth / 2, MARGIN.left + plotWidth)
+    return [{ date: d.date, x: left, width: right - left }]
+  })
+
   const xTickEvery = plotWidth < 320 ? 10 : 5
   const xTickIndexes = days.map((_, i) => i).filter((i) => i === 0 || (i + 1) % xTickEvery === 0)
 
@@ -75,6 +88,12 @@ export function ProgressChart({ days, targetKm, elapsedDays }: Props) {
           <LegendItem label="実績" color="var(--chart-actual)" />
           {hasPlan && <LegendItem label="計画" color="var(--chart-planned)" dashed />}
           {targetKm > 0 && <LegendItem label="目標" color="var(--color-muted-soft)" thin />}
+          <span className="chart-legend-item">
+            <svg width="12" height="12" aria-hidden="true">
+              <rect width="12" height="12" rx="2" fill="var(--chart-weekend)" />
+            </svg>
+            土日
+          </span>
         </div>
       </div>
 
@@ -86,6 +105,17 @@ export function ProgressChart({ days, targetKm, elapsedDays }: Props) {
           aria-label={`累積距離のグラフ。実績 ${formatKm(lastActual?.cumulativeActualKm ?? 0)} km`}
           style={{ display: 'block', overflow: 'visible' }}
         >
+          {weekendBands.map((band) => (
+            <rect
+              key={band.date}
+              data-weekend={band.date}
+              x={band.x}
+              y={MARGIN.top}
+              width={band.width}
+              height={plotHeight}
+              fill="var(--chart-weekend)"
+            />
+          ))}
           {yTicks.map((tick) => (
             <g key={tick}>
               <line x1={MARGIN.left} x2={MARGIN.left + plotWidth} y1={y(tick)} y2={y(tick)} stroke="var(--chart-grid)" strokeWidth={1} />
@@ -206,8 +236,10 @@ function DailyTable({ days, elapsedDays }: { days: DashboardDay[]; elapsedDays: 
         </thead>
         <tbody>
           {rows.map((d) => (
-            <tr key={d.date}>
-              <td>{formatDay(d.date)}</td>
+            <tr key={d.date} className={isWeekend(d.date) ? 'weekend-row' : undefined}>
+              <td>
+                <DayLabel date={d.date} />
+              </td>
               <td className="num">{formatKm(d.plannedKm)}</td>
               <td className="num">{formatKm(d.actualKm)}</td>
               <td className="num">{formatKm(d.cumulativePlannedKm)}</td>

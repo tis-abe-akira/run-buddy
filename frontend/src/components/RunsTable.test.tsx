@@ -14,10 +14,26 @@ describe('RunsTable', () => {
     )
 
     const [, first, second] = screen.getAllByRole('row')
-    expect(within(first!).getByText('11/8（日）')).toBeInTheDocument()
+    expect(first).toHaveTextContent('11/8（日）')
     expect(within(first!).getByText('2:00:00')).toBeInTheDocument()
     expect(within(first!).getByText('—')).toBeInTheDocument()
     expect(within(second!).getByText('5:30')).toBeInTheDocument()
+  })
+
+  it('marks Saturday and Sunday runs', () => {
+    render(
+      <RunsTable
+        runs={[
+          { activityId: 'sat', startedAt: '2026-11-07T06:30:00', distanceKm: 20, durationSeconds: 7200, paceSecondsPerKm: 360, averageHeartRate: 140 },
+          { activityId: 'mon', startedAt: '2026-11-09T06:30:00', distanceKm: 5, durationSeconds: 1800, paceSecondsPerKm: 360, averageHeartRate: 140 },
+        ]}
+      />,
+    )
+
+    const [, monday, saturday] = screen.getAllByRole('row')
+    expect(saturday).toHaveClass('weekend-row')
+    expect(within(saturday!).getByText('（土）')).toBeInTheDocument()
+    expect(monday).not.toHaveClass('weekend-row')
   })
 
   it('explains what to do when there are no runs', () => {
