@@ -152,6 +152,7 @@ docker compose down -v
   cd backend && RUNBUDDY_DB_PORT=5433 ./mvnw spring-boot:run
   ```
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
+- **DB の中身を見たい:** [データベースガイド](docs/guides/database.md#中身を見る)を参照してください（`psql` を手元に入れなくても見られます）。
 - **`release version 25 not supported`:** JDK 25 で動いていません。`JAVA_HOME` を JDK 25 に向けます。
 - **Docker を使わずに試したい:** backend を `memory` プロファイルで起動します。DB がなくても動きますが、データは再起動で消えます。
 
@@ -162,13 +163,8 @@ docker compose down -v
 
 ## backend（開発者向けの詳細）
 
-永続化には jOOQ を使います（[ADR-0007](docs/adr/0007-persistence-library.md)）。
-マイグレーションを変更したら、jOOQ のコードを生成し直します（Docker が必要です。CI は生成コードに差分があると失敗します）。
-
-```bash
-cd backend
-./scripts/generate-jooq.sh
-```
+永続化は PostgreSQL + jOOQ で、データは行レベルセキュリティ（RLS）でユーザーごとに分けています（[ADR-0007](docs/adr/0007-persistence-library.md)）。
+DB の中身の見方、RLS の仕組み、スキーマの変え方は **[データベースガイド](docs/guides/database.md)** にまとめています。
 
 ### AI 相談（Phase 2）
 
@@ -183,10 +179,7 @@ cd backend
 GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest
 ```
 
-### DB アクセスの約束事
-
-- データは行レベルセキュリティ（RLS）でユーザーごとに分けています。アプリのSQLは `user_id` に触れません。
-- DB へのアクセスは必ずトランザクションの中で行います。トランザクションの外で行うと、`app.user_id is not set` というエラーになります（`RlsTransactionManager`）。
+### API
 
 起動後は `GET http://localhost:8080/health` が `{"status":"ok"}` を返します。
 
@@ -196,6 +189,8 @@ GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest
 | `GET /api/runs/{YYYY-MM}` | ランの記録 |
 | `POST /api/runs/{YYYY-MM}/import` | ActivitySource（Phase 1 はダミー）から取り込む。何度呼んでも重複しない |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |
+| `GET /api/advisor/providers` | 使える AI プロバイダとモデルの一覧 |
+| `POST /api/advisor/consultations` | AI に相談する（会話の履歴を毎回送る。プラン案は保存しない） |
 | `GET /v3/api-docs` | OpenAPI 定義（frontend の型生成に使う） |
 
 
@@ -212,3 +207,4 @@ GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest
 
 - [コンセプト](docs/concept.md)
 - [ADR 一覧](docs/adr/README.md)
+- [データベースガイド](docs/guides/database.md)（中身の見方、RLS、スキーマの変え方）

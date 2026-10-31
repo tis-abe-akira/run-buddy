@@ -1,6 +1,7 @@
 # backend: rules for AI agents
 
-Spring Boot 4 / Java 25 / Maven. Read `docs/adr/` (especially ADR-0004 and ADR-0007) before
+Spring Boot 4 / Java 25 / Maven. Read `docs/adr/` (especially ADR-0004 and ADR-0007) and
+`docs/guides/database.md` (inspecting the database, row level security, schema changes) before
 changing the structure.
 
 ## Design
