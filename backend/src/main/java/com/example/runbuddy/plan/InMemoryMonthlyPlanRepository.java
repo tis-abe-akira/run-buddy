@@ -4,10 +4,8 @@ import java.time.YearMonth;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Repository;
 
-/** Phase 1 storage. Data is lost on restart. */
-@Repository
+/** In-memory storage for the "memory" profile and for tests. Data is lost on restart. */
 public class InMemoryMonthlyPlanRepository implements MonthlyPlanRepository {
 
     private final Map<YearMonth, MonthlyPlan> plansByMonth = new ConcurrentHashMap<>();

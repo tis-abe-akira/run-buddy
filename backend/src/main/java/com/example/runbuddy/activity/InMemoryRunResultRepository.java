@@ -6,10 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Repository;
 
-/** Phase 1 storage. Data is lost on restart. */
-@Repository
+/** In-memory storage for the "memory" profile and for tests. Data is lost on restart. */
 public class InMemoryRunResultRepository implements RunResultRepository {
 
     private final Map<String, RunResult> runsById = new ConcurrentHashMap<>();

@@ -23,7 +23,7 @@ public class PlanController {
 
     @GetMapping
     public PlanBody get(@PathVariable YearMonth month) {
-        return PlanBody.from(monthlyPlanRepository.getOrEmpty(month));
+        return PlanBody.from(monthlyPlanRepository.findByMonth(month).orElseGet(() -> MonthlyPlan.empty(month)));
     }
 
     @PutMapping

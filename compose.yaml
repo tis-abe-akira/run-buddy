@@ -1,0 +1,16 @@
+# Local PostgreSQL for the backend:  docker compose up -d
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: runbuddy
+      POSTGRES_USER: runbuddy
+      POSTGRES_PASSWORD: runbuddy
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

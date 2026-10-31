@@ -1,6 +1,7 @@
 package com.example.runbuddy.dashboard;
 
 import com.example.runbuddy.activity.RunResultRepository;
+import com.example.runbuddy.plan.MonthlyPlan;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Duration;
@@ -26,7 +27,7 @@ public class DashboardController {
     @GetMapping("/api/dashboard/{month}")
     public DashboardResponse get(@PathVariable YearMonth month) {
         PlanAchievement achievement = PlanAchievement.of(
-                monthlyPlanRepository.getOrEmpty(month), runResultRepository.findByMonth(month));
+                monthlyPlanRepository.findByMonth(month).orElseGet(() -> MonthlyPlan.empty(month)), runResultRepository.findByMonth(month));
         return DashboardResponse.from(achievement);
     }
 
