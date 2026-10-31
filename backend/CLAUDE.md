@@ -14,6 +14,8 @@ changing the structure.
   `@Transactional` proxy (this caused a real bug, see ADR-0007). `TransactionalPortRulesTest`
   (ArchUnit) fails the build on any default method in an interface a `@Transactional` class
   implements; never weaken it to make a change pass.
+  `scripts/archunit-mutation-check.sh` (run in CI) plants violations in a throwaway worktree and
+  fails unless the rule reports each one; when you change the rule, keep that check passing.
 
 ## Database (PostgreSQL + jOOQ + row level security)
 
