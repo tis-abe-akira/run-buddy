@@ -60,6 +60,7 @@ cp .env.example .env
 | `RUNBUDDY_ACTIVITY_SOURCE` | ランの記録をどこから取り込むか。`dummy`（既定、生成したデータ）か `garmin` |
 | `GARMIN_API_KEY` | Garmin Connect Personal API のキー（`RUNBUDDY_ACTIVITY_SOURCE=garmin` のとき必須） |
 | `RUNBUDDY_LOG_LEVEL` | backend のログの詳しさ。`INFO`（既定。取り込み元、取り込みごとの件数、AI の回答）か `DEBUG`（Garmin へのページごとのリクエストなども出る） |
+| `RUNBUDDY_BIND_ADDRESS` | backend が待ち受けるアドレス。既定は `127.0.0.1`（このマシンの中からだけ）。ログイン機能がないので変えないでください |
 | `RUNBUDDY_DB_PORT` | PostgreSQL のポート（既定 5432。別の PostgreSQL と重なるときに変える） |
 
 - `.env` は Docker Compose と backend の両方が読みます。backend は Spring Boot の `spring.config.import` で読み込みます。
@@ -132,6 +133,18 @@ http://localhost:5173 を開きます。
 - モデルの候補は `gemini-2.5-flash`（既定、速い）と `gemini-3.5-flash`（遅いが分析が詳しい）です。
 - 相談内容とランの記録は Google に送信されます。利用料がかかることがあります。
 - 無料枠には1分あたりの利用上限があり、AI がツールを呼ぶたびに1回分を使います。「利用上限に達しました」と出たら、1分ほど待ってから送り直してください。
+
+### スマホや別の端末から使う（任意）
+
+いつも起動しているマシン（Mac mini など）で動かし、Tailscale でつなぐと、スマホや外出先からも使えます。インターネットには公開しません。手順は [docs/guides/tailscale.md](docs/guides/tailscale.md) にあります（[ADR-0010](docs/adr/0010-run-at-home-over-tailscale.md)）。
+
+画面と API を1つにまとめて起動するには、`-Papp` を付けます（frontend もビルドされます。Node.js が必要です）。
+
+```bash
+cd backend && ./mvnw spring-boot:run -Papp
+```
+
+http://localhost:8080 で画面が開きます。
 
 ### テストを流す
 
@@ -252,3 +265,4 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 - [コンセプト](docs/concept.md)
 - [ADR 一覧](docs/adr/README.md)
 - [データベースガイド](docs/guides/database.md)（中身の見方、RLS、スキーマの変え方）
+- [スマホや別の端末から使う（Tailscale）](docs/guides/tailscale.md)
