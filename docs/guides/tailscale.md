@@ -16,7 +16,16 @@ run-buddy をいつも起動している自分のマシン（例: Mac mini）で
    tailscale status
    ```
 
-   コマンドが見つからない場合は、Tailscale アプリの設定からコマンドラインツールを入れてください（入れ方はインストール方法によって違います）。
+   `command not found` になる場合（Mac App Store や公式サイトからアプリとして入れた場合は、最初はこうなります）は、次のどちらかで使えるようにします。
+
+   - メニューバーの Tailscale のアイコン → Settings に、コマンドラインツール（CLI）を入れる項目があれば実行し、ターミナルを開き直す。
+   - アプリの中のコマンドに別名を付ける（そのターミナルの中だけ有効）。
+
+     ```bash
+     alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+     ```
+
+   Homebrew の `brew install tailscale` は、アプリとは別の Tailscale がもう1つ入ってぶつかることがあるので、使わないでください。
 
 ## 2. run-buddy を起動する
 
@@ -42,7 +51,15 @@ backend は、既定で**このマシンの中からだけ**接続を受け付�
 tailscale serve --bg 8080
 ```
 
-`https://<マシン名>.<tailnet名>.ts.net` のような URL が表示されます。初めてのときは、Tailscale の管理画面で HTTPS 証明書の利用（MagicDNS と HTTPS）を有効にするよう案内されることがあります。案内に従ってください。
+**初めてのとき**は、run-buddy の URL ではなく、Tailscale の管理画面の **「Start using Serve」** への案内が表示されます。その画面を開いて、次のようにします。
+
+1. **HTTPS certificates** はチェックを入れたままにする。
+2. **Tailscale Funnel にはチェックを入れない**（インターネット全体への公開です。下の注意を参照）。
+3. **Enable HTTPS** を押す。
+
+HTTPS を有効にすると、証明書を発行した端末の名前（`<マシン名>.<tailnet名>.ts.net`）が**公開の記録（Certificate Transparency ログ）に書かれ、あとから消せません**。名前だけで中に入れるわけではありませんが、マシン名に本名などが入っているなら、**先に**管理画面の Machines で名前を変えておきます（例: `runbuddy`）。名前を短くすると、URL も短くなります。
+
+有効にしたら、もう一度 `tailscale serve --bg 8080` を実行します。今度は `https://<マシン名>.<tailnet名>.ts.net` の URL が表示されます。まず自分のマシンのブラウザで開いて、画面が出ることを確認します（初回は証明書の準備で少し待つことがあります）。
 
 今の設定を確認するには、次を実行します。
 
@@ -54,7 +71,13 @@ tailscale serve status
 
 ## 4. スマホから開く
 
-スマホで Tailscale を接続した状態で、手順 3 の URL をブラウザで開きます。ホーム画面に追加しておくと、アプリのように開けます。
+スマホと自分のマシンは、**同じアカウントで Tailscale にログインした時点でつながっています**（メールなどで連携する必要はありません）。
+
+1. スマホの Tailscale アプリで「接続」をオンにする。
+2. 手順 3 の URL をスマホのブラウザで開く。URL は覚えなくて構いません。iPhone ならユニバーサルクリップボード（Mac でコピーして iPhone で貼る）や AirDrop、ほかには QR コードや自分宛てのメモで1回送れば十分です。この URL は自分の tailnet の端末からしか開けないので、知られても中身は見られません。
+3. ホーム画面に追加しておく。次からは Tailscale を接続してアイコンを押すだけで開けます。
+
+家の外からも使えます。同じ Wi-Fi にいる必要はありません（スマホの Wi-Fi を切ってモバイル回線で開けば確認できます）。
 
 ## 止める
 
@@ -68,6 +91,7 @@ run-buddy 自体は Ctrl+C で止めます。
 
 ## うまく動かないとき
 
+- **自分のマシンのブラウザで `Whitelabel Error Page`（404）になる:** 画面が同梱されていません。`backend/target/classes/static` に `index.html` があるか確認します。ない場合は、`-Papp` を付け忘れたか、`app` プロファイルのないブランチで起動しています。以前起動した backend が 8080 番を使ったまま残っていることもあります（`lsof -nP -iTCP:8080 -sTCP:LISTEN` で確認できます）。
 - **スマホで開けない:** スマホの Tailscale が接続中か、同じアカウントか確認します。自分のマシンの `tailscale serve status` に設定が出ているかも確認します。
 - **しばらくすると開けなくなる:** 自分のマシンがスリープしています。macOS では、システム設定でディスプレイがオフのときに自動でスリープしないように設定します。
 - **画面は出るが「データを読み込めませんでした」になる:** backend か PostgreSQL が止まっています。`curl http://localhost:8080/health` で確認します。
