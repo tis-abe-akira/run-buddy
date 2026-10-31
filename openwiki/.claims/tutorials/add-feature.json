@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b634aa4831cf2798161d54654d7a951ade2a4951d2f9476c607999695f483e98",
+  "claims": [
+    {
+      "id": "claim_da824c25225846db86c1ebf30a8a7573",
+      "statement": "RunBuddy における月次 CSV エクスポート機能は、GET /api/export/{month}.csv エンドポイントを通じて MonthlyPlan と RunResult リポジトリからデータを取得し、DailyLog ドメインモデルおよび DailyLogCsv フォーマッタを経て text/csv レスポンスを返却する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/export/DailyLog.java#L31-L47",
+          "version": "repo-lines-v1:sha256:750ab471938f5691edf08c5e7796a38d9139052f044156bd02c378cdd021de7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmODc3YjYxYzRlY2E1ZjJlMjAwYWExZGUzOTVmYzE4NjI1NTY2NzM2NzQxYTYyOGFlNGM0ZTM2MjNiZjJiN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYTQ0ZjJiMDNmOTk0ZjMzZDI4NTNlNWIwMzViOGM1Y2E5YmFhMTA0ZGNmOWNlYWU5NjNiMzIzMDNhNGY2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1Y2QyMDNhMTRmZDJkN2I3NDJkMjhlYjZhOGU3Yjg3ZmM5OWJkOWZkYWEwY2UzMDQwNjAyZjc2Yzk4ODc4NjEifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/export/DailyLogCsv.java#L25-L46",
+          "version": "repo-lines-v1:sha256:f7d1b8250da7091dfb428c221f2434911bcb53602f4a6cccba6e21a861546131:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlNmQ3ODlhYWY0N2U2YjY2ZWExOWU5NzQ0MzRlNjgyZmQ0NmM5NWZhYjAwOTlhNjRiNGNlMmVkYjhhNTA4YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZjY0NzRhNjNmMzZlNTY1NzgxY2NlODk2YjIzOWQwNWU4MmFiNzc2ZjJlZDc5NzIwODNkMTljYjlhNWYyZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1ZDQwOTQ1NmQ1NGM3NTBiMmYxNmU4MzEwNDZmMjMxYzE1NjRlZjdmYWEyNDZhMDZmMTQwNDFmZTcxMGI0NzcifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/export/ExportController.java#L30-L41",
+          "version": "repo-lines-v1:sha256:f447b590e96fe29b70ada455908710f23fefe01f477e665e00d1217e247be7b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxNmI1NjgyZWU2NGI5ZGU5ZTQzMTllOGRjODRmOGFjYmY5MTI0MWVhNGY1Y2Q2ODBhYmNmNDYzNTg1NzA5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTVkYmZlM2RiM2IyOWU1ODNiZTk0ZjZjNTVjNGY5MGUyYmM5MjBmMWY4YjY0ZjdjZjkzNzQyZGU5ZDYyYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_380403948ab7410a8e30a6f7b97d67d1",
+      "statement": "フロントエンドの ExportLink コンポーネントは exportCsvUrl(month) 関数によって生成された /api/export/{month}.csv を href に持つ download 属性付きアンカー要素を提供し、バックエンドから CSV ファイルを直接ダウンロード可能にする。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/src/components/ExportLink.tsx#L3-L14",
+          "version": "repo-lines-v1:sha256:c11d4d287f33cbfe2705bf2c74c59f4e7b0c4e8bebb6e203b5f9a4acb3cf9c60:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2NzljYzFjMTU1OWE1ODAwZGIzNDdhOWQ2OWViYjI5NDgxNzE2ZGJiYWExYzJhNTYyZTMwMjkzN2U2MzU2OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkZTNiNWE1NjRkNjI4MzY4NzM3YjdiOWU5NWIyNTViMjNlMTc1ZTVlMDA2YTlhODU3YWQ5ZWNjZGMwOGVkMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d3964d5ab134e87ba6b693db28c7fdf",
+      "statement": "RunBuddy のデータベーススキーマ追加時には、user_id 列を default app_current_user_id() と定義し、enable row level security および force row level security を有効化した上で user_id = (select app_current_user_id()) 条件の own_rows ポリシーを適用する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql#L22-L71",
+          "version": "repo-lines-v1:sha256:1c87a581db9a659b7ae505489448b6224bad71541e7b89148139e853aa72db17:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNzI0YTJkZWZjYmFhOGQ2ZWYxZDE5OWQzOTRjOTQ0ZmM1ODNhZWU0YzM3YzhlODJiN2M3Nzg1ZDlkNzU4MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZTM0N2UxNGEzOWZlZWQ2NDk0N2RhNGZmYjY4MjQ4NmNiOTcyMDUxOWU0NjZjYzA0N2QwYTAzOTE4ZDMzZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZGE3MTU2ZGZjMWE1NWE4MDhiNGQxMjk2OTJhNjU1ZGE3YWQwNTAwYThjOGQyMjFhMmM0YTFlZDM2MmIxYjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMTNjN2FhNGQxNWE4ZTZkYWVjMTA5MGQxYTZiYjZkMmI0Y2Y3OTIxMzFiYjBhZTgyMTBhNTYzMWVmN2RiN2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2f0fa214bec2415f91ee5f653c0b6bfe",
+      "statement": "Flyway マイグレーション変更後に backend/scripts/generate-jooq.sh を実行すると、一時的な Docker PostgreSQL コンテナ上でマイグレーションを適用し、jOOQ の Java DSL クラスを src/main/java/com/example/runbuddy/persistence/jooq/generated に再生成する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/scripts/generate-jooq.sh#L1-L20",
+          "version": "repo-lines-v1:sha256:b375a6392941d63d4fb797b7fd1e5e2bd26ecbf2944fe207f03f6aabf83241e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmZjhlMjJlYTUwMTczOGRjMGM1MmUxZjQ4ZGMzOGQ1YWQ4YTkzZjE3ZjBjYWFjZWZiM2Y0NGU5ZTA2MTk4NDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce615b175dec42dbbb552d9ce8b84761",
+      "statement": "リポジトリの変更検証において、RunResultRepositoryContract などの契約テストインターフェースを追加・更新することで、InMemoryRunResultRepository と JooqRunResultRepository の双方に対して同一の永続化・検索振る舞いを検証する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/InMemoryRunResultRepositoryTest.java#L3-L3",
+          "version": "repo-lines-v1:sha256:3267207eb0b75dad2341f81de3fe178a5824a4dde6508c14d21f194e4df7ade8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2NzIwN2ViMGI3NWRhZDIzNDFmODFkZTNmZTE3OGE1ODI0YTRkZGU2NTA4YzE0ZDIxZjE5NGU0ZGY3YWRlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2NzIwN2ViMGI3NWRhZDIzNDFmODFkZTNmZTE3OGE1ODI0YTRkZGU2NTA4YzE0ZDIxZjE5NGU0ZGY3YWRlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTNhNzU5MDI5MTdhMTAxNTA1NGZiM2NiNTkxMTE3NjQ3YWQ4OTA3MWQ1NjAyODhmZGJhODg5YjZiYzNjYmI1MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjlkNjAyNDJjMDljZmM5OWFlMGRiMDFjOTVkYmE2MzhkNDMzNmVjZjc5N2U1ZGVkYmJkYmIwYjg5ZmQ2ZjEzMCJ9"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/RunResultRepositoryContract.java#L13-L92",
+          "version": "repo-lines-v1:sha256:c7f2de93b7bd7eff775b427ed5a12c3097b912eb1397071ceccdb1f86102cd37:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMDY2NTU3NjQyZDRjNWQzOTNjZjZhNTc1MjdkYjAxMWIxZjBjNzk2MGYwYTU2NDFjNWYxYWZlOGQyOTEwOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyYjBjMjIyMjIwZjRmNjcxOTdmZjM2YzE3MTMxMWFhY2QzMmYwZmE0OGQ5NWFhZjVmYmUwY2M1MzhiNDYyODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/jooq/JooqPersistenceTest.java#L37-L42",
+          "version": "repo-lines-v1:sha256:bd336aff470a175511f305f9355212854213ff38d03271c22f7efd7eb66521f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTI5MWM1NTgzZGU0ZDI4Mzk0NWM3N2IxZjhlMjEwZjE2YjQyMmEzNmQ1MzlhMzY4N2U4ZjllZTU3YjNiOWYyYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGE5NDY0MGVjMGZjZGNkY2RjZWIxMWMzMzU5NmMzODljYmVmNDU0ZDY1OWI3ZDNmYmI0NzkyMWJmMTliNzZhZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODhmZjUwYTcyZmMwNWE0OWNlODJjOWRlNzg4NjQ3OGUwMDhkMjI0N2IxMGYxZTg3NWFlYmRjOGU2NGFkYmMxYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a095c147f0bf4bb8b04752641c3f3154",
+      "statement": "フロントエンドは npm run gen:api コマンドによって openapi-typescript を実行し、バックエンドの /v3/api-docs エンドポイントから src/api/schema.gen.ts に TypeScript 型定義を同期生成する。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/package.json#L13-L13",
+          "version": "repo-lines-v1:sha256:31e564e3a230abcb0835ada5fe86623e1f1e3c8e717651f6d29149435ca43ed5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTY0ZTNhMjMwYWJjYjA4MzVhZGE1ZmU4NjYyM2UxZjFlM2M4ZTcxNzY1MWY2ZDI5MTQ5NDM1Y2E0M2VkNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTY0ZTNhMjMwYWJjYjA4MzVhZGE1ZmU4NjYyM2UxZjFlM2M4ZTcxNzY1MWY2ZDI5MTQ5NDM1Y2E0M2VkNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWQxMGRiY2M5ZDNhYTIzZjRmMTUzMjJmN2E4ZjFkNTE4MGU5OTAwM2IyNDgxODBlMGQwNzY1NjM5MTcyNjVkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTliZTE0NzM1YmQ1MGI0NjllOGY1NjFlMzI0M2FmMTI1ODg4OWZiZjg4OTM3Yzg4MmQ5ZjI2NDUxOThlMzU2YiJ9"
+        },
+        {
+          "resource": "repo://frontend/src/api/client.ts#L1-L19",
+          "version": "repo-lines-v1:sha256:838b7808fefc0aa5ffed11ee2e87f50fd9ae9dc55428cf5dfbbb72f344bbb656:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzYzUzYzQ4ODkwNzYyZTcwYjQyOGQ0ZjNlMWVjOTg4NzM5ZTczMTQxYmI2YTZlYzY1YWM4NDZiOWJlMjc3MWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNzU4ZWQyNGI4NTA4ZDdmYTAzMzRiMzg4YTFjZDk3ZjEzY2UwYmYzMDI3MGIwMWE5ZjIxMWJiYWYyNTlmYzQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-31T19:40:47.036Z"
+  }
+}

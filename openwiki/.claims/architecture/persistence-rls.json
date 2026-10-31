@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b2df42986ae6a7bb8fdf153dc9d60bd18c4fac775a6fea36153bf09ea58c11ac",
+  "claims": [
+    {
+      "id": "claim_c3d4546cff5841bcbbb41628a4786eeb",
+      "statement": "RunBuddy adopts jOOQ as its persistence library to ensure compile-time type safety for SQL queries, seamless mapping to immutable Java record domain types, and native support for PostgreSQL features like MULTISET and upsert ON CONFLICT.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqMonthlyPlanRepository.java#L39-L97",
+          "version": "repo-lines-v1:sha256:62cc861f226ba242473c2acdba5eacdc39e1348f2b8ed49639ef77f29050f623:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkMDY4ODk1Y2IyNDhiMzk3MmM5ZTBjOTkyZDY2MWJkMzllNTRkY2Y3YWUxYjYwMDcwODU0NjQ2NGQyMzEwMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwNWE2ZTBjM2M2YzA4ZTRmNDE5MTJkYWQ3YWZiMmVmMzIwZDljMjIzNDY1M2FlOWZjYjBiZjk0ODdhNWVkOWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://docs/adr/0007-persistence-library.md#L159-L167",
+          "version": "repo-lines-v1:sha256:1a405faa809eed118664fb3e56c9d22a3b84a46d4c5673cecc490f8dd8ee4108:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQ5ZjZjN2Y2YWUwOTViMTBkZGFiMTlmMjc4MWE5MGQxNjAxMWU1ZjNiZTQ1ZGYwMDgzMzY5N2JjMTAxZTI1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmIwNzg4ZDQ2OGI4YTE5MTAyMzJiMWY3YmQ2NjlkNDliYjBhZGQ0OTJjNzBiMjdlNTBlOTgzYTU3ZjNhNTU4OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGIxZTc2MDRlYzkyMGIzMTk3ZDgxMWQ4MzllMjNhMTkwNDg2ZjdkYjZkN2I3N2RlOGViNTY4YzgwODAwMDlkYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_958b486f0b1146c9a990b56d78ebb762",
+      "statement": "RlsTransactionManager extends Spring JdbcTransactionManager to execute select set_config('app.user_id', ?, true) at transaction start, setting a transaction-local user context for PostgreSQL Row Level Security without leaking to other connection pool requests.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/RlsTransactionManager.java#L19-L36",
+          "version": "repo-lines-v1:sha256:b3861359f3add2a934a6435dabcd285fafbd0c58682b0e192f325afdfd08c679:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5ZTEyOGNiNDc3NTc4ZGU5YzNlOTk3ZTAzZDllZjJiOWNiNzllYWQ3ZWM4Y2I4MmU1NGFjNDQyNjJkYjkxNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxNjI1MTQwZDRjMzA2MDM5YTQ3ODQwNDA0OTdhMzM4YjE1NzM5MTRkNTFmZjIyZmZlOTFmNWVhMjg2MzMzN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb3799cf903949e2a33a87992a82c7f5",
+      "statement": "PostgreSQL function app_current_user_id() retrieves current_setting('app.user_id', true) and raises an exception if app.user_id is unset, preventing silent zero-row responses when database access runs outside a transaction.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql#L9-L20",
+          "version": "repo-lines-v1:sha256:3ee7177d1da08e26c081377b7306a9efa21ebc6cda06994ad2ad15b22dcdd463:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlZTk0ZmZhM2YxNGEyNTIwNmQ4NzU2YjRjZjdmZjhhOTZkMGEwNTE0YjU4MGEwOWJkNWZiMWFmMzI2M2ExZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMzQ2YjNlYzhlNDY1Zjc5MTMzZTQxYjU0NzdhNzRkZGNmNTc3YzE1YjNmNWUzZDczOTRhOTEyZDE5Zjc0ZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwMTA2YTczZGVlOWQ0OTU1OGU0YTlmNWIyOWY0MTk1ZGZiMWU5MjNiZjEyYTBjYjI0YTE4NjJjMWQzOGVlYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2NjAyM2MzYTI1NThkYzhiNDE4NGRlZDI1ODdhMDRmNTU4ZDFhOTZlN2FkNjBkYTkxNjM1ZTRjYmVmMzVkNzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ab6bedb889ea4ec1b01150cc52b38773",
+      "statement": "Database tables use app_current_user_id() as default column values and enforce RLS policy own_rows using scalar subqueries for statement-level optimization.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql#L22-L71",
+          "version": "repo-lines-v1:sha256:1c87a581db9a659b7ae505489448b6224bad71541e7b89148139e853aa72db17:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNzI0YTJkZWZjYmFhOGQ2ZWYxZDE5OWQzOTRjOTQ0ZmM1ODNhZWU0YzM3YzhlODJiN2M3Nzg1ZDlkNzU4MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZTM0N2UxNGEzOWZlZWQ2NDk0N2RhNGZmYjY4MjQ4NmNiOTcyMDUxOWU0NjZjYzA0N2QwYTAzOTE4ZDMzZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZGE3MTU2ZGZjMWE1NWE4MDhiNGQxMjk2OTJhNjU1ZGE3YWQwNTAwYThjOGQyMjFhMmM0YTFlZDM2MmIxYjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMTNjN2FhNGQxNWE4ZTZkYWVjMTA5MGQxYTZiYjZkMmI0Y2Y3OTIxMzFiYjBhZTgyMTBhNTYzMWVmN2RiN2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b4428555d9e345b2a00b04ee9b466121",
+      "statement": "The application connects as runbuddy_app role rather than the table owner runbuddy, ensuring Row Level Security policies are forcibly applied during normal operation and in Testcontainers database tests.",
+      "evidence": [
+        {
+          "resource": "repo://backend/db/init/01-create-app-role.sql#L1-L6",
+          "version": "repo-lines-v1:sha256:d51666c2fecded39c60082886085e30d0ddef718371461fb7118eb12f97fdb1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMwMjZhMDI2NzdmNzhjNDg0MWUwN2VhNWVkNTgzNWMyNzlhMjEwZDZkZWI4YmE0YTA4ZDZhODU3MmQ0NTgxMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU4MzRiODlmOGY4NmZmMzc3ODZhMmViMjI0MzlkZjgwNDYxMmIwYmQ0N2RmNDYxY2VmNjJiNTUzNDc2ZjEzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql#L73-L73",
+          "version": "repo-lines-v1:sha256:7d0c3629d5321ad1d61e060f78f5c6de6418acddfa486e3b3722f8c18003f024:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2QwYzM2MjlkNTMyMWFkMWQ2MWUwNjBmNzhmNWM2ZGU2NDE4YWNkZGZhNDg2ZTNiMzcyMmY4YzE4MDAzZjAyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2QwYzM2MjlkNTMyMWFkMWQ2MWUwNjBmNzhmNWM2ZGU2NDE4YWNkZGZhNDg2ZTNiMzcyMmY4YzE4MDAzZjAyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDAxNjYzZWVjMThjMTA5NDIyZTk1NTgyODg4MGQ2N2MwMDQ3NTdkM2E3NmQ3YzQ3ZjczYjhmMDNlMWU2YmQ4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://docs/guides/database.md#L30-L37",
+          "version": "repo-lines-v1:sha256:c7cb303a97ee14810bf44571f97bd606c540d5f33f75bfb8e1955529e837bf0c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM5MzdlMmRlODRmOTQ0NDQ4NmMyZjZjZGIyZjdkN2Y4ZjAwZGRmMzkxZDlhNTNjMjIxZjBjYjI5MDQyMDVkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjNkMjRhNDE4ZmU2ZWUwNDY0YmFmOGQxZGY1ZGMxZWI0ZWViY2JiOThmMzA5YTEyNTBjMmY2YmMwMDc2OTE0NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjAzNGFkOTc0NzNhYzYwMTZjMTg2YTRiYzU3ZGZhOWQxOWViNGQ5NDdhYWVjOGMxYzAxMzVlNzAwNWQwODdlZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU2NGJmNDY3NGRkYWJkYjUyZjU4YzRjY2Y0OWNmZmQyNzUwZTEwZjdmMWUzNTEyOGNmMTJlZjc1OGU3YTQ2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5da95177e91b41d58488ea620305a537",
+      "statement": "Repository port interfaces must not contain default methods because invoking a default method from outside triggers self-invocation that bypasses Spring AOP @Transactional proxies and skips RLS setup.",
+      "evidence": [
+        {
+          "resource": "repo://backend/CLAUDE.md#L12-L14",
+          "version": "repo-lines-v1:sha256:dc8180e7a9264f01bb5fd76c39f501c7be58b9d26f8200713aec5384e6114366:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjYThlZjRlZjJhNDE5Yzk1MzcyOWY5NThkMDMxNDQxYWM4NTIyNjRlZDI2MDQ1NWJjYjg0NWU0NzVjMWM1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmE4YWI4YjA5YWY4MDVjZWQxMThlZTc5MzhjMGFiMjQxZTcwMjBiZjVlZDdlYjc1YTZiZGI2N2YzMTAzYjU0NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjAzNTcxYWVlZTc1YmMyNTM3YWQ4NzBkMzNlYjA5ZWNmOTNhNjdhMjk1ZTlhODg5MTE1NWFjNzNhZTI3Yjc2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODA4YTg3MTlmMTRiOGNjZGJmMjYxM2ExNzdiZWNkZDZhMWI4ZDRkMmUzODkzNzcxYTRjZGQxZWJjNWJkYmU2OSJ9"
+        },
+        {
+          "resource": "repo://docs/adr/0007-persistence-library.md#L147-L153",
+          "version": "repo-lines-v1:sha256:a52a132809b04204509d0051a853f32d7402d04f560e50e1fee904c79679036a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4ZTExYjQ4MDM5OGMxZGNhYTdmNWFiYTk0ZjAxZDM3YTUzNGJmNmRhM2NlYTkwNDk1MTU1ZmE0ZTQzMDU1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzhiM2E1ZTUxYWZmNzNmNjc4MGYxZjJlMTdiZjE0NTBhOGNkNmJiMzE0M2RiZjFkN2FjNjQ2NDFiNjM0Y2RhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWNkMmVhYTMzZDQ5MTAxZjQwOGNkNTE4NjlhMDZhNGI1M2QzZTIxYWRmNjgyOWQ2YjllY2Q0MmU0Nzg1YjFlYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2M0MjE4MjhlODg1NjlhY2QwYmU3ZTNhMWI2NDcyOTI1ZTM3OTMwYjVjMjdkZDViNTY1Nzk0ZWZhODAzZWVmOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9586937e5b447218270dffd964feb31",
+      "statement": "jOOQ code generation script backend/scripts/generate-jooq.sh uses a temporary PostgreSQL container to generate classes into persistence/jooq/generated, and GitHub Actions CI validates that generated code stays synchronized with Flyway migrations.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/ci.yml#L23-L30",
+          "version": "repo-lines-v1:sha256:f902d2f40ec45feffda11220d898ef236e19a061534a66115d496846acde7021:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQ2MjM3YmIxMGFlODg0NTU2ZGE4NGYzOWRmZmUyNDgzYTMxNjgwOTNmNTNhNDRkOTI0ZDMxM2Q5ODc2NDk2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY1NTk3OWNlNzMwMjAzM2U2YjJmZDdkODhmNTM3YTNiOGUwOTFlYTMwNWM4MTFmZmExMjc0YmY1NzY0ZWE1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTA0ODg3ZjhhZjdhZTdlNWVjNWUyYjQzNWI3ZjI3ODYwZTBhOWU0MDkxN2I3N2ViNGE4ZDk0ZGQ2MzY4YjVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzJhOTI4OTI2N2IxNzhjZWJmNmI5Y2Y2NzkzZjdlZjdhYjk2ZjdiYTJhM2M4ZmEzOTU2ODY4OGQ4NjU3ZWNmNSJ9"
+        },
+        {
+          "resource": "repo://backend/scripts/generate-jooq.sh#L1-L20",
+          "version": "repo-lines-v1:sha256:b375a6392941d63d4fb797b7fd1e5e2bd26ecbf2944fe207f03f6aabf83241e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmZjhlMjJlYTUwMTczOGRjMGM1MmUxZjQ4ZGMzOGQ1YWQ4YTkzZjE3ZjBjYWFjZWZiM2Y0NGU5ZTA2MTk4NDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_96277d26a4a049fea177dd38d032c752",
+      "statement": "JooqMonthlyPlanRepository uses jOOQ multiset to load monthly plans and their planned workouts in a single SQL query and map them directly into immutable MonthlyPlan domain records.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqMonthlyPlanRepository.java#L75-L97",
+          "version": "repo-lines-v1:sha256:f88a6d89909939747c68ec5b722ed15655101b0a0b9da05249cc7d51ce4c7596:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4YjA0ZmJmYTg3OGQxZjY1NzAzODE0NTFkOThkNDZmYmJkZDJlZmY2MGI1YjEwZWNhMmQ5NWRhMzkyMGM0YmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2OTQ2ZTEwMWU1ZTc4ZDkwYTUxMGM2OWYyNjZlZjc2NTQwZDMwOWIxYjgyMjY5NWI1MzE3MmVkMmNhYTAyNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_36ab02594c2e45779dda3771d0a97150",
+      "statement": "JooqRunResultRepository handles bulk updates of run results using jOOQ onConflict and excluded expressions to perform idempotent upserts without duplicate activity entries.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java#L58-L64",
+          "version": "repo-lines-v1:sha256:432b9915b4beea4d651f39b711b7df64c51240c5e91b6dcbbb0d696e846b969b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjMjFiMzNkYmYwNDlmNDhjOTliN2FhYjExYTIzNTMwMmJlZjNkOTUwYWQ1MzgwYjllNGRlZjAwNmZkNzEzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmViZGNkYjBiMWI2NzRiMGMzNzc2NWE3MjI0ODhhMjE2YjIxNTZjMDk4MDM4YjgzODgyNTIxMDUxNmIzNjRjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDJiYTdhYmMzNDE2MjgzYTlmZGM1NGEzMzk1ZjY4N2NiNzgyZTRjMDhhNWVmZTgzNTk4ZWViM2YxN2E4ODE1MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWVlNGNjNTQzMjVhYTEzMGZkMGVmNjU2NzlkOTllNzFhZGNhZmZmN2Q1YTU1NjViYWE4YmI4ZjUxMmQ0YzY5NiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-31T19:40:47.036Z"
+  }
+}
