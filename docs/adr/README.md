@@ -13,6 +13,7 @@
 | [0007](0007-persistence-library.md) | 永続化ライブラリの選定（PostgreSQL + RLS）→ jOOQ | Accepted |
 | [0008](0008-ai-integration.md) | AI相談機能の実装方式（Gemini / Claude / OpenAI / Bedrock を選択可能に）| Accepted（Spring AI） |
 | [0009](0009-garmin-personal-api.md) | Garmin Connect Personal API でランの実績を取り込む | Accepted |
+| [0010](0010-run-at-home-over-tailscale.md) | クラウドに公開せず、手元のマシンで動かして Tailscale でつなぐ | Accepted |
 
 ## テンプレート
 
