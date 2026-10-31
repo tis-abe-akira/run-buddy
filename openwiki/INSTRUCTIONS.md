@@ -44,7 +44,8 @@
 - アプリの SQL が `user_id` に一切触れない理由と、それを支える仕組み:
   列のデフォルト値、`app_current_user_id()` が未設定なら例外を投げること、アプリは表の所有者ではない `runbuddy_app` で接続すること、
   Flyway は所有者 `runbuddy` で流すこと。
-- ポートに `default` メソッドを置かない理由（`@Transactional` のプロキシの外で動いてしまい、実際にバグになった。ADR-0007）。
+- ポートに `default` メソッドを置かない理由（`@Transactional` のプロキシの外で動いてしまい、実際にバグになった。ADR-0007）と、
+  それを人の注意ではなく ArchUnit のテスト `TransactionalPortRulesTest` で検査していること（何を対象にし、どう失敗するか）。
 - jOOQ のコード生成: `backend/scripts/generate-jooq.sh`、生成物 `persistence/jooq/generated` は手で直さないこと、
   CI が再生成して差分があれば落とすこと。生成クラスを使った DSL のクエリ例を、実際のアダプタから引用する。
 - record（ドメイン）と jOOQ の Record（行）の対応づけを、どこで・どう書いているか。

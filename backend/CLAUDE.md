@@ -11,7 +11,9 @@ changing the structure.
   annotations to them.
 - Repositories are ports (interfaces in the domain packages). Adapters live in `persistence/`.
   Keep ports free of `default` methods: a default method runs outside the adapter's
-  `@Transactional` proxy (this caused a real bug, see ADR-0007).
+  `@Transactional` proxy (this caused a real bug, see ADR-0007). `TransactionalPortRulesTest`
+  (ArchUnit) fails the build on any default method in an interface a `@Transactional` class
+  implements; never weaken it to make a change pass.
 
 ## Database (PostgreSQL + jOOQ + row level security)
 
