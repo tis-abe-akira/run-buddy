@@ -3,6 +3,7 @@ package com.example.runbuddy.persistence.jooq;
 import static com.example.runbuddy.persistence.jooq.generated.Tables.RUN_RESULT;
 import static org.jooq.impl.DSL.excluded;
 
+import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.shared.Distance;
@@ -46,14 +47,25 @@ public class JooqRunResultRepository implements RunResultRepository {
                 RUN_RESULT.STARTED_AT,
                 RUN_RESULT.DISTANCE_METERS,
                 RUN_RESULT.DURATION_MILLIS,
-                RUN_RESULT.AVERAGE_HEART_RATE);
+                RUN_RESULT.AVERAGE_HEART_RATE,
+                RUN_RESULT.MAX_HEART_RATE,
+                RUN_RESULT.AVERAGE_CADENCE,
+                RUN_RESULT.MAX_CADENCE,
+                RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM,
+                RUN_RESULT.ELEVATION_GAIN_METERS);
         for (RunResult run : byId.values()) {
+            RunMetrics metrics = run.metrics();
             insert = insert.values(
                     run.activityId(),
                     run.startedAt(),
                     run.distance().meters(),
                     run.duration().toMillis(),
-                    run.averageHeartRate());
+                    run.averageHeartRate(),
+                    metrics.maxHeartRate(),
+                    metrics.averageCadence(),
+                    metrics.maxCadence(),
+                    metrics.averageStrideLengthCm(),
+                    metrics.elevationGainMeters());
         }
         insert.onConflict(RUN_RESULT.USER_ID, RUN_RESULT.ACTIVITY_ID)
                 .doUpdate()
@@ -61,6 +73,11 @@ public class JooqRunResultRepository implements RunResultRepository {
                 .set(RUN_RESULT.DISTANCE_METERS, excluded(RUN_RESULT.DISTANCE_METERS))
                 .set(RUN_RESULT.DURATION_MILLIS, excluded(RUN_RESULT.DURATION_MILLIS))
                 .set(RUN_RESULT.AVERAGE_HEART_RATE, excluded(RUN_RESULT.AVERAGE_HEART_RATE))
+                .set(RUN_RESULT.MAX_HEART_RATE, excluded(RUN_RESULT.MAX_HEART_RATE))
+                .set(RUN_RESULT.AVERAGE_CADENCE, excluded(RUN_RESULT.AVERAGE_CADENCE))
+                .set(RUN_RESULT.MAX_CADENCE, excluded(RUN_RESULT.MAX_CADENCE))
+                .set(RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM, excluded(RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM))
+                .set(RUN_RESULT.ELEVATION_GAIN_METERS, excluded(RUN_RESULT.ELEVATION_GAIN_METERS))
                 .execute();
 
         return byId.size() - existing.size();
@@ -78,6 +95,12 @@ public class JooqRunResultRepository implements RunResultRepository {
                         row.getStartedAt(),
                         Distance.ofMeters(row.getDistanceMeters()),
                         Duration.ofMillis(row.getDurationMillis()),
-                        row.getAverageHeartRate()));
+                        row.getAverageHeartRate(),
+                        new RunMetrics(
+                                row.getMaxHeartRate(),
+                                row.getAverageCadence(),
+                                row.getMaxCadence(),
+                                row.getAverageStrideLengthCm(),
+                                row.getElevationGainMeters())));
     }
 }

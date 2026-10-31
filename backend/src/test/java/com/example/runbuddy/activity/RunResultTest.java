@@ -30,4 +30,28 @@ class RunResultTest {
         assertThatThrownBy(() -> new RunResult("a", START, Distance.ofKilometers(1), Duration.ZERO, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void aRunWithoutMeasurementsHasNone() {
+        RunResult run = new RunResult("a", START, Distance.ofKilometers(10), Duration.ofMinutes(55), 150);
+
+        assertThat(run.metrics()).isEqualTo(RunMetrics.NONE);
+    }
+
+    @Test
+    void maximumHeartRateBelowTheAverageIsRejected() {
+        assertThatThrownBy(() -> new RunResult(
+                        "a", START, Distance.ofKilometers(10), Duration.ofMinutes(55), 150,
+                        new RunMetrics(149, null, null, null, null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("maxHeartRate");
+    }
+
+    @Test
+    void maximumHeartRateAloneIsAccepted() {
+        RunMetrics metrics = new RunMetrics(180, null, null, null, null);
+
+        assertThat(new RunResult("a", START, Distance.ofKilometers(10), Duration.ofMinutes(55), null, metrics).metrics())
+                .isEqualTo(metrics);
+    }
 }
