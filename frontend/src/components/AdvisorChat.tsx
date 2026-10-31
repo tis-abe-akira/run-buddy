@@ -4,7 +4,7 @@ import { formatKm } from '../lib/format'
 import { isWeekend } from '../lib/weekday'
 import { DayLabel } from './DayLabel'
 import { formatMonth, type Month } from '../lib/month'
-import { WORKOUT_TYPES } from './PlanEditor'
+import { workoutTypeLabel } from '../lib/workout'
 
 export type ChatEntry =
   | { speaker: 'USER'; text: string }
@@ -158,7 +158,7 @@ function ProposalCard({ proposal, adoption, onAdopt }: { proposal: ProposedPlan;
   const [expanded, setExpanded] = useState(false)
   const visible = expanded ? proposal.workouts : proposal.workouts.slice(0, COLLAPSED_WORKOUTS)
   const plannedKm = proposal.workouts.reduce((sum, w) => sum + w.distanceKm, 0)
-  const typeLabel = (type: string) => WORKOUT_TYPES.find((t) => t.value === type)?.label ?? type
+  const typeLabel = workoutTypeLabel
   return (
     <div className="dark-card stack proposal" aria-label="プラン案">
       <div className="row">

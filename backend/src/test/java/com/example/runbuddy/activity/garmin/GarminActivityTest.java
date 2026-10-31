@@ -2,6 +2,8 @@ package com.example.runbuddy.activity.garmin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.runbuddy.activity.RunMetrics;
+import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.garmin.GarminActivity.ActivityType;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,8 @@ class GarminActivityTest {
 
     @Test
     void theStartIsTheLocalWallClockTime() {
-        GarminActivity activity = new GarminActivity(42L, "2026-10-31 09:40:33", RUNNING, 10017.8, 4651.95, 129.4);
+        GarminActivity activity = new GarminActivity(
+                42L, "2026-10-31 09:40:33", RUNNING, 10017.8, 4651.95, 129.4, null, null, null, null, null);
 
         assertThat(activity.toRunResult()).hasValueSatisfying(run -> {
             assertThat(run.activityId()).isEqualTo("garmin-42");
@@ -48,7 +51,32 @@ class GarminActivityTest {
         });
     }
 
+    // A value the domain would reject drops that value, never the run.
+
+    @Test
+    void aMaximumBelowItsAverageIsDroppedButTheRunIsKept() {
+        RunResult run = measured(150.0, 140.0, 170.0, 160.0, 100.0, 10.0).toRunResult().orElseThrow();
+
+        assertThat(run.averageHeartRate()).isEqualTo(150);
+        assertThat(run.metrics()).isEqualTo(new RunMetrics(null, 170, null, 100, 10));
+    }
+
+    @Test
+    void zeroIsTreatedAsNotMeasured() {
+        RunResult run = measured(null, 0.0, 0.0, 0.0, 0.0, 0.0).toRunResult().orElseThrow();
+
+        // No cadence or stride without a sensor, but 0 m of climb is a real measurement.
+        assertThat(run.metrics()).isEqualTo(new RunMetrics(null, null, null, null, 0));
+    }
+
     private static GarminActivity activity(ActivityType type, Double meters, Double seconds) {
-        return new GarminActivity(1L, "2026-10-05 07:00:00", type, meters, seconds, null);
+        return new GarminActivity(1L, "2026-10-05 07:00:00", type, meters, seconds, null, null, null, null, null, null);
+    }
+
+    private static GarminActivity measured(
+            Double averageHR, Double maxHR, Double averageCadence, Double maxCadence, Double stride, Double climb) {
+        return new GarminActivity(
+                1L, "2026-10-01 06:00:00", RUNNING, 5000.0, 1500.0, averageHR,
+                maxHR, averageCadence, maxCadence, stride, climb);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.runbuddy.activity.dummy;
 
 import com.example.runbuddy.activity.ActivitySource;
+import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.shared.Distance;
 import java.time.Clock;
@@ -62,6 +63,23 @@ public class DummyActivitySource implements ActivitySource {
         Duration duration = Duration.ofSeconds(Math.round(paceSecondsPerKm * distance.toKilometers()));
         int heartRate = 135 + random.nextInt(31);
         LocalTime start = LocalTime.of(6, 0).plusMinutes(random.nextInt(90));
-        return new RunResult("dummy-" + day, day.atTime(start), distance, duration, heartRate);
+        return new RunResult(
+                "dummy-" + day, day.atTime(start), distance, duration, heartRate, metrics(day, heartRate, paceSecondsPerKm));
+    }
+
+    /**
+     * Plausible extra measurements. They come from their own generator so the runs themselves (days,
+     * distances, times) stay what they were before these measurements existed.
+     */
+    private static RunMetrics metrics(LocalDate day, int averageHeartRate, int paceSecondsPerKm) {
+        Random random = new Random(day.toEpochDay());
+        int cadence = 165 + random.nextInt(16);
+        int strideCm = (int) Math.round(100_000.0 * 60 / paceSecondsPerKm / cadence);
+        return new RunMetrics(
+                averageHeartRate + 8 + random.nextInt(18),
+                cadence,
+                cadence + 6 + random.nextInt(12),
+                strideCm,
+                random.nextInt(61));
     }
 }

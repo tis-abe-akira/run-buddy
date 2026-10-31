@@ -23,6 +23,13 @@ class DummyActivitySourceTest {
     }
 
     @Test
+    void everyRunHasEveryMeasurement() {
+        List<RunResult> runs = sourceAsOf(LocalDate.of(2027, 1, 1)).fetchRuns(NOVEMBER);
+
+        assertThat(runs).allSatisfy(run -> assertThat(run.metrics()).hasNoNullFieldsOrProperties());
+    }
+
+    @Test
     void noRunsAfterToday() {
         LocalDate today = LocalDate.of(2026, 11, 15);
 

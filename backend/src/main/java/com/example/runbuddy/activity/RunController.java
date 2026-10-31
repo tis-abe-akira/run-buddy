@@ -54,22 +54,34 @@ public class RunController {
         return problem;
     }
 
+    /** A run with every measurement we have; the optional ones are null when not recorded. */
     public record RunResponse(
             String activityId,
             LocalDateTime startedAt,
             double distanceKm,
             long durationSeconds,
             long paceSecondsPerKm,
-            @Schema(types = {"integer", "null"}) Integer averageHeartRate) {
+            @Schema(types = {"integer", "null"}) Integer averageHeartRate,
+            @Schema(types = {"integer", "null"}, description = "beats per minute") Integer maxHeartRate,
+            @Schema(types = {"integer", "null"}, description = "steps per minute") Integer averageCadence,
+            @Schema(types = {"integer", "null"}, description = "steps per minute") Integer maxCadence,
+            @Schema(types = {"integer", "null"}, description = "centimeters") Integer averageStrideLengthCm,
+            @Schema(types = {"integer", "null"}, description = "meters") Integer elevationGainMeters) {
 
-        static RunResponse from(RunResult run) {
+        public static RunResponse from(RunResult run) {
+            RunMetrics metrics = run.metrics();
             return new RunResponse(
                     run.activityId(),
                     run.startedAt(),
                     run.distance().toKilometers(),
                     run.duration().toSeconds(),
                     run.pace().toSeconds(),
-                    run.averageHeartRate());
+                    run.averageHeartRate(),
+                    metrics.maxHeartRate(),
+                    metrics.averageCadence(),
+                    metrics.maxCadence(),
+                    metrics.averageStrideLengthCm(),
+                    metrics.elevationGainMeters());
         }
     }
 }

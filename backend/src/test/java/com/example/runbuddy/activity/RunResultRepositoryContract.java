@@ -83,6 +83,42 @@ public interface RunResultRepositoryContract {
                 .satisfies(run -> assertThat(run.heartRate()).isEmpty());
     }
 
+    @Test
+    default void metricsAreStoredAndReadBack() {
+        RunMetrics metrics = new RunMetrics(181, 172, 188, 98, 42);
+        RunResult measured = new RunResult(
+                "a", LocalDateTime.of(2026, 11, 2, 6, 0), Distance.ofKilometers(10), Duration.ofMinutes(55), 150,
+                metrics);
+
+        repository().saveAll(List.of(measured));
+
+        assertThat(repository().findByMonth(NOVEMBER)).singleElement()
+                .satisfies(run -> assertThat(run.metrics()).isEqualTo(metrics));
+    }
+
+    @Test
+    default void missingMetricsStayMissing() {
+        repository().saveAll(List.of(run("a", 2)));
+
+        assertThat(repository().findByMonth(NOVEMBER)).singleElement()
+                .satisfies(run -> assertThat(run.metrics()).isEqualTo(RunMetrics.NONE));
+    }
+
+    @Test
+    default void savingAgainReplacesTheMetrics() {
+        RunResult before = run("a", 2);
+        RunMetrics metrics = new RunMetrics(181, 172, 188, 98, 0);
+        RunResult after = new RunResult(
+                before.activityId(), before.startedAt(), before.distance(), before.duration(),
+                before.averageHeartRate(), metrics);
+
+        repository().saveAll(List.of(before));
+        repository().saveAll(List.of(after));
+
+        assertThat(repository().findByMonth(NOVEMBER)).singleElement()
+                .satisfies(run -> assertThat(run.metrics()).isEqualTo(metrics));
+    }
+
     private static RunResult run(String id, int day) {
         return run(id, LocalDateTime.of(2026, 11, day, 6, 30), 8);
     }

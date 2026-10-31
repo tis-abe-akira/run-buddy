@@ -53,7 +53,7 @@ public class PlanController {
 
     public record WorkoutBody(LocalDate date, WorkoutType type, double distanceKm, String note) {
 
-        static WorkoutBody from(PlannedWorkout workout) {
+        public static WorkoutBody from(PlannedWorkout workout) {
             return new WorkoutBody(
                     workout.date(), workout.type(), workout.distance().toKilometers(), workout.note());
         }

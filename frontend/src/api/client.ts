@@ -1,4 +1,5 @@
 import type { components } from './schema.gen'
+import type { IsoDate } from '../lib/day'
 import type { Month } from '../lib/month'
 
 type Schemas = components['schemas']
@@ -6,6 +7,7 @@ type Schemas = components['schemas']
 export type Dashboard = Schemas['DashboardResponse']
 export type DashboardDay = Schemas['DayBody']
 export type Run = Schemas['RunResponse']
+export type DayDetail = Schemas['DayResponse']
 export type Plan = Schemas['PlanBody']
 export type Workout = Schemas['WorkoutBody']
 export type WorkoutType = Workout['type']
@@ -46,6 +48,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   dashboard: (month: Month) => request<Dashboard>(`/api/dashboard/${month}`),
   runs: (month: Month) => request<Run[]>(`/api/runs/${month}`),
+  day: (date: IsoDate) => request<DayDetail>(`/api/days/${date}`),
   activitySource: () => request<ActivitySourceInfo>('/api/activity-source'),
   importRuns: (month: Month) => request<ImportResult>(`/api/runs/${month}/import`, { method: 'POST' }),
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),

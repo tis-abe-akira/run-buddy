@@ -84,7 +84,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/dashboard/{month}": {
+    "/api/export/{month}.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["exportMonth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/days/{date}": {
         parameters: {
             query?: never;
             header?: never;
@@ -92,6 +108,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dashboard/{month}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -202,6 +234,37 @@ export interface components {
             paceSecondsPerKm: number;
             /** Format: int32 */
             averageHeartRate: number | null;
+            /**
+             * Format: int32
+             * @description beats per minute
+             */
+            maxHeartRate: number | null;
+            /**
+             * Format: int32
+             * @description steps per minute
+             */
+            averageCadence: number | null;
+            /**
+             * Format: int32
+             * @description steps per minute
+             */
+            maxCadence: number | null;
+            /**
+             * Format: int32
+             * @description centimeters
+             */
+            averageStrideLengthCm: number | null;
+            /**
+             * Format: int32
+             * @description meters
+             */
+            elevationGainMeters: number | null;
+        };
+        DayResponse: {
+            /** Format: date */
+            date: string;
+            plannedWorkouts: components["schemas"]["WorkoutBody"][];
+            runs: components["schemas"]["RunResponse"][];
         };
         DashboardResponse: {
             month: string;
@@ -388,7 +451,51 @@ export interface operations {
             };
         };
     };
+    exportMonth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                month: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
     get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DayResponse"];
+                };
+            };
+        };
+    };
+    get_2: {
         parameters: {
             query?: never;
             header?: never;

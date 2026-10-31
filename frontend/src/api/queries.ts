@@ -1,5 +1,6 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, type ConsultationRequest, type Plan } from './client'
+import type { IsoDate } from '../lib/day'
 import type { Month } from '../lib/month'
 
 export const dashboardQuery = (month: Month) =>
@@ -7,6 +8,9 @@ export const dashboardQuery = (month: Month) =>
 
 export const runsQuery = (month: Month) =>
   queryOptions({ queryKey: ['runs', month], queryFn: () => api.runs(month) })
+
+export const dayQuery = (date: IsoDate) =>
+  queryOptions({ queryKey: ['day', date], queryFn: () => api.day(date) })
 
 export const planQuery = (month: Month) =>
   queryOptions({ queryKey: ['plan', month], queryFn: () => api.plan(month) })

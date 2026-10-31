@@ -85,7 +85,14 @@ export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMon
       {/* runs: dark product surface */}
       <section className="band">
         <div className="container">
-          <RunsTable runs={runs} />
+          <RunsTable
+            runs={runs}
+            dayLink={(date, label) => (
+              <Link to="/days/$date" params={{ date }} className="day-link">
+                {label}
+              </Link>
+            )}
+          />
         </div>
       </section>
 
