@@ -1,4 +1,4 @@
-import { containsDate, currentMonth, daysInMonth, formatMonth, isMonth, shiftMonth } from './month'
+import { containsDate, currentMonth, daysInMonth, daysOf, formatMonth, isMonth, shiftMonth } from './month'
 
 describe('month', () => {
   it('accepts only YYYY-MM', () => {
@@ -35,5 +35,11 @@ describe('month', () => {
     expect(containsDate('2026-11', '2026-11-30')).toBe(true)
     expect(containsDate('2026-11', '2026-11-31')).toBe(false)
     expect(containsDate('2026-11', '2026-12-01')).toBe(false)
+  })
+
+  it('lists every date of the month', () => {
+    expect(daysOf('2028-02')).toHaveLength(29)
+    expect(daysOf('2026-11')[0]).toBe('2026-11-01')
+    expect(daysOf('2026-11').at(-1)).toBe('2026-11-30')
   })
 })

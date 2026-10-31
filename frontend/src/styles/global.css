@@ -308,23 +308,43 @@ a.text-link,
 
 /* ---------- plan editor ---------- */
 
+.workout-list { display: flex; flex-direction: column; gap: var(--spacing-xxs); }
+.workout-item { display: flex; flex-direction: column; gap: var(--spacing-xxs); padding: var(--spacing-xxs) var(--spacing-xs); border-radius: var(--rounded-md); }
+.workout-item.weekend { background: var(--color-surface-soft); }
 .workout-row {
   display: grid;
-  grid-template-columns: 206px 150px 100px 1fr 36px;
+  grid-template-columns: 112px 150px 100px 1fr 36px;
   gap: var(--spacing-sm);
   align-items: end;
 }
 .workout-row .button-icon { margin-bottom: 2px; }
 /* Column labels are shown on the first row only; later rows keep them for screen readers. */
 .workout-row.repeat .field-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.memo-toggle { display: none; }
 .plan-summary { position: sticky; top: var(--spacing-lg); }
+
+/* Phones: one line per day (day, type, km, memo button, delete). The memo opens below the line,
+   and is always shown when it has text. */
 @media (max-width: 767px) {
-  .workout-row { grid-template-columns: 1fr 1fr; }
-  /* The date and its weekday chip get a row of their own; type and distance share the next. */
-  .workout-row .field:nth-child(1) { grid-column: 1 / -1; }
-  .workout-row .field:nth-child(4) { grid-column: 1 / 2; }
-  .workout-row.repeat .field-label { position: static; width: auto; height: auto; clip-path: none; }
-  .workout-list > * + * { border-top: 1px solid var(--color-hairline-soft); padding-top: var(--spacing-md); }
+  .workout-row {
+    grid-template-columns: auto minmax(0, 1fr) 52px 32px 32px;
+    gap: 6px;
+    align-items: center;
+  }
+  .workout-row.repeat .field-label { position: absolute; }
+  .workout-row .text-input { height: 36px; padding: 6px 8px; font-size: 14px; }
+  .workout-row .button-icon { width: 32px; height: 32px; margin: 0; align-self: end; }
+  .workout-row .date-with-weekday { gap: 4px; }
+  .workout-row .weekday-chip { width: 24px; height: 24px; font-size: 12px; }
+  /* Drop the native arrows: the day needs two digits, and the type needs room for インターバル.
+     The bordered box still reads as tappable, and tapping opens the native picker. */
+  .workout-row select.text-input { appearance: none; -webkit-appearance: none; }
+  .workout-row .date-with-weekday select.text-input { width: 40px; padding: 6px 4px; text-align: center; text-align-last: center; flex: none; }
+  .memo-toggle { display: inline-flex; }
+  .field-memo { grid-column: 1 / -1; order: 1; }
+  .field-memo .field-label { display: none; }
+  .field-memo[data-open='false'] { display: none; }
+  .plan-workouts.outline-card { padding: var(--spacing-md); }
 }
 .button-on-dark { background: var(--color-surface-dark-elevated); color: var(--color-on-dark); }
 

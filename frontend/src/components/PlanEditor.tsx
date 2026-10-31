@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { Plan, WorkoutType } from '../api/client'
 import { formatKm } from '../lib/format'
-import { containsDate, formatMonth, type Month } from '../lib/month'
+import { containsDate, daysOf, formatMonth, type Month } from '../lib/month'
+import { isWeekend } from '../lib/weekday'
 import { WeekdayChip } from './DayLabel'
 
 export const WORKOUT_TYPES: { value: WorkoutType; label: string }[] = [
@@ -59,6 +60,17 @@ function hasErrors(errors: Errors) {
 export function PlanEditor({ month, initial, onSave, saving, saved, serverError }: Props) {
   const [draft, setDraft] = useState<Draft>(() => toDraft(initial))
   const [errors, setErrors] = useState<Errors>({ workouts: {} })
+  const [openMemos, setOpenMemos] = useState<ReadonlySet<number>>(new Set())
+
+  function toggleMemo(key: number) {
+    setOpenMemos((open) => {
+      const next = new Set(open)
+      if (!next.delete(key)) {
+        next.add(key)
+      }
+      return next
+    })
+  }
 
   const plannedKm = draft.workouts.reduce((sum, w) => sum + (Number(w.distanceKm) || 0), 0)
   const targetKm = Number(draft.targetKm) || 0
@@ -94,31 +106,37 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
 
   return (
     <form className="grid-plan" onSubmit={handleSubmit} noValidate aria-label={`${formatMonth(month)}のプラン`}>
-      <section className="outline-card stack" aria-labelledby="workouts-heading">
+      <section className="outline-card stack plan-workouts" aria-labelledby="workouts-heading">
         <h2 id="workouts-heading" className="title-md">
           予定ワークアウト
         </h2>
         {draft.workouts.length === 0 && <p className="body-sm muted" style={{ margin: 0 }}>まだ予定がありません。「ワークアウトを追加」から入力してください。</p>}
-        <div className="stack workout-list" style={{ gap: 'var(--spacing-sm)' }}>
+        <div className="workout-list">
         {draft.workouts.map((workout, index) => {
           const error = errors.workouts[workout.key]
           const n = index + 1
+          const memoOpen = openMemos.has(workout.key) || workout.note !== ''
           return (
-            <div key={workout.key} className="stack" style={{ gap: 'var(--spacing-xxs)' }}>
+            <div key={workout.key} className={isWeekend(workout.date) ? 'workout-item weekend' : 'workout-item'}>
               <div className={index === 0 ? 'workout-row' : 'workout-row repeat'}>
                 <label className="field">
-                  <span className="field-label">日付</span>
+                  <span className="field-label">日</span>
                   <span className="date-with-weekday">
-                    <input
-                      type="date"
-                      className="text-input"
+                    {/* The month is fixed, so only the day is chosen; the chip shows its weekday. */}
+                    <select
+                      className="text-input numeric"
                       aria-label={`${n}件目の日付`}
-                      min={`${month}-01`}
-                      max={`${month}-31`}
                       value={workout.date}
                       aria-invalid={error !== undefined}
                       onChange={(e) => updateWorkout(workout.key, { date: e.target.value })}
-                    />
+                    >
+                      {!containsDate(month, workout.date) && <option value={workout.date}>{workout.date || '—'}</option>}
+                      {daysOf(month).map((date) => (
+                        <option key={date} value={date}>
+                          {Number(date.slice(8))}
+                        </option>
+                      ))}
+                    </select>
                     <WeekdayChip date={workout.date} />
                   </span>
                 </label>
@@ -138,7 +156,7 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
                   </select>
                 </label>
                 <label className="field">
-                  <span className="field-label">距離 km</span>
+                  <span className="field-label">km</span>
                   <input
                     type="number"
                     inputMode="decimal"
@@ -151,7 +169,7 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
                     onChange={(e) => updateWorkout(workout.key, { distanceKm: e.target.value })}
                   />
                 </label>
-                <label className="field">
+                <label className="field field-memo" data-open={memoOpen}>
                   <span className="field-label">メモ</span>
                   <input
                     type="text"
@@ -162,6 +180,16 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
                     onChange={(e) => updateWorkout(workout.key, { note: e.target.value })}
                   />
                 </label>
+                {/* Phones only: the memo does not fit on the line, so it opens below it. */}
+                <button
+                  type="button"
+                  className="button-icon memo-toggle"
+                  aria-label={`${n}件目のメモを開く`}
+                  aria-expanded={memoOpen}
+                  onClick={() => toggleMemo(workout.key)}
+                >
+                  ✎
+                </button>
                 <button type="button" className="button-icon" aria-label={`${n}件目を削除`} onClick={() => removeWorkout(workout.key)}>
                   ×
                 </button>
