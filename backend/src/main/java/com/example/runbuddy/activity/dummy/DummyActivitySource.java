@@ -12,6 +12,8 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Component;
 public class DummyActivitySource implements ActivitySource {
 
     private static final double RUN_PROBABILITY = 0.6;
+
+    private static final Logger log = LoggerFactory.getLogger(DummyActivitySource.class);
 
     private final Clock clock;
 
@@ -46,6 +50,7 @@ public class DummyActivitySource implements ActivitySource {
                 runs.add(run);
             }
         }
+        log.info("Dummy: generated {} runs for {} (not real data)", runs.size(), month);
         return runs;
     }
 

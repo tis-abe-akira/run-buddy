@@ -12,6 +12,8 @@ import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdvisorTools {
 
+    private static final Logger log = LoggerFactory.getLogger(AdvisorTools.class);
+
     private final MonthlyPlanRepository plans;
     private final RunResultRepository runs;
 
@@ -36,6 +40,7 @@ public class AdvisorTools {
 
     @Tool(description = "Summary of one month: target and actual distance, achievement rate, run counts and average pace.")
     public MonthSummary monthSummary(@ToolParam(description = "Month as YYYY-MM") String month) {
+        log.info("Advisor tool: monthSummary({})", month);
         YearMonth yearMonth = parse(month);
         MonthlyPlan plan = plans.findByMonth(yearMonth).orElseGet(() -> MonthlyPlan.empty(yearMonth));
         PlanAchievement achievement = PlanAchievement.of(plan, runs.findByMonth(yearMonth));
@@ -55,11 +60,13 @@ public class AdvisorTools {
 
     @Tool(description = "Every run recorded in one month, oldest first.")
     public List<RunView> runs(@ToolParam(description = "Month as YYYY-MM") String month) {
+        log.info("Advisor tool: runs({})", month);
         return runs.findByMonth(parse(month)).stream().map(AdvisorTools::view).toList();
     }
 
     @Tool(description = "The training plan of one month: distance target and planned workouts. Empty when not planned.")
     public PlanView plan(@ToolParam(description = "Month as YYYY-MM") String month) {
+        log.info("Advisor tool: plan({})", month);
         YearMonth yearMonth = parse(month);
         MonthlyPlan plan = plans.findByMonth(yearMonth).orElseGet(() -> MonthlyPlan.empty(yearMonth));
         return new PlanView(

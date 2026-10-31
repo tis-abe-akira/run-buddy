@@ -100,6 +100,14 @@ public class SpringAiTrainingAdvisor implements TrainingAdvisor {
 
     @Override
     public Advice consult(Consultation consultation, String model) {
+        long started = System.nanoTime();
+        Advice advice = answer(consultation, model);
+        log.info("Advisor {} ({}): answered in {} ms, plan proposed: {}", info.id(), model,
+                (System.nanoTime() - started) / 1_000_000, advice.plan().isPresent() ? "yes" : "no");
+        return advice;
+    }
+
+    private Advice answer(Consultation consultation, String model) {
         List<Message> messages = toMessages(consultation.turns());
         AdvisorAnswer answer = ask(consultation, model, messages);
         if (answer.proposedPlan() == null) {
@@ -108,6 +116,7 @@ public class SpringAiTrainingAdvisor implements TrainingAdvisor {
         try {
             return new Advice(answer.reply(), answer.toPlan(consultation.planMonth()));
         } catch (IllegalArgumentException invalid) {
+            log.info("Advisor {} ({}): proposed plan rejected ({}); asking once for a correction", info.id(), model, invalid.getMessage());
             return retryWithCorrection(consultation, model, messages, answer, invalid);
         }
     }

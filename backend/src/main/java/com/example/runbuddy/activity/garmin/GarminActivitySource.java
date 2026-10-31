@@ -100,6 +100,7 @@ public class GarminActivitySource implements ActivitySource {
                 throw new IllegalStateException("more than " + MAX_PAGES * PAGE_SIZE + " activities in " + month);
             }
             List<GarminActivity> found = search(month, page * PAGE_SIZE);
+            log.debug("Garmin: {} page {} (start {}) returned {} activities", month, page + 1, page * PAGE_SIZE, found.size());
             found.stream()
                     .filter(a -> a.activityId() != null)
                     .forEach(a -> activities.putIfAbsent(a.activityId(), a));
@@ -113,7 +114,7 @@ public class GarminActivitySource implements ActivitySource {
                 // The search filters by local start date already; this guards the month boundary.
                 .filter(run -> YearMonth.from(run.date()).equals(month))
                 .toList();
-        log.info("Garmin: {} activities in {}, {} of them runs with a distance and time",
+        log.info("Garmin: {} activities in {}, {} of them runs with a distance and time (others skipped)",
                 activities.size(), month, runs.size());
         return runs;
     }
@@ -127,6 +128,7 @@ public class GarminActivitySource implements ActivitySource {
             if (e.getStatusCode() != HttpStatus.UNAUTHORIZED) {
                 throw e;
             }
+            log.warn("Garmin: access token rejected (401); requesting a new one and retrying once");
             tokens.invalidate();
             return search(month, start, tokens.current());
         }

@@ -3,6 +3,8 @@ package com.example.runbuddy.activity.garmin;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClient;
 
@@ -14,6 +16,8 @@ import org.springframework.web.client.RestClient;
  * callers {@link #invalidate()} it when Garmin answers 401, e.g. after the key was replaced.
  */
 final class GarminTokens {
+
+    private static final Logger log = LoggerFactory.getLogger(GarminTokens.class);
 
     static final String TOKEN_PATH = "/personalapitoken-service/personal-api/personal-api-key/token";
 
@@ -38,6 +42,10 @@ final class GarminTokens {
         if (token == null || !clock.instant().isBefore(expiresAt)) {
             token = obtain();
             expiresAt = clock.instant().plus(LIFETIME);
+            // Never log the key or the token.
+            log.info("Garmin: exchanged the API key for an access token, reused until {}", expiresAt);
+        } else {
+            log.debug("Garmin: reusing the access token (valid until {})", expiresAt);
         }
         return token;
     }

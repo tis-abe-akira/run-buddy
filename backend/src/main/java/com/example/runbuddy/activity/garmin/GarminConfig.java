@@ -1,6 +1,8 @@
 package com.example.runbuddy.activity.garmin;
 
 import java.time.Clock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(name = "runbuddy.activity-source", havingValue = "garmin")
 public class GarminConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(GarminConfig.class);
+
     @Bean
     GarminActivitySource garminActivitySource(
             @Value("${runbuddy.garmin.api-key:}") String apiKey,
@@ -27,6 +31,8 @@ public class GarminConfig {
             throw new IllegalStateException("runbuddy.activity-source=garmin needs a Garmin Personal API key. "
                     + "Set GARMIN_API_KEY (see .env.example), or set RUNBUDDY_ACTIVITY_SOURCE=dummy to use generated runs.");
         }
+        // Never log the key itself.
+        log.info("Garmin: importing from the Personal API at {} (API key configured; it is checked on the first import)", baseUrl);
         return GarminActivitySource.connect(baseUrl, apiKey.strip(), clock);
     }
 }

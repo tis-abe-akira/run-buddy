@@ -180,6 +180,7 @@ docker compose down -v
   docker compose down && docker compose up -d --wait
   ```
 
+- **Garmin を選んだのにダミーのデータが取り込まれる:** backend の起動ログの `Activity source:` の行を見てください。`dummy` と出ていれば、`RUNBUDDY_ACTIVITY_SOURCE=garmin` が読まれていません（`.env` の書き間違い、同じキーが2行ある、シェルに同じ名前の環境変数がある、など）。`curl http://localhost:8080/api/activity-source` でも確かめられます。取り込むたびに `Import 2026-10: 29 runs from GarminActivitySource, ...` のようなログが出るので、どこから取ったかも分かります。garmin なのにダミーのランが見える場合は、以前に取り込んだダミーのデータが DB に残っています（`docker compose down -v` で作り直します）。
 - **`.env` に書いた値が効かない:** 同じ名前の環境変数がシェルに設定されていると、そちらが優先されます（`env | grep GEMINI` で確認できます）。また、値を引用符で囲むと、引用符まで値に含まれてしまいます。
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
 - **DB の中身を見たい:** [データベースガイド](docs/guides/database.md#中身を見る)を参照してください（`psql` を手元に入れなくても見られます）。
