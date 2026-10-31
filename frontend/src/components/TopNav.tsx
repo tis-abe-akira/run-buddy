@@ -7,7 +7,7 @@ export function TopNav() {
   return (
     <header className="top-nav">
       <div className="container">
-        <Link to="/dashboard" search={{}} className="wordmark">
+        <Link to="/dashboard" search={{}} className="wordmark" aria-label="run-buddy">
           <Wordmark />
         </Link>
         <nav className="nav-links" aria-label="メイン">
@@ -16,6 +16,9 @@ export function TopNav() {
           </Link>
           <Link to="/plans/$month" params={{ month }} className="nav-link">
             プラン
+          </Link>
+          <Link to="/advisor" search={{}} className="nav-link">
+            AI相談
           </Link>
         </nav>
       </div>

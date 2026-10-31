@@ -91,11 +91,16 @@ export function DashboardView({ dashboard, runs, elapsedDays, onMonthChange, onI
           <div className="callout-coral row" style={{ gap: 'var(--spacing-lg)' }}>
             <div className="stack" style={{ gap: 'var(--spacing-xs)', flex: '1 1 320px' }}>
               <h2 className="display-sm">次の一か月を、計画から。</h2>
-              <p style={{ margin: 0 }}>今月の走りを踏まえて、{formatMonth(shiftMonth(month, 1))}のプランを立てましょう。</p>
+              <p style={{ margin: 0 }}>今月の走りを踏まえて、{formatMonth(shiftMonth(month, 1))}のプランを AI と一緒に立てましょう。</p>
             </div>
-            <Link to="/plans/$month" params={{ month: shiftMonth(month, 1) }} className="button button-on-coral">
-              {formatMonth(shiftMonth(month, 1))}のプランを作る
-            </Link>
+            <div className="row">
+              <Link to="/advisor" search={{ month: shiftMonth(month, 1) }} className="button button-on-coral">
+                AIに相談する
+              </Link>
+              <Link to="/plans/$month" params={{ month: shiftMonth(month, 1) }} className="button button-text" style={{ color: 'var(--color-on-primary)' }}>
+                自分で作る
+              </Link>
+            </div>
           </div>
         </div>
       </section>

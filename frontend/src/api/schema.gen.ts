@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/advisor/consultations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["consult"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -84,6 +100,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/advisor/providers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["providers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -108,6 +140,36 @@ export interface components {
             fetched: number;
             /** Format: int32 */
             added: number;
+        };
+        ConsultationBody: {
+            provider: string;
+            model: string;
+            month: string;
+            messages: components["schemas"]["MessageBody"][];
+        };
+        MessageBody: {
+            /** @enum {string} */
+            speaker: "USER" | "ADVISOR";
+            text: string;
+        };
+        AdviceBody: {
+            reply: string;
+            proposedPlan: components["schemas"]["ProposedPlanBody"] | null;
+        };
+        ProposedPlanBody: {
+            month: string;
+            /** Format: double */
+            targetKm: number;
+            workouts: components["schemas"]["ProposedWorkoutBody"][];
+        };
+        ProposedWorkoutBody: {
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            type: "EASY" | "TEMPO" | "INTERVAL" | "LONG" | "RACE";
+            /** Format: double */
+            distanceKm: number;
+            note: string;
         };
         HealthResponse: {
             status: string;
@@ -156,6 +218,11 @@ export interface components {
             cumulativePlannedKm: number;
             /** Format: double */
             cumulativeActualKm: number;
+        };
+        AdvisorInfo: {
+            id: string;
+            displayName: string;
+            models: string[];
         };
     };
     responses: never;
@@ -236,6 +303,30 @@ export interface operations {
             };
         };
     };
+    consult: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsultationBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdviceBody"];
+                };
+            };
+        };
+    };
     health: {
         parameters: {
             query?: never;
@@ -296,6 +387,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["DashboardResponse"];
+                };
+            };
+        };
+    };
+    providers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdvisorInfo"][];
                 };
             };
         };

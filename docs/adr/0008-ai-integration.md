@@ -1,6 +1,6 @@
 # ADR-0008: AI相談機能（Phase 2）の実装方式
 
-- ステータス: **Proposed**（推奨は Spring AI。オーナーの判断待ち）
+- ステータス: Accepted（2026-10-31。Spring AI を採用。プロバイダとモデルは相談のたびに選ぶ。最初のプロバイダは Gemini）
 - 日付: 2026-10-31
 - 改訂: 同日、「LLM を **Gemini / Claude / OpenAI / Amazon Bedrock** から選べるようにする」という要件が加わったため、比較をやり直した（初版は Claude だけを前提にしていた）
 
@@ -110,3 +110,16 @@ Bedrock は LLM の会社ではなく、**AWS 上で複数の会社のモデル�
 - Java 内で完結させるので、データ・権限・ドメインの境界は1か所のまま保たれる。
 - 各社の新しい機能は、Spring AI が対応するまで使いにくい。機能の中心を共通の機能だけで作ることで、この影響を小さくする。
 - ポート `TrainingAdvisor` があるので、Spring AI から LangChain4j や Python サービスへ乗り換えることになっても、ドメインと画面は変わらない。
+
+## 決定（2026-10-31）
+
+- **Spring AI を採用する。**
+- **プロバイダとモデルは、相談のたびにユーザーが選ぶ**（上の表の方式 (2)）。会話の履歴はサーバーに保存しない。毎回クライアントが履歴全体を送るので、途中でプロバイダやモデルを変えてもよい。
+- **最初に対応するのは Gemini。** API キーがまだないため、次のように準備した。
+  - **Gemini の設定:** `GeminiAdvisorConfig` は、`GEMINI_API_KEY` が設定されたときだけ有効になる。
+  - **偽物のプロバイダ（fake）:** キーがなくても画面まで動かせるように、ルールベースの `FakeTrainingAdvisor` を用意した（`runbuddy.ai.fake.enabled`。本番では無効にする）。fake も本物と同じツール（`AdvisorTools`）でデータを読むので、RLS の経路まで確かめられる。
+  - **実際の Gemini を呼ぶテスト:** `GeminiLiveTest` は `GEMINI_API_KEY` があるときだけ動く。Spring AI のツール呼び出しの往復と、Gemini の構造化出力の質は、このテストで初めて確かめられる。
+- **Spring AI の starter は使わず、プロバイダごとに設定クラスを手で書く。**
+  - 理由: starter は API キーがないと起動に失敗するものがあり、複数のプロバイダの自動設定が衝突することもある。
+  - 次のプロバイダ（Claude、OpenAI、Bedrock）は、同じ形の設定クラスを1つずつ足せばよい。
+- **Spring AI 2.0.2 は Spring Boot 4.1 / Java 25 で問題なく動いた**（ビルドと、偽物の ChatModel を使ったテストで確認）。

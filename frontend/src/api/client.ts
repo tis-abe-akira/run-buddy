@@ -10,6 +10,11 @@ export type Plan = Schemas['PlanBody']
 export type Workout = Schemas['WorkoutBody']
 export type WorkoutType = Workout['type']
 export type ImportResult = Schemas['ImportResult']
+export type AdvisorInfo = Schemas['AdvisorInfo']
+export type ChatMessage = Schemas['MessageBody']
+export type Advice = Schemas['AdviceBody']
+export type ProposedPlan = Schemas['ProposedPlanBody']
+export type ConsultationRequest = Schemas['ConsultationBody']
 
 /** An error response from the backend, carrying the RFC 9457 problem detail when there is one. */
 export class ApiError extends Error {
@@ -40,4 +45,7 @@ export const api = {
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),
   savePlan: (month: Month, plan: Plan) =>
     request<Plan>(`/api/plans/${month}`, { method: 'PUT', body: JSON.stringify(plan) }),
+  advisorProviders: () => request<AdvisorInfo[]>('/api/advisor/providers'),
+  consult: (consultation: ConsultationRequest) =>
+    request<Advice>('/api/advisor/consultations', { method: 'POST', body: JSON.stringify(consultation) }),
 }

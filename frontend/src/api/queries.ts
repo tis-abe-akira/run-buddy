@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api, type Plan } from './client'
+import { api, type ConsultationRequest, type Plan } from './client'
 import type { Month } from '../lib/month'
 
 export const dashboardQuery = (month: Month) =>
@@ -32,4 +32,11 @@ export function useSavePlan(month: Month) {
       return queryClient.invalidateQueries({ queryKey: ['dashboard', month] })
     },
   })
+}
+
+export const advisorProvidersQuery = () =>
+  queryOptions({ queryKey: ['advisor', 'providers'], queryFn: api.advisorProviders, staleTime: Infinity })
+
+export function useConsult() {
+  return useMutation({ mutationFn: (consultation: ConsultationRequest) => api.consult(consultation) })
 }

@@ -51,6 +51,19 @@ cd backend
 ./scripts/generate-jooq.sh
 ```
 
+### AI 相談（Phase 2）
+
+画面の「AI相談」から、プロバイダとモデルを選んで相談できます（[ADR-0008](docs/adr/0008-ai-integration.md)）。
+
+- **Gemini:** `GEMINI_API_KEY` を設定すると選べるようになります。モデルの候補は `runbuddy.ai.gemini.models` で設定します。
+- **Fake（開発用）:** API キーがなくても使えるルールベースの相談相手です（`runbuddy.ai.fake.enabled=true`）。本番では無効にしてください。
+- **実際の Gemini を呼ぶテスト:** `GEMINI_API_KEY` があるときだけ動きます。
+
+```bash
+cd backend
+GEMINI_API_KEY=... mvn test -Dtest=GeminiLiveTest
+```
+
 ### DB アクセスの約束事
 
 - データは行レベルセキュリティ（RLS）でユーザーごとに分けています。アプリのSQLは `user_id` に触れません。

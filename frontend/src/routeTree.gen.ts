@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdvisorRouteImport } from './routes/advisor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as PlansMonthRouteImport } from './routes/plans.$month'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvisorRoute = AdvisorRouteImport.update({
+  id: '/advisor',
+  path: '/advisor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -31,30 +37,34 @@ const PlansMonthRoute = PlansMonthRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/plans/$month'
+  fullPaths: '/' | '/advisor' | '/dashboard' | '/plans/$month'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/plans/$month'
-  id: '__root__' | '/' | '/dashboard' | '/plans/$month'
+  to: '/' | '/advisor' | '/dashboard' | '/plans/$month'
+  id: '__root__' | '/' | '/advisor' | '/dashboard' | '/plans/$month'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdvisorRoute: typeof AdvisorRoute
   DashboardRoute: typeof DashboardRoute
   PlansMonthRoute: typeof PlansMonthRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advisor': {
+      id: '/advisor'
+      path: '/advisor'
+      fullPath: '/advisor'
+      preLoaderRoute: typeof AdvisorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdvisorRoute: AdvisorRoute,
   DashboardRoute: DashboardRoute,
   PlansMonthRoute: PlansMonthRoute,
 }

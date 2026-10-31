@@ -11,7 +11,7 @@
 | [0005](0005-frontend-framework.md) | frontend に Vite + TanStack Router（SPA）を使う | Accepted |
 | [0006](0006-design-system.md) | frontend のデザインを DESIGN.md のトークンで統一する | Accepted |
 | [0007](0007-persistence-library.md) | 永続化ライブラリの選定（PostgreSQL + RLS）→ jOOQ | Accepted |
-| [0008](0008-ai-integration.md) | AI相談機能の実装方式（Gemini / Claude / OpenAI / Bedrock を選択可能に）| Proposed（推奨 Spring AI） |
+| [0008](0008-ai-integration.md) | AI相談機能の実装方式（Gemini / Claude / OpenAI / Bedrock を選択可能に）| Accepted（Spring AI） |
 
 ## テンプレート
 

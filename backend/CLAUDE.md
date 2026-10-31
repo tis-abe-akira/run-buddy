@@ -43,3 +43,19 @@ changing the structure.
   one user's data from leaking to another.
 - Database tests act as a fresh random user (`DatabaseTest`), so they need no cleanup and must not
   depend on data from other tests.
+
+## AI advisor (ADR-0008)
+
+- `TrainingAdvisor` is the port, one implementation per provider; `AdvisorDirectory` routes by
+  provider id. Spring AI types never leave `advisor/springai`.
+- To add a provider, add a configuration class like `GeminiAdvisorConfig`: active only when its
+  credentials are set, building a `SpringAiTrainingAdvisor`. Do not add Spring AI starters; they
+  auto-configure (and can fail) without credentials.
+- Rely only on chat, tool calling and structured output. Provider-specific options go in the
+  provider's `optionsForModel` function, never in the shared code.
+- The model's proposed plan is untrusted input: it becomes a `MonthlyPlan` only through
+  `AdvisorAnswer.toPlan`, and is never saved automatically.
+- Never call a model inside a database transaction. Tools in `AdvisorTools` read through the
+  repositories, one short transaction per call.
+- Tests must not call real providers except the `*LiveTest` classes, which are skipped unless the
+  provider's API key is set. Use `ScriptedChatModel` or the fake advisor elsewhere.

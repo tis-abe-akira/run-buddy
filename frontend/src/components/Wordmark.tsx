@@ -15,7 +15,7 @@ export function Wordmark() {
         />
         <circle cx="3.5" cy="16" r="3" fill="var(--color-primary)" />
       </svg>
-      run-buddy
+      <span className="wordmark-text">run-buddy</span>
     </>
   )
 }
