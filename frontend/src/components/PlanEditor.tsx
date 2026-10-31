@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import type { Plan, WorkoutType } from '../api/client'
 import { formatKm } from '../lib/format'
 import { containsDate, formatMonth, type Month } from '../lib/month'
+import { WeekdayChip } from './DayLabel'
 
 export const WORKOUT_TYPES: { value: WorkoutType; label: string }[] = [
   { value: 'EASY', label: 'イージー' },
@@ -107,16 +108,19 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
               <div className={index === 0 ? 'workout-row' : 'workout-row repeat'}>
                 <label className="field">
                   <span className="field-label">日付</span>
-                  <input
-                    type="date"
-                    className="text-input"
-                    aria-label={`${n}件目の日付`}
-                    min={`${month}-01`}
-                    max={`${month}-31`}
-                    value={workout.date}
-                    aria-invalid={error !== undefined}
-                    onChange={(e) => updateWorkout(workout.key, { date: e.target.value })}
-                  />
+                  <span className="date-with-weekday">
+                    <input
+                      type="date"
+                      className="text-input"
+                      aria-label={`${n}件目の日付`}
+                      min={`${month}-01`}
+                      max={`${month}-31`}
+                      value={workout.date}
+                      aria-invalid={error !== undefined}
+                      onChange={(e) => updateWorkout(workout.key, { date: e.target.value })}
+                    />
+                    <WeekdayChip date={workout.date} />
+                  </span>
                 </label>
                 <label className="field">
                   <span className="field-label">種別</span>

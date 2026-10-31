@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { AdvisorInfo, ProposedPlan } from '../api/client'
-import { formatDay, formatKm } from '../lib/format'
+import { formatKm } from '../lib/format'
+import { isWeekend } from '../lib/weekday'
+import { DayLabel } from './DayLabel'
 import { formatMonth, type Month } from '../lib/month'
 import { WORKOUT_TYPES } from './PlanEditor'
 
@@ -178,8 +180,10 @@ function ProposalCard({ proposal, adoption, onAdopt }: { proposal: ProposedPlan;
           </thead>
           <tbody>
             {visible.map((w) => (
-              <tr key={w.date + w.type}>
-                <td>{formatDay(w.date)}</td>
+              <tr key={w.date + w.type} className={isWeekend(w.date) ? 'weekend-row' : undefined}>
+                <td>
+                  <DayLabel date={w.date} />
+                </td>
                 <td>{typeLabel(w.type)}</td>
                 <td className="num">{formatKm(w.distanceKm)}</td>
                 <td>{w.note}</td>

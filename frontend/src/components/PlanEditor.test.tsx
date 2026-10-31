@@ -72,6 +72,21 @@ describe('PlanEditor', () => {
     expect(onSave).not.toHaveBeenCalled()
   })
 
+  it('shows the weekday next to each date and follows changes', async () => {
+    const user = userEvent.setup()
+    renderEditor(vi.fn(), {
+      targetKm: 100,
+      workouts: [{ date: '2026-11-08', type: 'LONG', distanceKm: 20, note: '' }],
+    })
+
+    expect(screen.getByTitle('日曜日')).toHaveClass('weekend')
+
+    await user.clear(screen.getByLabelText('1件目の日付'))
+    await user.type(screen.getByLabelText('1件目の日付'), '2026-11-10')
+
+    expect(screen.getByTitle('火曜日')).not.toHaveClass('weekend')
+  })
+
   it('shows the error returned by the server', () => {
     render(
       <PlanEditor month="2026-11" initial={EMPTY_PLAN} onSave={vi.fn()} saving={false} saved={false} serverError="boom" />,

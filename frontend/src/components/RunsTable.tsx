@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Run } from '../api/client'
-import { formatDay, formatDuration, formatKm, formatPace } from '../lib/format'
+import { formatDuration, formatKm, formatPace } from '../lib/format'
+import { isWeekend } from '../lib/weekday'
+import { DayLabel } from './DayLabel'
 
 const COLLAPSED_ROWS = 7
 
@@ -38,8 +40,10 @@ export function RunsTable({ runs }: { runs: Run[] }) {
             </thead>
             <tbody>
               {visible.map((run) => (
-                <tr key={run.activityId}>
-                  <td>{formatDay(run.startedAt)}</td>
+                <tr key={run.activityId} className={isWeekend(run.startedAt) ? 'weekend-row' : undefined}>
+                  <td>
+                    <DayLabel date={run.startedAt} />
+                  </td>
                   <td className="num">{formatKm(run.distanceKm)}</td>
                   <td className="num">{formatDuration(run.durationSeconds)}</td>
                   <td className="num">{formatPace(run.paceSecondsPerKm)}</td>
