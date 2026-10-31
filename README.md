@@ -138,7 +138,19 @@ docker compose down -v
   docker compose logs postgres
   ```
 
-- **`port 5432 is already allocated`:** 手元で別の PostgreSQL が動いています。止めるか、`compose.yaml` のポートを `"5433:5432"` に変え、backend を `SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/runbuddy ./mvnw spring-boot:run` で起動します。
+- **`port 5432 is already allocated`、または `docker compose ps` の PORTS が `0.0.0.0:5432->5432/tcp` ではなく `5432/tcp` だけになっている:** Mac の 5432 番を別のプログラムが使っています（`lsof -nP -iTCP:5432 -sTCP:LISTEN` で確認できます）。環境変数 `RUNBUDDY_DB_PORT` で別のポートを使えます。PostgreSQL と backend の両方に同じ値を指定してください。
+
+  ```bash
+  docker compose down
+  ```
+
+  ```bash
+  RUNBUDDY_DB_PORT=5433 docker compose up -d --wait
+  ```
+
+  ```bash
+  cd backend && RUNBUDDY_DB_PORT=5433 ./mvnw spring-boot:run
+  ```
 - **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
 - **`release version 25 not supported`:** JDK 25 で動いていません。`JAVA_HOME` を JDK 25 に向けます。
 - **Docker を使わずに試したい:** backend を `memory` プロファイルで起動します。DB がなくても動きますが、データは再起動で消えます。
