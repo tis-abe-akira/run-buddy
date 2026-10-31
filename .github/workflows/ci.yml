@@ -28,6 +28,8 @@ jobs:
             echo "::error::Generated jOOQ classes are out of date. Run backend/scripts/generate-jooq.sh and commit the result."
             exit 1
           fi
+      - name: ArchUnit rules catch planted violations (mutation check)
+        run: ./scripts/archunit-mutation-check.sh
 
   frontend:
     runs-on: ubuntu-latest
