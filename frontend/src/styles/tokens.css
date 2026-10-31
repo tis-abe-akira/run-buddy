@@ -38,6 +38,8 @@
   --chart-actual: var(--color-primary);
   --chart-planned: #1f9e8a;
   --chart-grid: var(--color-hairline);
+  /* Weekend days behind the plot: the cream one step darker than the card, so it stays quiet. */
+  --chart-weekend: var(--color-surface-soft);
 
   /* typography: font stacks (substitutes, see CLAUDE.md) */
   --font-display: 'Cormorant Garamond', 'Shippori Mincho', 'Tiempos Headline', Garamond, serif;

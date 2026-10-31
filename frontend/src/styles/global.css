@@ -310,7 +310,7 @@ a.text-link,
 
 .workout-row {
   display: grid;
-  grid-template-columns: 170px 150px 100px 1fr 36px;
+  grid-template-columns: 206px 150px 100px 1fr 36px;
   gap: var(--spacing-sm);
   align-items: end;
 }
@@ -320,6 +320,8 @@ a.text-link,
 .plan-summary { position: sticky; top: var(--spacing-lg); }
 @media (max-width: 767px) {
   .workout-row { grid-template-columns: 1fr 1fr; }
+  /* The date and its weekday chip get a row of their own; type and distance share the next. */
+  .workout-row .field:nth-child(1) { grid-column: 1 / -1; }
   .workout-row .field:nth-child(4) { grid-column: 1 / 2; }
   .workout-row.repeat .field-label { position: static; width: auto; height: auto; clip-path: none; }
   .workout-list > * + * { border-top: 1px solid var(--color-hairline-soft); padding-top: var(--spacing-md); }
@@ -360,3 +362,36 @@ a.text-link,
   .top-nav .wordmark .wordmark-text { display: none; }
   .nav-link { padding: 8px 8px; }
 }
+
+/* ---------- weekdays ---------- */
+/* Saturdays and Sundays are long-run and key-workout days. They get one quiet emphasis everywhere:
+   a cream band on the row and an ink, medium-weight label. No blue/red: DESIGN.md has no cool
+   accent, and red is the error colour. */
+
+.day-label { white-space: nowrap; }
+.day-label .day-weekday { color: var(--color-muted); }
+.day-label.weekend { font-weight: 500; color: var(--color-ink); }
+.day-label.weekend .day-weekday { color: var(--color-ink); }
+.table tr.weekend-row td { background: var(--color-surface-soft); }
+
+.dark-card .day-label .day-weekday { color: var(--color-on-dark-soft); }
+.dark-card .day-label.weekend,
+.dark-card .day-label.weekend .day-weekday { color: var(--color-on-dark); }
+.dark-card .table tr.weekend-row td { background: var(--color-surface-dark-elevated); }
+
+.date-with-weekday { display: flex; align-items: center; gap: 6px; }
+.date-with-weekday .text-input { flex: 1; }
+.weekday-chip {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--rounded-full);
+  border: 1px solid var(--color-hairline);
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.weekday-chip.weekend { background: var(--color-surface-cream-strong); border-color: transparent; color: var(--color-ink); }
