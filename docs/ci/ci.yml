@@ -19,7 +19,7 @@ jobs:
           java-version: '25'
           cache: maven
       - name: Test (database tests use Testcontainers)
-        run: mvn -B test
+        run: ./mvnw -B test
       - name: jOOQ classes match the migrations
         run: |
           ./scripts/generate-jooq.sh

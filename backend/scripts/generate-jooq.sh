@@ -16,5 +16,5 @@ until docker exec "$name" pg_isready -q -h 127.0.0.1 -U runbuddy -d runbuddy; do
 port="$(docker port "$name" 5432/tcp | head -1 | sed 's/.*://')"
 
 rm -rf src/main/java/com/example/runbuddy/persistence/jooq/generated
-mvn -B -q -Pjooq-codegen generate-sources -Ddb.url="jdbc:postgresql://127.0.0.1:${port}/runbuddy"
+./mvnw -B -q -Pjooq-codegen generate-sources -Ddb.url="jdbc:postgresql://127.0.0.1:${port}/runbuddy"
 echo "jOOQ classes regenerated."

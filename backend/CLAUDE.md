@@ -33,7 +33,7 @@ changing the structure.
 
 ## Tests
 
-- `mvn test` runs everything; database tests start PostgreSQL with Testcontainers (Docker).
+- `./mvnw test` runs everything; database tests start PostgreSQL with Testcontainers (Docker).
 - Repository behaviour is specified once, as contract interfaces
   (`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RowLevelSecurityContract`,
   `ApiOverDatabaseContract`), and every adapter's test implements them. New repository methods get

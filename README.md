@@ -14,34 +14,127 @@ run-buddy/
     └── adr/         Architecture Decision Records
 ```
 
-## backend
+## ローカルで動かす
 
-前提: JDK 25, Maven 3.9+, Docker（テストと開発用の PostgreSQL に使う）
+### 前提
+
+| ツール | バージョン | 用途 |
+|---|---|---|
+| JDK | 25 | backend（Maven は同梱の `./mvnw` が自動で取得するので、入れなくてよい） |
+| Node.js | 22.12 以上 | frontend |
+| Docker（Docker Desktop など） | Compose v2 が使えること | 開発用の PostgreSQL と、DB を使うテスト |
 
 ```bash
-cd backend
-mvn test
+java -version
 ```
 
-DB を使うテストは Testcontainers が PostgreSQL 17 を自動で起動します。
+```bash
+node -v
+```
 
-開発用の PostgreSQL を起動してから backend を動かします。
+```bash
+docker compose version
+```
+
+### 1. clone する
+
+```bash
+git clone https://github.com/tis-abe-akira/run-buddy.git
+```
+
+```bash
+cd run-buddy
+```
+
+### 2. PostgreSQL を起動する
 
 ```bash
 docker compose up -d
 ```
 
-```bash
-cd backend
-mvn spring-boot:run
-```
+初回の起動時に、アプリ用のロール `runbuddy_app` が作られます（`backend/db/init`）。テーブルは backend の起動時に Flyway が作ります。
 
-DB なしで動かす場合は `memory` プロファイルを使います（データは再起動で消えます）。
+### 3. backend を起動する（ターミナル 1）
 
 ```bash
 cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=memory
+./mvnw spring-boot:run
 ```
+
+`Started RunBuddyApplication` と出たら起動完了です。別のターミナルで確認できます。
+
+```bash
+curl http://localhost:8080/health
+```
+
+### 4. frontend を起動する（ターミナル 2）
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+http://localhost:5173 を開きます。
+
+### 5. 画面で一通り試す
+
+1. **ダッシュボード:** 「Garminから取り込む」を押す（Phase 1 はダミーデータ）。今月のランが取り込まれ、グラフと記録が表示されます。前の月（‹）に移動して、その月も取り込めます。
+2. **プラン:** 上部の「プラン」で、月間目標と予定ワークアウトを入力して保存します。ダッシュボードに計画の線と達成率が出ます。
+3. **AI相談:** 上部の「AI相談」で、プロバイダに「Fake（開発用）」を選び、「先月の走りを振り返って」→「プランを作って」と送ります。プラン案の「このプランを採用」で、その月のプランとして保存されます。
+
+### Gemini で相談する（任意）
+
+[Google AI Studio](https://aistudio.google.com/) で API キーを取得し、環境変数に入れて backend を起動し直します。画面のプロバイダに「Gemini」が出ます。
+
+```bash
+cd backend
+GEMINI_API_KEY=取得したキー ./mvnw spring-boot:run
+```
+
+相談内容とランの記録が Google に送信され、利用料がかかることがあります。
+
+### テストを流す
+
+```bash
+cd backend
+./mvnw test
+```
+
+```bash
+cd frontend
+npm test
+```
+
+backend の DB を使うテストは、Testcontainers が PostgreSQL のコンテナを自動で起動します（Docker が動いている必要があります）。
+
+### 片付け
+
+backend と frontend は Ctrl+C で止めます。PostgreSQL のコンテナも止めます。
+
+```bash
+docker compose down
+```
+
+データも消したいときは `-v` を付けます。
+
+```bash
+docker compose down -v
+```
+
+### うまく動かないとき
+
+- **`port 5432 is already allocated`:** 手元で別の PostgreSQL が動いています。止めるか、`compose.yaml` のポートを `"5433:5432"` に変え、backend を `SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/runbuddy ./mvnw spring-boot:run` で起動します。
+- **`role "runbuddy_app" does not exist`:** 古い DB のデータが残っていて、初期化スクリプトが流れていません。`docker compose down -v` してから起動し直します。
+- **`release version 25 not supported`:** JDK 25 で動いていません。`JAVA_HOME` を JDK 25 に向けます。
+- **Docker を使わずに試したい:** backend を `memory` プロファイルで起動します。DB がなくても動きますが、データは再起動で消えます。
+
+  ```bash
+  cd backend
+  ./mvnw spring-boot:run -Dspring-boot.run.profiles=memory
+  ```
+
+## backend（開発者向けの詳細）
 
 永続化には jOOQ を使います（[ADR-0007](docs/adr/0007-persistence-library.md)）。
 マイグレーションを変更したら、jOOQ のコードを生成し直します（Docker が必要です。CI は生成コードに差分があると失敗します）。
@@ -61,7 +154,7 @@ cd backend
 
 ```bash
 cd backend
-GEMINI_API_KEY=... mvn test -Dtest=GeminiLiveTest
+GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest
 ```
 
 ### DB アクセスの約束事
@@ -80,17 +173,9 @@ GEMINI_API_KEY=... mvn test -Dtest=GeminiLiveTest
 | `GET /v3/api-docs` | OpenAPI 定義（frontend の型生成に使う） |
 
 
-## frontend
+## frontend（開発者向けの詳細）
 
-前提: Node.js 22.12+。backend を起動した状態で:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-http://localhost:5173 を開きます。詳しくは [frontend/README.md](frontend/README.md)。
+[frontend/README.md](frontend/README.md) を参照してください。
 
 ## AI エージェント向けのルール
 
