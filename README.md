@@ -57,6 +57,8 @@ cp .env.example .env
 | 設定 | 内容 |
 |---|---|
 | `GEMINI_API_KEY` | AI 相談で Gemini を使うときの API キー（空なら開発用の Fake だけが使える） |
+| `RUNBUDDY_ACTIVITY_SOURCE` | ランの記録をどこから取り込むか。`dummy`（既定、生成したデータ）か `garmin` |
+| `GARMIN_API_KEY` | Garmin Connect Personal API のキー（`RUNBUDDY_ACTIVITY_SOURCE=garmin` のとき必須） |
 | `RUNBUDDY_DB_PORT` | PostgreSQL のポート（既定 5432。別の PostgreSQL と重なるときに変える） |
 
 - `.env` は Docker Compose と backend の両方が読みます。backend は Spring Boot の `spring.config.import` で読み込みます。
@@ -98,9 +100,29 @@ http://localhost:5173 を開きます。
 
 ### 6. 画面で一通り試す
 
-1. **ダッシュボード:** 「Garminから取り込む」を押す（Phase 1 はダミーデータ）。今月のランが取り込まれ、グラフと記録が表示されます。前の月（‹）に移動して、その月も取り込めます。
+1. **ダッシュボード:** 「Garminから取り込む」を押す（既定はダミーデータ。本物の Garmin は下の「Garmin から取り込む」を参照）。今月のランが取り込まれ、グラフと記録が表示されます。前の月（‹）に移動して、その月も取り込めます。
 2. **プラン:** 上部の「プラン」で、月間目標と予定ワークアウトを入力して保存します。ダッシュボードに計画の線と達成率が出ます。
 3. **AI相談:** 上部の「AI相談」で、プロバイダに「Fake（開発用）」を選び、「先月の走りを振り返って」→「プランを作って」と送ります。プラン案の「このプランを採用」で、その月のプランとして保存されます。
+
+### Garmin から取り込む（任意）
+
+自分の Garmin Connect の記録を取り込めます（[ADR-0009](docs/adr/0009-garmin-personal-api.md)）。
+
+1. Garmin Connect Web にログインした状態で「Personal API Key」ページを開き、「Create Key」でキーを作ります（利用規約への同意と、有効期限（30日〜1年）の選択があります）。キーは一度しか表示されないので、パスワードと同じように保管してください。
+2. `.env` に次の2行を書き、backend を起動し直します。
+
+   ```
+   RUNBUDDY_ACTIVITY_SOURCE=garmin
+   GARMIN_API_KEY=作ったキー
+   ```
+
+3. ダッシュボードの「Garminから取り込む」で、その月のランニング（トレイルランなどのサブ種別を含む）が取り込まれます。「ダミーデータ」のバッジは表示されなくなります。
+
+- 取り込むのは、日時（走った場所の現地時刻）・距離・タイム・平均心拍だけです。位置情報や名前は読みません。0 m の手入力の記録は取り込みません。
+- `RUNBUDDY_ACTIVITY_SOURCE=garmin` でキーが空だと、backend は起動時にエラーで止まります。
+- キーの期限が切れると、取り込みのときに「Garmin が API キーを受け付けませんでした」と表示されます。新しいキーを作って `.env` を書き換えてください。
+- ダミーで取り込んだ月を Garmin で取り込み直すと、両方が残って距離が二重になります。Garmin に切り替えるときは、`docker compose down -v` で DB を作り直すのが簡単です。
+- AI 相談で Gemini を使うと、取り込んだランの記録が Google に送られます。Garmin の Personal API の利用規約でこれが許されているかは未確認です（ADR-0009）。
 
 ### Gemini で相談する（任意）
 
@@ -189,6 +211,15 @@ cd backend
 GEMINI_API_KEY=$(grep '^GEMINI_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dtest=GeminiLiveTest
 ```
 
+### Garmin 連携（Phase 4）
+
+`RUNBUDDY_ACTIVITY_SOURCE=garmin` で、`activity/garmin` の `GarminActivitySource` が使われます（[ADR-0009](docs/adr/0009-garmin-personal-api.md)）。本物の Garmin を呼ぶテスト `GarminLiveTest` は、OS の環境変数 `GARMIN_API_KEY` があるときだけ動きます（読み取りだけで、料金はかかりません）。
+
+```bash
+cd backend
+GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dtest=GarminLiveTest
+```
+
 ### API
 
 起動後は `GET http://localhost:8080/health` が `{"status":"ok"}` を返します。
@@ -197,7 +228,8 @@ GEMINI_API_KEY=$(grep '^GEMINI_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 |---|---|
 | `GET /api/dashboard/{YYYY-MM}` | 計画と実績の比較（達成率、日ごとの累積など） |
 | `GET /api/runs/{YYYY-MM}` | ランの記録 |
-| `POST /api/runs/{YYYY-MM}/import` | ActivitySource（Phase 1 はダミー）から取り込む。何度呼んでも重複しない |
+| `POST /api/runs/{YYYY-MM}/import` | ActivitySource（ダミーか Garmin）から取り込む。何度呼んでも重複しない。失敗すると ProblemDetail の `reason` に `CREDENTIALS_REJECTED` / `RATE_LIMITED` / `UNAVAILABLE` |
+| `GET /api/activity-source` | 今の取り込み元（`dummy` / `garmin`） |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |
 | `GET /api/advisor/providers` | 使える AI プロバイダとモデルの一覧 |
 | `POST /api/advisor/consultations` | AI に相談する（会話の履歴を毎回送る。プラン案は保存しない） |

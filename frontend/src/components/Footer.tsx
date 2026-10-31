@@ -7,7 +7,7 @@ export function Footer() {
         <span className="wordmark">
           <Wordmark />
         </span>
-        <span>Garmin 連携は、いまはダミーデータで動作しています。</span>
+        <span>ランの記録は Garmin Connect から取り込みます（設定によっては開発用のダミーデータ）。</span>
       </div>
     </footer>
   )

@@ -11,6 +11,9 @@ export const runsQuery = (month: Month) =>
 export const planQuery = (month: Month) =>
   queryOptions({ queryKey: ['plan', month], queryFn: () => api.plan(month) })
 
+export const activitySourceQuery = () =>
+  queryOptions({ queryKey: ['activity-source'], queryFn: api.activitySource, staleTime: Infinity })
+
 export function useImportRuns(month: Month) {
   const queryClient = useQueryClient()
   return useMutation({

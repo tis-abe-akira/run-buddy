@@ -10,6 +10,8 @@ import { StatTile } from './StatTile'
 type Props = {
   dashboard: Dashboard
   runs: Run[]
+  /** Runs are generated (runbuddy.activity-source=dummy), not read from Garmin. */
+  dummySource: boolean
   /** Days of the month that have already happened (0 for a future month). */
   elapsedDays: number
   onMonthChange: (month: Month) => void
@@ -19,7 +21,7 @@ type Props = {
   importError?: string
 }
 
-export function DashboardView({ dashboard, runs, elapsedDays, onMonthChange, onImport, importing, lastImport, importError }: Props) {
+export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMonthChange, onImport, importing, lastImport, importError }: Props) {
   const month = dashboard.month
   const remainingKm = Math.max(dashboard.targetKm - dashboard.actualKm, 0)
 
@@ -40,7 +42,7 @@ export function DashboardView({ dashboard, runs, elapsedDays, onMonthChange, onI
             <button type="button" className="button button-primary" onClick={onImport} disabled={importing}>
               {importing ? '取り込み中…' : 'Garminから取り込む'}
             </button>
-            <span className="badge-pill">ダミーデータ</span>
+            {dummySource && <span className="badge-pill">ダミーデータ</span>}
             {lastImport && !importing && (
               <span className="body-sm muted" role="status">
                 {lastImport.fetched} 件を確認し、新しく {lastImport.added} 件を取り込みました

@@ -61,6 +61,15 @@ changing the structure.
 - Tests must not call real providers except the `*LiveTest` classes, which are skipped unless the
   provider's API key is set. Use `ScriptedChatModel` or the fake advisor elsewhere.
 
+## Garmin (ADR-0009)
+
+- `GarminActivitySource` (in `activity/garmin`) is the only code that knows Garmin's API; it
+  throws `ActivitySourceUnavailableException` with a reason, never Spring's HTTP exceptions.
+- Only build on endpoints and fields confirmed in Garmin's Swagger or in a real response, and
+  record what was confirmed in ADR-0009. Test fixtures copy the response's shape with made-up
+  values: never commit real activity ids, names, locations or other personal data.
+- Never log the API key or the access token.
+
 ## Local settings
 
 - Local settings and secrets live in the repository root's `.env` (template: `.env.example`),

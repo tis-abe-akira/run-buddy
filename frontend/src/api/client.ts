@@ -15,12 +15,17 @@ export type ChatMessage = Schemas['MessageBody']
 export type Advice = Schemas['AdviceBody']
 export type ProposedPlan = Schemas['ProposedPlanBody']
 export type ConsultationRequest = Schemas['ConsultationBody']
+export type ActivitySourceInfo = Schemas['ActivitySourceInfo']
 
-/** An error response from the backend, carrying the RFC 9457 problem detail when there is one. */
+/**
+ * An error response from the backend, carrying the RFC 9457 problem detail when there is one.
+ * reason is the problem's "reason" property, which some endpoints add (e.g. a failed run import).
+ */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly detail: string | undefined,
+    readonly reason?: string,
   ) {
     super(detail ?? `request failed with status ${status}`)
   }
@@ -32,8 +37,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { Accept: 'application/json', ...(init?.body ? { 'Content-Type': 'application/json' } : {}) },
   })
   if (!response.ok) {
-    const problem = (await response.json().catch(() => undefined)) as { detail?: string } | undefined
-    throw new ApiError(response.status, problem?.detail)
+    const problem = (await response.json().catch(() => undefined)) as { detail?: string; reason?: string } | undefined
+    throw new ApiError(response.status, problem?.detail, problem?.reason)
   }
   return (await response.json()) as T
 }
@@ -41,6 +46,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   dashboard: (month: Month) => request<Dashboard>(`/api/dashboard/${month}`),
   runs: (month: Month) => request<Run[]>(`/api/runs/${month}`),
+  activitySource: () => request<ActivitySourceInfo>('/api/activity-source'),
   importRuns: (month: Month) => request<ImportResult>(`/api/runs/${month}/import`, { method: 'POST' }),
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),
   savePlan: (month: Month, plan: Plan) =>
