@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import type { AdvisorInfo, ProposedPlan } from '../api/client'
+import { ApiError, type AdvisorInfo, type ProposedPlan } from '../api/client'
 import { advisorProvidersQuery, useConsult, useSavePlan } from '../api/queries'
 import { AdvisorChat, type Adoption, type ChatEntry } from '../components/AdvisorChat'
 import { ErrorBand } from '../components/ErrorBand'
@@ -18,6 +18,13 @@ export const Route = createFileRoute('/advisor')({
   component: AdvisorPage,
   errorComponent: ({ error }) => <ErrorBand error={error} />,
 })
+
+function describeError(error: Error): string {
+  if (error instanceof ApiError && error.status === 429) {
+    return 'AI の利用上限に達しました。1分ほど待ってから送り直すか、別のモデルを選んでください。'
+  }
+  return `回答を得られませんでした: ${error.message}`
+}
 
 /** Real providers first; the rule-based fake only when nothing else is configured. */
 function defaultProvider(providers: AdvisorInfo[]): AdvisorInfo | undefined {
@@ -98,7 +105,7 @@ function AdvisorPage() {
               onChoose={(provider, model) => setChoice({ provider, model })}
               entries={entries}
               pending={consult.isPending}
-              error={consult.error ? `回答を得られませんでした: ${consult.error.message}` : undefined}
+              error={consult.error ? describeError(consult.error) : undefined}
               onSend={send}
               onAdopt={adopt}
               adoption={adoption}

@@ -9,7 +9,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
@@ -43,7 +45,8 @@ public class AdvisorTools {
                 achievement.targetDistance().toKilometers(),
                 achievement.plannedDistance().toKilometers(),
                 achievement.actualDistance().toKilometers(),
-                rate.isPresent() ? Math.round(rate.getAsDouble() * 100) + "%" : "no target",
+                // One decimal: rounding 99.8% to "100%" made models report a missed target as met.
+                rate.isPresent() ? String.format(Locale.ROOT, "%.1f%%", rate.getAsDouble() * 100) : "no target",
                 achievement.runCount(),
                 achievement.plannedWorkoutCount(),
                 achievement.completedWorkoutCount(),
@@ -63,7 +66,8 @@ public class AdvisorTools {
                 yearMonth.toString(),
                 plan.targetDistance().toKilometers(),
                 plan.workouts().stream()
-                        .map(w -> new PlannedWorkoutView(w.date(), w.type().name(), w.distance().toKilometers(), w.note()))
+                        .map(w -> new PlannedWorkoutView(
+                                w.date(), weekday(w.date()), w.type().name(), w.distance().toKilometers(), w.note()))
                         .toList());
     }
 
@@ -78,10 +82,16 @@ public class AdvisorTools {
     private static RunView view(RunResult run) {
         return new RunView(
                 run.date(),
+                weekday(run.date()),
                 run.distance().toKilometers(),
                 Math.round(run.duration().toSeconds() / 60.0),
                 pace(run.pace()),
                 run.averageHeartRate());
+    }
+
+    /** Models get weekdays wrong when they work them out themselves, so every date carries one. */
+    static String weekday(LocalDate date) {
+        return date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
     }
 
     private static String pace(Duration perKilometer) {
@@ -101,12 +111,12 @@ public class AdvisorTools {
             String averagePace) {
     }
 
-    public record RunView(LocalDate date, double distanceKm, long minutes, String pace, Integer averageHeartRate) {
+    public record RunView(LocalDate date, String weekday, double distanceKm, long minutes, String pace, Integer averageHeartRate) {
     }
 
     public record PlanView(String month, double targetKm, List<PlannedWorkoutView> workouts) {
     }
 
-    public record PlannedWorkoutView(LocalDate date, String type, double distanceKm, String note) {
+    public record PlannedWorkoutView(LocalDate date, String weekday, String type, double distanceKm, String note) {
     }
 }

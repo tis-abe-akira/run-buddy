@@ -47,6 +47,12 @@ public class AdvisorController {
 
     @ExceptionHandler(AdvisorUnavailableException.class)
     ProblemDetail handleUnavailable(AdvisorUnavailableException e) {
+        if (e.reason() == AdvisorUnavailableException.Reason.RATE_LIMITED) {
+            ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
+                    e.getMessage() + ". Wait a minute and send it again, or choose another model.");
+            problem.setTitle("Rate limited");
+            return problem;
+        }
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
         problem.setTitle("The advisor could not answer");
         return problem;

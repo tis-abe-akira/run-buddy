@@ -76,7 +76,8 @@ class SpringAiTrainingAdvisorTest {
                 .containsExactly(MessageType.SYSTEM, MessageType.USER, MessageType.ASSISTANT, MessageType.USER);
         assertThat(prompt.getInstructions().getFirst().getText())
                 .contains("Today is 2026-10-30")
-                .contains("planning 2026-11");
+                .contains("planning 2026-11")
+                .contains("Sun: 1, 8, 15, 22, 29");
     }
 
     @Test
@@ -123,6 +124,51 @@ class SpringAiTrainingAdvisorTest {
                 .hasMessageContaining("test");
     }
 
+    @Test
+    void calendarListsTheDaysOfEachWeekday() {
+        // 2026-11-01 is a Sunday; Gemini 2.5 Flash placed it on a Saturday before the calendar was added.
+        assertThat(SpringAiTrainingAdvisor.calendar(NOVEMBER)).isEqualTo("""
+                Mon: 2, 9, 16, 23, 30
+                Tue: 3, 10, 17, 24
+                Wed: 4, 11, 18, 25
+                Thu: 5, 12, 19, 26
+                Fri: 6, 13, 20, 27
+                Sat: 7, 14, 21, 28
+                Sun: 1, 8, 15, 22, 29""");
+    }
+
+    @Test
+    void quotaErrorsAreReportedAsRateLimited() {
+        ScriptedChatModel model = new ScriptedChatModel() {
+            @Override
+            public org.springframework.ai.chat.model.ChatResponse call(org.springframework.ai.chat.prompt.Prompt prompt) {
+                throw new RuntimeException("Failed to generate content", new QuotaExceeded());
+            }
+        };
+
+        assertThatThrownBy(() -> advisor(model).consult(ASK_FOR_PLAN, "flash"))
+                .isInstanceOfSatisfying(AdvisorUnavailableException.class,
+                        e -> assertThat(e.reason()).isEqualTo(AdvisorUnavailableException.Reason.RATE_LIMITED));
+    }
+
+    @Test
+    void otherErrorsAreReportedAsFailures() {
+        ScriptedChatModel model = new ScriptedChatModel() {
+            @Override
+            public org.springframework.ai.chat.model.ChatResponse call(org.springframework.ai.chat.prompt.Prompt prompt) {
+                throw new RuntimeException("connection reset");
+            }
+        };
+
+        assertThatThrownBy(() -> advisor(model).consult(ASK_FOR_PLAN, "flash"))
+                .isInstanceOfSatisfying(AdvisorUnavailableException.class,
+                        e -> assertThat(e.reason()).isEqualTo(AdvisorUnavailableException.Reason.FAILED));
+    }
+
+    /** Stands in for a provider SDK's "429 quota exceeded" exception. */
+    static class QuotaExceeded extends RuntimeException {
+    }
+
     private static SpringAiTrainingAdvisor advisor(ScriptedChatModel model) {
         AdvisorTools tools = new AdvisorTools(new InMemoryMonthlyPlanRepository(), new InMemoryRunResultRepository());
         Clock clock = Clock.fixed(Instant.parse("2026-10-30T09:00:00Z"), ZoneOffset.UTC);
@@ -130,6 +176,7 @@ class SpringAiTrainingAdvisorTest {
                 new AdvisorInfo("test", "Test", List.of("flash", "pro")),
                 model,
                 name -> ChatOptions.builder().model(name),
+                e -> e instanceof QuotaExceeded,
                 tools,
                 clock);
     }

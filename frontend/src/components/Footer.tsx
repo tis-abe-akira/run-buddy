@@ -7,7 +7,7 @@ export function Footer() {
         <span className="wordmark">
           <Wordmark />
         </span>
-        <span>Phase 1 — Garmin連携はダミーデータで動作しています。データはバックエンドの再起動で消えます。</span>
+        <span>Garmin 連携は、いまはダミーデータで動作しています。</span>
       </div>
     </footer>
   )

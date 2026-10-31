@@ -34,7 +34,8 @@ class AdvisorControllerTest {
         mockMvc.perform(get("/api/advisor/providers"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                        [{"id":"planner","displayName":"Planner","models":["m1","m2"]},
+                        [{"id":"limited","displayName":"Limited","models":["m"]},
+                         {"id":"planner","displayName":"Planner","models":["m1","m2"]},
                          {"id":"broken","displayName":"Broken","models":["m"]}]
                         """, true));
     }
@@ -79,8 +80,33 @@ class AdvisorControllerTest {
                 .andExpect(jsonPath("$.detail").value("quota exceeded"));
     }
 
+    @Test
+    void rateLimitIsATooManyRequests() throws Exception {
+        mockMvc.perform(post("/api/advisor/consultations").contentType(MediaType.APPLICATION_JSON).content("""
+                        {"provider":"limited","model":"m","month":"2026-11","messages":[{"speaker":"USER","text":"hi"}]}
+                        """))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("Wait a minute")));
+    }
+
     @TestConfiguration
     static class Advisors {
+
+        @Bean
+        TrainingAdvisor limited() {
+            return new TrainingAdvisor() {
+                @Override
+                public AdvisorInfo info() {
+                    return new AdvisorInfo("limited", "Limited", List.of("m"));
+                }
+
+                @Override
+                public Advice consult(Consultation consultation, String model) {
+                    throw new AdvisorUnavailableException(
+                            AdvisorUnavailableException.Reason.RATE_LIMITED, "Limited rate limit or quota exceeded", null);
+                }
+            };
+        }
 
         @Bean
         TrainingAdvisor planner() {
