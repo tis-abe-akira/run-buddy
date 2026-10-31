@@ -1,5 +1,5 @@
 # ファイル
 
-- [システム構成とモジュール依存関係](overview.md) - run-buddy のモノレ포全体像、バックエンドのパッケージ構成とドメイン非依存設計ルール、単一オリジン配信 (SpaConfig)、および Tailscale による個人アクセス運用モデルを解説する。
-- [主要設計パターンと連携メカニズム](patterns.md) - Ports & Adapters、契約テスト、不変ドメインモデル、Spring AI 統合、Garmin API 連携、OpenAPI 型連携、フロントエンド設計、環境変数管理の構造を解説。
-- [永続化層の設計: jOOQ と行レベルセキュリティ (RLS)](persistence-rls.md)
+- [アーキテクチャ概要](overview.md) - Monorepo構成（Spring Boot 4 / Java 25 & Vite + React）、バックエンドのパッケージ構成、ドメイン中心の依存制御、SpaConfigによるフロントエンド静的配信、およびTailscaleを用いた動作モデルを解説する。
+- [アーキテクチャパターンと設計の工夫](patterns.md) - ポート＆アダプタパターン、契約テストによる実装検証、不変ドメインモデル、Spring AIを用いたAdvisor機能、Garmin連携での例外・ProblemDetailハンドリング、OpenAPI型共有、フロントエンド設計の意図と実装方法を解説。
+- [永続化: jOOQ と行レベルセキュリティ](persistence-rls.md) - PostgreSQLの行レベルセキュリティ（RLS）によるマルチテナントデータ分離機構、RlsTransactionManagerでのset_config処理、jOOQを使用した型安全なデータアクセス、コード生成フロー、およびデータベース安全性テストを詳述する。

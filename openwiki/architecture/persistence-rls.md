@@ -1,10 +1,11 @@
 ---
-type: "リファレンス"
-title: "永続化層の設計: jOOQ と行レベルセキュリティ (RLS)"
-openwiki_generated: true
+type: "architecture"
+title: "永続化: jOOQ と行レベルセキュリティ"
+description: "PostgreSQLの行レベルセキュリティ（RLS）によるマルチテナントデータ分離機構、RlsTransactionManagerでのset_config処理、jOOQを使用した型安全なデータアクセス、コード生成フロー、およびデータベース安全性テストを詳述する。"
+tags: ["jooq", "rls", "postgresql", "persistence", "spring-boot", "transaction-management"]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T19:40:47.036Z
+    at: 2026-10-31T22:55:43.691Z
 sources:
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
@@ -26,51 +27,50 @@ sources:
     resource: repo://docs/adr/0007-persistence-library.md
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-31T22:55:43.691Z" }
 ---
 
+# 永続化: jOOQ と行レベルセキュリティ
 
-# 永続化層の設計: jOOQ と行レベルセキュリティ (RLS)
+本ドキュメントでは、RunBuddy バックエンドにおける永続化層（Persistence Layer）の設計方針、アーキテクチャ構造、および実装詳細について解説します。
+RunBuddy では、データベースに PostgreSQL 17 を使用し、アクセスライブラリとして **jOOQ**、マルチテナンシー（ユーザー間の完全なデータ隔離）のために **PostgreSQL Row Level Security (RLS)** を採用しています。
 
-本ドキュメントでは、RunBuddy バックエンドにおける永続化層（Persistence Layer）の設計方針と実装詳細について解説します。
-RunBuddy では、データベースに PostgreSQL 17 を使用し、アクセスライブラリとして **jOOQ**、マルチテナンシー（ユーザー毎のデータ隔離）のために **PostgreSQL Row Level Security (RLS)** を採用しています。
-
-全体アーキテクチャの概要は [アーキテクチャ概要](./overview.md)、設計パターンやポート＆アダプタ構造の詳細は [設計パターン](./patterns.md)、新機能追加の手順は [機能追加チュートリアル](../tutorials/add-feature.md) を参照してください。
+全体アーキテクチャの概要は [アーキテクチャ概要](overview.md)、設計パターンやポート＆アダプタ構造の詳細は [設計パターン](patterns.md)、新機能追加の手順は [機能追加チュートリアル](../tutorials/add-feature.md) を参照してください。
 
 ---
 
-## 1. jOOQ 選定理由 (ADR-0007)
+## 1. jOOQ 選定理由 (ADR-0007 要約)
 
-永続化ライブラリの選定にあたっては、[ADR-0007: 永続化ライブラリの選定](../../docs/adr/0007-persistence-library.md) に基づき、JPA (Hibernate)、MyBatis、Spring Data JDBC、JdbcClient、Doma、jOOQ の比較検討を行いました。
+永続化ライブラリの選定にあたっては、[ADR-0007: 永続化ライブラリの選定](../../docs/adr/0007-persistence-library.md) に基づき、JPA (Hibernate)、MyBatis、Spring Data JDBC、JdbcClient、Doma、jOOQ の比較検討およびプロトタイプ（スパイク）検証を行いました。
 
 ### 選定時の重要要件
 
 1. **イミュータブルなドメインモデルの維持**:
-   ドメインモデル（`MonthlyPlan` や `RunResult`）は Java 25 の不変 `record` であり、コンストラクタで不変条件を検証しています。永続化のために無引数コンストラクタや可変フィールドを追加（ミュータブル化）することは避ける必要がありました。
+   ドメインモデル（`MonthlyPlan` や `RunResult`）は Java 25 の不変 `record` であり、コンストラクタで不変条件を検証しています。永続化のために無引数コンストラクタや可変フィールドを追加（ミュータブル化）することを完全に回避する必要がありました。
 2. **AI エージェント主導開発における安全性の向上**:
    開発コードの多くを AI エージェントが記述・修正するため、SQL の記述ミスや型ミスマッチ、カラム名の誤りを実行時ではなく**コンパイル時**に検知できることが不可欠でした。
 3. **PostgreSQL 特有機能の活用**:
-   RLS（セッション変数設定）、`INSERT ... ON CONFLICT`（upsert 処理）、`MULTISET` 階層クエリなどの PostgreSQL 固有機能を自然かつ効率的に表現できることが求められました。
+   RLS（セッション変数設定）、`INSERT ... ON CONFLICT`（upsert 処理）、`MULTISET` 階層クエリなどの PostgreSQL 固有機能を自然かつ型安全に表現できることが求められました。
 4. **ポート＆アダプタ構造との親和性**:
    ドメイン層はリポジトリインターフェース（ポート）のみに依存し、永続化技術の詳細をアダプタ層に閉じ込める設計としています。
 
 ### 各ライブラリとの比較と決定理由
 
-| ライブラリ | 不変 record との相性 | コンパイル時検査 | SQL の制御性・機能 | AI 開発での誤り検出速度 |
+| ライブラリ | 不変 `record` との相性 | コンパイル時検査 | SQL の制御性・機能 | AI 開発での誤り検出速度 |
 |---|---|---|---|---|
-| **JPA (Hibernate)** | ✕ （可変エンティティ要求、詰め替えが必要） | △ （起動時レベル） | △ （N+1 問題や自動更新の隠蔽） | △ （実行時・テスト時） |
-| **MyBatis** | ○ （マッピング設定） | ✕ （XML/文字列は実行時） | ◎ （手書き SQL） | △ （テスト実行時） |
-| **Spring Data JDBC** | ○ （集約コンストラクタ） | △ （派生クエリは起動時） | △ （upsert や集計は生 SQL） | △ （テスト実行時） |
-| **jOOQ** | **◎ （`record` 変換が用意）** | **◎ （コード生成による型・カラム完全検査）** | **◎ （upsert, MULTISET などを DSL で表現）** | **◎ （コンパイルエラーとして即座に通知）** |
-| **JdbcClient** | ○ （RowMapper 変換） | ✕ （SQL 文字列は実行時） | ◎ （生 SQL） | △ （テスト実行時） |
+| **JPA (Hibernate)** | ✕（可変エンティティ要求、詰め替えが必要） | △（起動時レベル） | △（N+1 問題や自動更新の隠蔽） | △（実行時・テスト時） |
+| **MyBatis** | ○（マッピング設定） | ✕（XML/文字列は実行時） | ◎（手書き SQL） | △（テスト実行時） |
+| **Spring Data JDBC** | ○（集約コンストラクタ） | △（派生クエリは起動時） | △（upsert や集計は生 SQL） | △（テスト実行時） |
+| **jOOQ** | **◎（`record` 変換が容易）** | **◎（コード生成による型・カラム完全検査）** | **◎（upsert, MULTISET などを DSL で表現）** | **◎（コンパイルエラーとして即座に通知）** |
+| **JdbcClient** | ○（RowMapper 変換） | ✕（SQL 文字列は実行時） | ◎（生 SQL） | △（テスト実行時） |
 
-スパイク検証の結果、`JdbcClient` は「書くとき」は容易であるものの、誤りに「テスト実行時」しか気付けない点が課題となりました。一方 **jOOQ** は、データベーススキーマから生成された型安全な Java DSL を使用するため、カラム名のタイポや型の誤り、スキーマ変更時の修正漏れがすべて**コンパイルエラー**として提示されます。これにより、AI エージェントが自律的に誤りを修正しやすく、非常に高い安全性が確保できるため jOOQ の採用を決定しました。
+スパイク検証の結果、`JdbcClient` は「書くとき」は最も容易であるものの、誤りに「テスト実行時」しか気付けない点が課題となりました。一方 **jOOQ** は、データベーススキーマから生成された型安全な Java DSL を使用するため、カラム名のタイポや型の誤り、スキーマ変更時の修正漏れがすべて**コンパイルエラー**として提示されます。これにより、AI エージェントが自律的に誤りを修正しやすく、非常に高い安全性が確保できるため jOOQ の採用を決定しました。
 
 ---
 
 ## 2. リクエスト毎の RLS トランザクション制御フロー
 
-RunBuddy では、アプリケーションコードの SQL 条件に `user_id` を明示的に記述しません。代わりに PostgreSQL の 行レベルセキュリティ（RLS）機能と、トランザクションローカルなセッション変数 `app.user_id` を組み合わせてユーザー分離を実現しています。
+RunBuddy では、アプリケーションコードの SQL 条件（`WHERE` 句など）に `user_id` を明示的に記述しません。代わりに PostgreSQL の行レベルセキュリティ（RLS）機能と、トランザクションローカルなセッション変数 `app.user_id` を組み合わせてユーザー分離を実現しています。
 
 ### トランザクション制御の仕組み (`RlsTransactionManager`)
 
@@ -103,7 +103,7 @@ public class RlsTransactionManager extends JdbcTransactionManager {
 
 ### リクエスト処理シーケンス
 
-以下に、リクエスト受信からデータベース検索・ドメインオブジェクト返却までの制御フローを示します。
+以下に、HTTP リクエスト受信からデータベース検索・ドメインオブジェクト返却までの制御フローを示します。
 
 ```mermaid
 sequenceDiagram
@@ -114,18 +114,17 @@ sequenceDiagram
     participant Database as PostgreSQL (RLS)
 
     Controller->>Port: findByMonth(2026-11)
-    Note over Port,Adapter: @Transactional (readOnly = true)
+    Note over Port,Adapter: @Transactional(readOnly = true)
     Port->>Adapter: findByMonth(YearMonth)
     Adapter->>TxManager: prepareTransactionalConnection()
     TxManager->>Database: select set_config('app.user_id', 'demo', true)
     Database-->>TxManager: OK
     Adapter->>Database: jOOQ DSL SQL 実行 (select ... from monthly_plan)
-    Note over Database: RLS ポリシー (own_rows) 適用<br/>user_id = app_current_user_id()
+    Note over Database: RLS ポリシー own_rows 適用<br/>user_id = app_current_user_id()
     Database-->>Adapter: 該当ユーザーの Record / MULTISET 結果
     Adapter-->>Controller: ドメインモデル (MonthlyPlan record) 変換結果を返却
 ```
-
-*図 1: RLS トランザクション制御と jOOQ 問い合わせの処理シーケンス*
+*図 1: リクエストから DB 問い合わせまでの RLS トランザクション制御フローと jOOQ 検索シーケンス*
 
 ---
 
@@ -152,7 +151,7 @@ end
 $$;
 ```
 
-- **Fail-Fast 原則**: トランザクション外で DB アクセスが行われ `app.user_id` が設定されていない場合、単に 0 件を返すのではなく**即座に例外を発生**させます。これにより、トランザクション設定漏れバグが黙って隠蔽されるのを防止します。
+- **Fail-Fast 原則**: トランザクション外で DB アクセスが行われ `app.user_id` が設定されていない場合、単に 0 件を返すのではなく**即座に例外を発生**させます。これにより、トランザクション設定漏れバグが黙って隠蔽されるのを防止します。`nullif` を挟むことで、トランザクション終了後に PostgreSQL がセッション変数を `''` として残す挙動にも対処しています。
 
 ### 2. DEFAULT 値と RLS ポリシー
 
@@ -174,16 +173,11 @@ create policy own_rows on monthly_plan
 ```
 
 - **自動設定 (`default`)**: `INSERT` 実行時に `user_id` カラムを省略しても、`app_current_user_id()` によって自動的に現在のログインユーザー ID が設定されます。
-- **行レベルでの制限 (`using` / `with check`)**: データの参照・更新・削除時、PostgreSQL エンジンが `user_id = (select app_current_user_id())` を自動的に透過適用します。スカラサブクエリ `(select app_current_user_id())` にすることで、クエリ全体の実行につき関数呼び出しを 1 回に最適化しています。
+- **行レベルでの制限 (`using` / `with check`)**: データの参照・更新・削除時、PostgreSQL エンジンが `user_id = (select app_current_user_id())` を自動的に透過適用します。スカラサブクエリ `(select app_current_user_id())` にすることで、クエリ全体の実行につき関数呼び出しを 1 回に最適化しています。`FORCE ROW LEVEL SECURITY` を指定することで、テーブル所有者以外のすべてのアクセスに RLS を強制します。
 
 ### 3. DB ロールと所有権の分離
 
-RLS の効果を保証するため、データベースのロール設計を分離しています（詳細は [データベースガイド](../../docs/guides/database.md) を参照）。
-
-```sql
--- backend/db/init/01-create-app-role.sql
-create role runbuddy_app login password 'runbuddy_app';
-```
+RLS の効果を保証するため、データベースのロール設計を分離しています。
 
 - **`runbuddy` (所有者/マイグレーション用)**: テーブルの作成・変更を行うロール。PostgreSQL の仕様上、所有者やスーパーユーザーは RLS をバイパスするため、Flyway マイグレーション時のみ使用します。
 - **`runbuddy_app` (アプリケーション接続用)**: バックエンドアプリケーションおよび統合テスト（Testcontainers）が接続する専用ロール。テーブル所有者ではないため、RLS ポリシーおよび `FORCE ROW LEVEL SECURITY` が強制適用されます。
@@ -198,7 +192,7 @@ RunBuddy の設計規約として、ドメイン層のリポジトリインタ�
 
 開発初期（ADR-0007 スパイク時）、リポジトリポートに `default` メソッド（例: `getOrEmpty`）を実装していました。この `default` メソッドの中でポート自身の別メソッド（`findByMonth` など）を呼び出していたところ、以下のアスペクト指向プログラミング（AOP）の制限に起因する障害が発生しました。
 
-1. クライアントが `default` メソッドを呼び出す。
+1. クライアントがインターフェースの `default` メソッドを呼び出す。
 2. Spring の AOP プロキシ（`@Transactional`）はインターフェースの実装クラスの外側をラップしているため、`default` メソッド内部からの別メソッド呼び出しは**自クラス内呼び出し（self-invocation）** となり、プロキシを通過しない。
 3. その結果、`@Transactional` が起動せず、`RlsTransactionManager` による `set_config('app.user_id', ...)` が実行されない。
 4. トランザクション外での DB アクセスとなり、`app_current_user_id()` が例外をスロー（またはデータが空になる）する。
@@ -209,11 +203,11 @@ RunBuddy の設計規約として、ドメイン層のリポジトリインタ�
 
 ## 5. jOOQ コード生成と CI での差分チェック
 
-jOOQ は PostgreSQL のスキーマ情報に基づいて Java クラス群を生成します。
+jOOQ は PostgreSQL のスキーマ情報に基づいて Java DSL クラス群を生成します。
 
-### コード生成スクリプト (`backend/scripts/generate-jooq.sh`)
+### コード生成スクリプト ([`backend/scripts/generate-jooq.sh`](../../backend/scripts/generate-jooq.sh))
 
-マイグレーションファイル（`V1__create_plans_and_runs.sql` など）を変更した際、次のスクリプトを実行して jOOQ クラスを再生成します。
+マイグレーションファイル（`V1__create_plans_and_runs.sql`, `V2__add_run_metrics.sql` など）を変更した際、次のスクリプトを実行して jOOQ クラスを再生成します。
 
 ```bash
 #!/usr/bin/env bash
@@ -239,7 +233,7 @@ echo "jOOQ classes regenerated."
 1. 使い捨ての Docker コンテナ（PostgreSQL 17）を起動し、初期化 SQL を適用。
 2. Flyway で最新マイグレーションを流し、スキーマを完成。
 3. Maven プロファイル `jooq-codegen` を起動し、`src/main/java/com/example/runbuddy/persistence/jooq/generated` 配下にソースコードを出力。
-4. 生成されたコードは git リポジトリにコミットします。これにより、通常のビルドやテスト実行時に Docker 環境が不要となります。
+4. 生成されたコードは Git リポジトリにコミットします。これにより、通常のビルドやテスト実行時に Docker 環境が不要となります。
 
 ### CI での自動検証 (`.github/workflows/ci.yml`)
 
@@ -256,13 +250,13 @@ echo "jOOQ classes regenerated."
     fi
 ```
 
-生成コードとマイグレーションに乖離がある場合、CI ビルドは失敗します。手動で `generated` 配下のコードを修正することは禁止されています。
+生成コードとマイグレーションに乖離がある場合、CI ビルドは失敗します。手動で `generated` 配下のコードを直接編集することは厳禁とされています。
 
 ---
 
 ## 6. DSL クエリと Record / ドメインモデルマッピング実装
 
-以下に、実際のアダプタにおける jOOQ DSL の活用パターンと、ドメイン `record` へのマッピング実装例を示します。
+以下に、実際のアダプタにおける jOOQ DSL の活用パターンと、不変ドメイン `record` へのマッピング実装例を示します。
 
 ### 1. `JooqMonthlyPlanRepository` の実装
 
@@ -371,14 +365,25 @@ public int saveAll(Collection<RunResult> runs) {
             RUN_RESULT.STARTED_AT,
             RUN_RESULT.DISTANCE_METERS,
             RUN_RESULT.DURATION_MILLIS,
-            RUN_RESULT.AVERAGE_HEART_RATE);
+            RUN_RESULT.AVERAGE_HEART_RATE,
+            RUN_RESULT.MAX_HEART_RATE,
+            RUN_RESULT.AVERAGE_CADENCE,
+            RUN_RESULT.MAX_CADENCE,
+            RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM,
+            RUN_RESULT.ELEVATION_GAIN_METERS);
     for (RunResult run : byId.values()) {
+        RunMetrics metrics = run.metrics();
         insert = insert.values(
                 run.activityId(),
                 run.startedAt(),
                 run.distance().meters(),
                 run.duration().toMillis(),
-                run.averageHeartRate());
+                run.averageHeartRate(),
+                metrics.maxHeartRate(),
+                metrics.averageCadence(),
+                metrics.maxCadence(),
+                metrics.averageStrideLengthCm(),
+                metrics.elevationGainMeters());
     }
     insert.onConflict(RUN_RESULT.USER_ID, RUN_RESULT.ACTIVITY_ID)
             .doUpdate()
@@ -386,21 +391,43 @@ public int saveAll(Collection<RunResult> runs) {
             .set(RUN_RESULT.DISTANCE_METERS, excluded(RUN_RESULT.DISTANCE_METERS))
             .set(RUN_RESULT.DURATION_MILLIS, excluded(RUN_RESULT.DURATION_MILLIS))
             .set(RUN_RESULT.AVERAGE_HEART_RATE, excluded(RUN_RESULT.AVERAGE_HEART_RATE))
+            .set(RUN_RESULT.MAX_HEART_RATE, excluded(RUN_RESULT.MAX_HEART_RATE))
+            .set(RUN_RESULT.AVERAGE_CADENCE, excluded(RUN_RESULT.AVERAGE_CADENCE))
+            .set(RUN_RESULT.MAX_CADENCE, excluded(RUN_RESULT.MAX_CADENCE))
+            .set(RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM, excluded(RUN_RESULT.AVERAGE_STRIDE_LENGTH_CM))
+            .set(RUN_RESULT.ELEVATION_GAIN_METERS, excluded(RUN_RESULT.ELEVATION_GAIN_METERS))
             .execute();
 
     return byId.size() - existing.size();
 }
 ```
 
-- **`excluded(...)`**: PostgreSQL の `EXCLUDED.col_name` テーブル（挿入を試みた値）を参照する jOOQ 表現であり、同一アクティビティ ID の重複取り込み時に既存データを最新値で安全に更新します。
+- **重複排除と「最後勝ち」**: 同一のリクエスト内に同じアクティビティ ID が含まれる場合、`LinkedHashMap` で後勝ちなマップに集約します（同一行を 1 つの ON CONFLICT 文で二度更新しようとすると PostgreSQL がエラーを発生させるため）。
+- **`excluded(...)`**: PostgreSQL の `EXCLUDED.col_name` テーブル（挿入を試みた値）を参照する jOOQ 表現であり、同一アクティビティ ID の重複取り込み時に既存データを最新値で安全かつ冪等に更新します。
+- **拡張指標 ([`RunMetrics`](../../backend/src/main/java/com/example/runbuddy/activity/RunMetrics.java))**: `V2__add_run_metrics.sql` で追加された心拍数・ピッチ・ストライド長・獲得標高のオプション指標も一括で Upsert します。
 
 ---
 
-## 7. まとめと検証テスト
+## 7. データベース安全性テスト
 
-RunBuddy の永続化設計は、**jOOQ による型安全な SQL 構築** と **PostgreSQL RLS による透過的なマルチテナンシー** を統合した設計になっています。
+RunBuddy の永続化設計は、**jOOQ による型安全な SQL 構築** と **PostgreSQL RLS による透過的なマルチテナンシー** を統合した構成になっています。これを保証するため、2 種類の主要テストが整備されています。
 
-- **リポジトリ契約テスト**: すべての永続化アダプタ（jOOQ 実装およびインメモリ実装）は、共通の契約テストインターフェース（`MonthlyPlanRepositoryContract` や `RunResultRepositoryContract`）を全件パスします。
-- **RLS セーフティテスト**: `RowLevelSecurityContract` および `DatabaseSafetyTest` により、「別ユーザーのデータが漏洩・干渉しないこと」「トランザクション外アクセスで安全に失敗すること」が自動テストで常時検証されています。
+### 1. データベース設定セーフティテスト ([`DatabaseSafetyTest.java`](../../backend/src/test/java/com/example/runbuddy/persistence/DatabaseSafetyTest.java))
 
-この堅牢なインフラ構成により、ドメインモデルの不変性と安全性を損なうことなく、高い開発速度とデータ保護の両立を実現しています。
+`DatabaseSafetyTest` は、永続化ライブラリとは独立してデータベース自体の設定および `RlsTransactionManager` の挙動を検証します。
+
+- **トランザクション外アクセスの Fail-Fast 検証**:
+  `writingOutsideATransactionFailsLoudly` および `readingOutsideATransactionFailsLoudlyInsteadOfSeeingNothing` では、`@Transactional` スコープ外で SQL（またはリポジトリメソッド）を実行した際に、`app_current_user_id()` が例外（`app.user_id is not set`）を即座にスローすることを確認します。
+- **トランザクション内アクセスの分離検証**:
+  `readingInsideATransactionSeesOnlyTheCurrentUsersRows` では、トランザクション内で正常にログインユーザーの行のみが返されることを検証します。
+
+### 2. RLS 契約テスト ([`RowLevelSecurityContract.java`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java))
+
+`RowLevelSecurityContract` は、すべてのアダプタ（jOOQ 実装および InMemory 実装）に共通して適用される契約テストインターフェースです。
+
+- **他ユーザーデータ不可視の検証 (`anotherUserSeesNothing`)**:
+  あるユーザー（Alice）が保存したプラン・走破実績が、別ユーザーにコンテキストを切り替えた際に一切見えなくなること、かつ Alice に戻した際に正しく取得できることを検証します。
+- **同一キーの分離検証 (`sameMonthAndActivityIdDoNotCollideAcrossUsers`)**:
+  異なるユーザー間で同一の年月 (`month`) やアクティビティ ID (`activityId`) を持つデータを作成しても、プライマリキー衝突が発生せず独立して保存されることを検証します。
+
+これらの自動テストにより、ドメインモデルの不変性とデータの安全性を損なうことなく、高信頼なマルチテナント永続化基盤が維持されています。

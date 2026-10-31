@@ -1,11 +1,11 @@
 ---
 type: concept
-title: "チュートリアル: 実機能の追加手順 (TDD)"
-description: "CSV エクスポート機能を参考実装とした TDD 手順、および DB スキーマ変更を伴う機能追加の実践ステップを説明する。"
+title: "チュートリアル: 機能追加"
+description: "既存の月次 CSV エクスポートを手本とした TDD 手順と、Flyway・jOOQ・契約テスト・OpenAPI・フロントエンド型連携を伴うスキーマ変更機能追加の実践ガイド。"
 tags: [tutorial, tdd, flyway, jooq, openapi, testing]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T19:40:47.036Z
+    at: 2026-10-31T22:55:43.691Z
 sources:
   - id: openwiki-source-9eb5287ccf13806e65e224d1
     resource: repo://backend/scripts/generate-jooq.sh
@@ -29,10 +29,10 @@ sources:
     resource: repo://frontend/src/api/client.ts
   - id: openwiki-source-9ad52ddc523140b03411a027
     resource: repo://frontend/src/components/ExportLink.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-31T22:55:43.691Z" }
 ---
 
-# チュートリアル: 実機能の追加手順 (TDD)
+# チュートリアル: 機能追加
 
 本チュートリアルでは、`run-buddy` プロジェクトにおいて新機能を追加する際の実践的な開発手順を解説します。プロジェクトの設計理念である「型安全性の重視」「契約テストによる品質担保」「行レベルセキュリティ（RLS）の不変条件維持」を遵守しながら、テスト駆動開発（TDD）のサイクル（赤 → 緑 → リファクタリング）に沿って安全に機能を拡張する手順を学びます。
 
@@ -73,10 +73,10 @@ sequenceDiagram
    - `DailyLog` オブジェクトを可読性の高い CSV フォーマットへ変換します。
    - 表計算ソフトで数値として認識されるように `km` 表示や `pace` 表記の整形を行います。
 3. **コントローラ (`com.example.runbuddy.export.ExportController`)**:
-   - 端点 `GET /api/export/{month}.csv` を公開します。
+   - エンドポイント `GET /api/export/{month}.csv` を公開します。
    - `MonthlyPlanRepository` と `RunResultRepository` からデータを取得し、`DailyLog` および `DailyLogCsv` を経由して `text/csv` レスポンス（ファイルダウンロード用ヘッダー付き）を返却します。
 4. **フロントエンド UI (`frontend/src/components/ExportLink.tsx`)**:
-   - `exportCsvUrl(month)` 関数でエンドポイント URL を生成し、`<a href="..." download>` タグとしてダウンロードリンクを提供します。
+   - `exportCsvUrl(month)` 関数で `/api/export/${month}.csv` URL を生成し、`<a href="..." download>` タグとしてダウンロードリンクを提供します。
 
 ### TDD による変更手順 (最小フロー)
 
@@ -205,7 +205,7 @@ default void storesAndRetrievesRunNote() {
 #### 2. 緑 (Green): メモリ実装とテストヘルパーの修復
 `InMemoryRunResultRepository.java` および契約テスト内のファクトリメソッドを修正し、`note` が保持・還元されるように実装します。
 
-`./mvnw test -Dtest=InMemoryRunResultRepositoryTest,JooqPersistenceTest` を実行し、インメモリおよび PostgreSQL（jOOQ）の両実装で契約テストが成功（緑）することを確認します。
+`./mvnw test -Dtest=InMemoryRunResultRepositoryTest,JooqPersistenceTest` を実行し、インメモリ（`InMemoryRunResultRepositoryTest`）および PostgreSQL/jOOQ（`JooqPersistenceTest.Runs`）の両実装で契約テストが成功（緑）することを確認します。
 
 ---
 

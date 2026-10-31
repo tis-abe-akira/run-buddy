@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b2df42986ae6a7bb8fdf153dc9d60bd18c4fac775a6fea36153bf09ea58c11ac",
+  "pageVersion": "sha256:83eeef6f449e51cb1ef28d1f323d94feeb3cf50a47dee4fc73e37b7a8c14631b",
   "claims": [
     {
       "id": "claim_c3d4546cff5841bcbbb41628a4786eeb",
@@ -107,14 +107,14 @@
       "statement": "JooqRunResultRepository handles bulk updates of run results using jOOQ onConflict and excluded expressions to perform idempotent upserts without duplicate activity entries.",
       "evidence": [
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java#L58-L64",
-          "version": "repo-lines-v1:sha256:432b9915b4beea4d651f39b711b7df64c51240c5e91b6dcbbb0d696e846b969b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjMjFiMzNkYmYwNDlmNDhjOTliN2FhYjExYTIzNTMwMmJlZjNkOTUwYWQ1MzgwYjllNGRlZjAwNmZkNzEzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmViZGNkYjBiMWI2NzRiMGMzNzc2NWE3MjI0ODhhMjE2YjIxNTZjMDk4MDM4YjgzODgyNTIxMDUxNmIzNjRjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDJiYTdhYmMzNDE2MjgzYTlmZGM1NGEzMzk1ZjY4N2NiNzgyZTRjMDhhNWVmZTgzNTk4ZWViM2YxN2E4ODE1MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWVlNGNjNTQzMjVhYTEzMGZkMGVmNjU2NzlkOTllNzFhZGNhZmZmN2Q1YTU1NjViYWE4YmI4ZjUxMmQ0YzY5NiJ9"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java#L70-L81",
+          "version": "repo-lines-v1:sha256:95e0d6164039ed43e20a3dfbdf58d12afd5992dfc2d4bc9a7631b4757e65ad1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YzIxYjMzZGJmMDQ5ZjQ4Yzk5YjdhYWIxMWEyMzUzMDJiZWYzZDk1MGFkNTM4MGI5ZTRkZWYwMDZmZDcxMzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlYmRjZGIwYjFiNjc0YjBjMzc3NjVhNzIyNDg4YTIxNmIyMTU2YzA5ODAzOGI4Mzg4MjUyMTA1MTZiMzY0YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1Y2ZhYTRmOWU2MGQ3ZGVkMGE1MTk4MTE1YjIzOGE3YzQxNzI0ZWU3YTVlNjdkMjViMzRiNWQ5Y2YwM2UwZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlZTRjYzU0MzI1YWExMzBmZDBlZjY1Njc5ZDk5ZTcxYWRjYWZmZjdkNWE1NTY1YmFhOGJiOGY1MTJkNGM2OTYifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T19:40:47.036Z"
+    "at": "2026-10-31T22:55:43.691Z"
   }
 }
