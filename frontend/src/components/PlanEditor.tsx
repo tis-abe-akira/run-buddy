@@ -3,15 +3,8 @@ import type { Plan, WorkoutType } from '../api/client'
 import { formatKm } from '../lib/format'
 import { containsDate, daysOf, formatMonth, type Month } from '../lib/month'
 import { isWeekend } from '../lib/weekday'
+import { WORKOUT_TYPES } from '../lib/workout'
 import { WeekdayChip } from './DayLabel'
-
-export const WORKOUT_TYPES: { value: WorkoutType; label: string }[] = [
-  { value: 'EASY', label: 'イージー' },
-  { value: 'TEMPO', label: 'テンポ走' },
-  { value: 'INTERVAL', label: 'インターバル' },
-  { value: 'LONG', label: 'ロング走' },
-  { value: 'RACE', label: 'レース' },
-]
 
 type Props = {
   month: Month

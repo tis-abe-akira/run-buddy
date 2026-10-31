@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdvisorRouteImport } from './routes/advisor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DaysDateRouteImport } from './routes/days.$date'
 import { Route as PlansMonthRouteImport } from './routes/plans.$month'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DaysDateRoute = DaysDateRouteImport.update({
+  id: '/days/$date',
+  path: '/days/$date',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlansMonthRoute = PlansMonthRouteImport.update({
   id: '/plans/$month',
   path: '/plans/$month',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
+  '/days/$date': typeof DaysDateRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
+  '/days/$date': typeof DaysDateRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/advisor': typeof AdvisorRoute
   '/dashboard': typeof DashboardRoute
+  '/days/$date': typeof DaysDateRoute
   '/plans/$month': typeof PlansMonthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/advisor' | '/dashboard' | '/plans/$month'
+  fullPaths: '/' | '/advisor' | '/dashboard' | '/days/$date' | '/plans/$month'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/advisor' | '/dashboard' | '/plans/$month'
-  id: '__root__' | '/' | '/advisor' | '/dashboard' | '/plans/$month'
+  to: '/' | '/advisor' | '/dashboard' | '/days/$date' | '/plans/$month'
+  id:
+    | '__root__'
+    | '/'
+    | '/advisor'
+    | '/dashboard'
+    | '/days/$date'
+    | '/plans/$month'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdvisorRoute: typeof AdvisorRoute
   DashboardRoute: typeof DashboardRoute
+  DaysDateRoute: typeof DaysDateRoute
   PlansMonthRoute: typeof PlansMonthRoute
 }
 
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/days/$date': {
+      id: '/days/$date'
+      path: '/days/$date'
+      fullPath: '/days/$date'
+      preLoaderRoute: typeof DaysDateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plans/$month': {
       id: '/plans/$month'
       path: '/plans/$month'
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdvisorRoute: AdvisorRoute,
   DashboardRoute: DashboardRoute,
+  DaysDateRoute: DaysDateRoute,
   PlansMonthRoute: PlansMonthRoute,
 }
 export const routeTree = rootRouteImport
