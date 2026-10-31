@@ -1,11 +1,11 @@
 ---
 type: concept
-title: クイックスタートとテスト実行
-description: OpenWikiのナビゲーションマップ、ローカル開発環境のセットアップと動作確認手順、およびテスト階層の分類・実行方法を解説します。
+title: 開発の始め方とテスト実行
+description: run-buddyのローカル開発環境のセットアップ手順、OpenWikiタスクルーティング、およびバックエンド/フロントエンドの各種テスト階層（単体・MvcTest・Testcontainers・Vitest）の実行方法を解説します。
 tags: [quickstart, setup, testing, navigation, openwiki]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T19:40:47.036Z
+    at: 2026-10-31T23:04:12.652Z
 sources:
   - id: openwiki-source-3421d35cc2d552c5979c7b87
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java
@@ -21,12 +21,12 @@ sources:
     resource: repo://frontend/vite.config.ts
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
 ---
 
-# クイックスタートとテスト実行
+# 開発の始め方とテスト実行
 
-本ページでは、OpenWiki ドキュメント内の**タスク別ルーティングマップ**、OpenWiki（run-buddy）の**ローカル開発環境のセットアップ手順**、日常の運用・トラブルシューティング、およびバックエンド・フロントエンドにまたがる**テスト階層の分類と実行方法**を解説します。
+本ページでは、OpenWiki ドキュメント内の**タスク別ルーティングマップ**、run-buddy の**ローカル開発環境のセットアップ手順**、日常の運用・トラブルシューティング、およびバックエンド・フロントエンドにまたがる**テスト階層の分類と実行方法**を解説します。
 
 ---
 
@@ -45,44 +45,46 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
 
 ---
 
-## 2. ローカル開発環境のセットアップ
+## 2. ローカル開発環境のセットアップとアプリ起動
 
 ### 2.1 前提条件
 
-ローカル開発には以下の環境が必要です（元ドキュメント: [`../README.md`](../README.md)）。
+ローカル開発には以下の環境が必要です（参照: [`../README.md`](../README.md)）。
 
 | ツール | 要求バージョン | 用途 |
 |---|---|---|
 | **JDK** | 25 | バックエンド実行（Maven Wrapper `./mvnw` が自動ダウンロードされるため Maven の個別インストールは不要） |
 | **Node.js** | 22.12 以上 | フロントエンド実行・ビルド |
-| **Docker** | Docker Desktop 等（Compose v2 必須） | PostgreSQL データベースおよび Testcontainers によるテスト |
+| **Docker** | Docker Desktop 等（Compose v2 必須） | PostgreSQL データベースおよび Testcontainers による DB テスト |
 
-### 2.2 セットアップと起動手順
+### 2.2 設定ファイル (`.env`) の作成
 
-1. **リポジトリのクローンと環境設定ファイルの作成**
+ローカルの環境変数および秘密情報は、リポジトリルートの `.env` で管理します（参照: [`../.env.example`](../.env.example)）。
 
-   ```bash
-   git clone https://github.com/tis-abe-akira/run-buddy.git
-   cd run-buddy
-   cp .env.example .env
-   ```
+```bash
+cp .env.example .env
+```
 
-   `.env` ファイルで設定可能な主要項目:
-   *   `GEMINI_API_KEY`: AI 相談機能で Gemini を利用する際の API キー（空の場合は開発用 Fake プロバイダのみ利用可）
-   *   `RUNBUDDY_ACTIVITY_SOURCE`: ランニング記録の取得先（`dummy`［規定値］または `garmin`）
-   *   `GARMIN_API_KEY`: Garmin Connect Personal API のキー（`garmin` 設定時に必須）
-   *   `RUNBUDDY_LOG_LEVEL`: ログレベル（既定: `INFO`）
-   *   `RUNBUDDY_BIND_ADDRESS`: バインド制限アドレス（既定: `127.0.0.1`）
-   *   `RUNBUDDY_DB_PORT`: PostgreSQL ポート（既定: `5432`）
+`.env` ファイルで設定可能な主要項目:
+*   `GEMINI_API_KEY`: AI 相談機能で Gemini を利用する際の API キー（空の場合は開発用 Fake プロバイダのみ利用可）
+*   `RUNBUDDY_ACTIVITY_SOURCE`: ランニング記録の取得先（`dummy`［既定値］または `garmin`）
+*   `GARMIN_API_KEY`: Garmin Connect Personal API のキー（`garmin` 設定時に必須）
+*   `RUNBUDDY_LOG_LEVEL`: バックエンドのログレベル（既定: `INFO`）
+*   `RUNBUDDY_BIND_ADDRESS`: バインド制限アドレス（既定: `127.0.0.1`）
+*   `RUNBUDDY_DB_PORT`: PostgreSQL ポート（既定: `5432`）
 
-2. **PostgreSQL データベースの起動**
+### 2.3 セットアップと起動手順
+
+1. **PostgreSQL データベースの起動**
+
+   リポジトリルート（[`../compose.yaml`](../compose.yaml) がある場所）で実行します。
 
    ```bash
    docker compose up -d --wait
    ```
-   起動時に初回用アプリロール `runbuddy_app` が生成され、バックエンド起動時に Flyway によりテーブル定義が適用されます。
+   `--wait` オプションによりヘルスチェック（`pg_isready`）が成功するまで待機します。初回起動時にアプリ用ロール `runbuddy_app` が自動作成され、バックエンド起動時に Flyway によりテーブル定義が適用されます（参照: [`../docs/guides/database.md`](../docs/guides/database.md)）。
 
-3. **バックエンドの起動（開発モード）**
+2. **バックエンドの起動（開発モード）**
 
    ```bash
    cd backend
@@ -90,39 +92,39 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
    ```
    起動確認: `curl http://localhost:8080/health`（`{"status":"ok"}` が返却されます）。
 
-4. **フロントエンドの起動**
+3. **フロントエンドの起動**
 
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
-   ブラウザで `http://localhost:5173` にアクセスして動作確認します（Vite 開発サーバー経由で `/api` リクエストはバックエンドへプロキシされます）。
+   ブラウザで `http://localhost:5173` にアクセスして動作確認します（Vite 開発サーバー経由で `/api` リクエストはバックエンド `http://localhost:8080` へプロキシされます）。
 
-5. **統合配信ビルド（任意: モバイル/リモート利用時）**
+4. **統合配信ビルド（任意: モバイル/リモート利用時）**
 
-   バックエンドとフロントエンドを1つの静的資産として統合配信する場合:
+   バックエンドとフロントエンドを 1 つの静的資産として統合配信する場合:
 
    ```bash
    cd backend
    ./mvnw spring-boot:run -Papp
    ```
-   `-Papp` プロファイル指定によりフロントエンドがビルドされ、バックエンドの静的リソース（`target/classes/static`）に埋め込まれて `http://localhost:8080` から一元配信されます。
+   `-Papp` プロファイル指定によりフロントエンドが自動ビルドされ、バックエンドの静的リソース（`target/classes/static`）に埋め込まれて `http://localhost:8080` から一元配信されます（参照: [`../README.md`](../README.md)）。
 
-6. **Tailscale によるリモート利用（任意）**
+5. **Tailscale によるリモート利用（任意）**
 
-   Tailscale を使用して宅内やモバイル端末からセキュアにアクセスする場合（元ドキュメント: [`../docs/guides/tailscale.md`](../docs/guides/tailscale.md)）:
+   Tailscale を使用して宅内やモバイル端末からセキュアにアクセスする場合（参照: [`../docs/guides/tailscale.md`](../docs/guides/tailscale.md)）:
 
    ```bash
    tailscale serve --bg 8080
    ```
-   `https://<マシン名>.<tailnet名>.ts.net` でアクセス可能となります。インターネットへ無制限公開する `tailscale funnel` は利用しないでください。
+   `https://<マシン名>.<tailnet名>.ts.net` でアクセス可能となります。インターネットへ無制限公開する `tailscale funnel` はセキュリティ上利用しないでください。
 
 ---
 
-## 3. 運用コマンドとトラブルシューティング
+## 3. 日常運用とトラブルシューティング
 
-日常の開発作業および DB 操作における代表的コマンドです（元ドキュメント: [`../docs/guides/database.md`](../docs/guides/database.md)）。
+日常の開発作業および DB 操作における代表的コマンドです（参照: [`../docs/guides/database.md`](../docs/guides/database.md)）。
 
 *   **ポート 5432 の競合が発生する場合:**
     `.env` 内で `RUNBUDDY_DB_PORT=5433` のように変更し、`docker compose down && docker compose up -d --wait` を実行して再起動します。
@@ -151,7 +153,7 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
 
 ## 4. テスト階層の分類と実行ガイド
 
-OpenWiki（run-buddy）では、テストの目的に応じて厳密に階層化されたテスト構成を採用しています。
+run-buddy では、テストの目的に応じて厳密に階層化されたテスト構成を採用しています。
 
 ```mermaid
 flowchart TD
@@ -172,9 +174,8 @@ flowchart TD
     BE_DB --> BE_Cmd
     BE_Live --> BE_LiveCmd["環境変数付与時のみ実行\nGEMINI_API_KEY=... ./mvnw test -Dtest=..."]
 ```
-*図 1: フロントエンドおよびバックエンドのテスト階層構造*
 
-### 4.1 バックエンドテスト階層
+### 4.1 バックエンドテスト階層と使い分け
 
 バックエンドのテストは 4 つのレベルに整理されています。
 
@@ -202,7 +203,7 @@ flowchart TD
     ```
 
 *   **OpenAPI スキーマからの TypeScript 型自動生成:**
-    バックエンド起動後、REST API の定義からフロントエンド用型定義ファイル（`src/api/schema.gen.ts`）を更新します。
+    バックエンド起動後、REST API 定義からフロントエンド用型定義ファイル（`src/api/schema.gen.ts`）を更新します。
 
     ```bash
     cd frontend

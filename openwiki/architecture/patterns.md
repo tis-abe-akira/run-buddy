@@ -1,11 +1,11 @@
 ---
 type: concept
-title: 主要設計パターンと連携メカニズム
-description: Ports & Adapters、契約テスト、不変ドメインモデル、Spring AI 統合、Garmin API 連携、OpenAPI 型連携、フロントエンド設計、環境変数管理の構造を解説。
+title: アーキテクチャ上の工夫と設計パターン
+description: ポート＆アダプタ、契約テスト、不変ドメインモデル、Spring AI 統合、Garmin 連携、OpenAPI 型連携、フロントエンド構造の解説。
 tags: [architecture, patterns, ports-and-adapters, spring-ai, garmin, openapi, domain-model, testing, configuration]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T19:40:47.036Z
+    at: 2026-10-31T23:04:12.652Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example
@@ -55,10 +55,10 @@ sources:
     resource: repo://frontend/package.json
   - id: openwiki-source-b240a0614dbaf1a8d51dcd80
     resource: repo://frontend/src/routes/plans.%24month.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
 ---
 
-# 主要設計パターンと連携メカニズム
+# アーキテクチャ上の工夫と設計パターン
 
 本ページでは、`run-buddy` が採用している主要な設計パターン、外部サービス連携メカニズム、テスト戦略、およびフロントエンド/バックエンド間の協調構造を解説します。システム全体の構成については [アーキテクチャ概要](overview.md)、データベースの権限設計については [永続化と RLS](persistence-rls.md) を併せて参照してください。
 
@@ -70,7 +70,7 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T19:40:47.036Z" }
 Garmin API や LLM、永続化ストレージなどの外部サービスにドメインロジックが直接依存すると、外部 API の仕様変更や認証未準備（API キー未発行など）、ネットワーク遅延・障害によって開発やテストがストップする課題があります。
 
 ### 工夫
-ドメイン層に外部サービスとの結合境界となるインターフェース（**Port**）を配置し、具体の接続実装（**Adapter**）を外部パッケージに分離しました。起動時の設定プロパティ（`runbuddy.activity-source`、`runbuddy.persistence` など）や Spring プロファイルによって、インメモリ/ダミー実装と本物のアダプタを切り替え可能です。
+ドメイン層に外部サービスとの結合境界となるインターフェース（**Port**）を配置し、具体の接続実装（**Adapter**）を外部パッケージに分離しました。起動時の設定プロパティ（`runbuddy.activity-source`、`runbuddy.persistence` など）や Spring プロファイルによって、インメモリ/ダミー実装と本物のアダプタを柔軟に切り替え可能です。
 
 ```mermaid
 sequenceDiagram
@@ -88,12 +88,12 @@ sequenceDiagram
         Garmin-->>Domain: List of RunResult (From Garmin API)
     end
 ```
-ポートによる外部サービス抽象化と設定によるアダプタ切替の制御フロー
 
 ### コードの場所
 - **Port 定義**:
   - `backend/src/main/java/com/example/runbuddy/activity/ActivitySource.java`
   - `backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`
+  - `backend/src/main/java/com/example/runbuddy/plan/RunResultRepository.java`
   - `backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`
 - **Adapter 実装**:
   - `backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivitySource.java`
@@ -163,9 +163,9 @@ LLM とのやり取りでは、長時間に及ぶ API 呼び出し中に DB ト�
 
 ### 工夫
 1. **Spring AI 閉塞**: `ChatClient` やプロバイダ特有の型は `advisor/springai` パッケージ内に隠蔽し、ドメイン層の `TrainingAdvisor` ポートには Spring AI の型を出さない。
-2. **短トランザクション**: `AdvisorTools` の `@Tool` メソッドが呼び出されるたびにリポジトリを個別の短トランザクションで実行し、RLS (行レベルセキュリティ) を適用。
-3. **非信頼出力検証**: LLM から返却された JSON は `AdvisorAnswer.toPlan(YearMonth)` でドメインモデル `MonthlyPlan` に変換し、不変条件違反があれば不採用として安全に処理。
-4. **動的ルーティング**: `AdvisorDirectory` が利用可能なプロバイダとモデルを保持し、リクエストに応じて適切な `TrainingAdvisor` に処理を振る。
+2. **トランザクション外のモデル呼び出しと短トランザクションツール実行**: LLM への呼び出し（`ChatClient.prompt()`）は DB トランザクションの外で実行する。LLM がデータ参照のために `AdvisorTools` の `@Tool` メソッド（例: `monthSummary`）を呼び出した際、ツールメソッド内でリポジトリを個別の短トランザクションで呼び出し、RLS (行レベルセキュリティ) を安全に適用する。
+3. **非信頼出力のドメイン検証**: LLM から返却された JSON レスポンスは `AdvisorAnswer.toPlan(YearMonth)` でドメインモデル `MonthlyPlan` に変換し、不変条件違反があれば不採用として安全に例外処理する。
+4. **動的ルーティング**: `AdvisorDirectory` が利用可能なプロバイダとモデルを保持し、リクエストに応じて適切な `TrainingAdvisor` 実装に処理を振り分ける。
 
 ```mermaid
 sequenceDiagram
@@ -179,16 +179,17 @@ sequenceDiagram
     UI->>Ctrl: POST /api/advisor/consult
     Ctrl->>Dir: consult(provider, model, consultation)
     Dir->>Adv: consult(consultation, model)
+    Note over Adv: LLM 呼び出しは DB トランザクション外
     Adv->>Adv: ChatClient.prompt() with tool call
     Adv->>Tools: @Tool monthSummary(month)
-    Tools->>Repo: findByMonth(month) (Short TX & RLS)
+    Note over Tools: 短トランザクション & RLS 適用
+    Tools->>Repo: findByMonth(month)
     Repo-->>Tools: MonthlyPlan
     Tools-->>Adv: MonthSummary (plain record)
     Adv->>Adv: AdvisorAnswer.toPlan() validation
     Adv-->>Ctrl: Advice (reply text & proposedPlan)
     Ctrl-->>UI: Advice Response
 ```
-AI 相談におけるプロバイダ動的ルーティング、短トランザクションでのツール呼び出し、不変ドメインモデル検証の流れ
 
 ### コードの場所
 - **AI 統合コンポーネント**:
@@ -212,7 +213,7 @@ AI 相談におけるプロバイダ動的ルーティング、短トランザ�
 Garmin Connect Personal API の特殊な認証仕様（テキスト応答の JWT トークン交換、24 時間有効期間）、現地時刻扱い、ページング、およびレート制限や認証エラーをそのまま UI に露出すると、密結合とバグの原因になります。
 
 ### 工夫
-Garmin の全知識を `activity/garmin` パッケージ内に隠蔽。トークン有効期限の 23 時間キャッシュや `401` 再試行、現地時刻ベースでのアクティビティ取得・変換を行います。エラー発生時はドメイン例外 `ActivitySourceUnavailableException`（`Reason`: `CREDENTIALS_REJECTED`, `RATE_LIMITED`, `UNAVAILABLE`）へ変換し、`RunController` の `@ExceptionHandler` で RFC 9457 `ProblemDetail`（`reason` プロパティ付き）に整形してフロントエンドへ返却します。
+Garmin の知識を `activity/garmin` パッケージ（`GarminActivitySource`）内に隠蔽。トークン有効期限の 23 時間キャッシュや `401` 再試行、現地時刻ベースでのアクティビティ取得・変換を行います。エラー発生時はドメイン例外 `ActivitySourceUnavailableException`（`Reason`: `CREDENTIALS_REJECTED`, `RATE_LIMITED`, `UNAVAILABLE`）へ変換し、`RunController` の `@ExceptionHandler` で RFC 9457 `ProblemDetail`（`reason` プロパティ付き）に整形してフロントエンドへ返却します。
 
 ```mermaid
 sequenceDiagram
@@ -231,7 +232,6 @@ sequenceDiagram
     Svc-->>Ctrl: Exception Propagate
     Ctrl-->>UI: ProblemDetail (HTTP 429/502, property: reason)
 ```
-Garmin API 連携における外部通信例外のドメイン例外・ProblemDetail (reason) への変換フロー
 
 ### コードの場所
 - **Garmin アダプタ & 例外ハンドラ**:
@@ -251,13 +251,14 @@ Garmin API 連携における外部通信例外のドメイン例外・ProblemDe
 バックエンドの API レスポンスやリクエストボディの型を変更した際、フロントエンドの TypeScript 型定義との不一致が発生し、実行時エラーになる課題があります。
 
 ### 工夫
-バックエンドの `springdoc-openapi` が出力する OpenAPI 仕様書（`/v3/api-docs`）から、`npm run gen:api`（`openapi-typescript`）を実行して TypeScript 型定義ファイル `src/api/schema.gen.ts` を自動生成しています。フロントエンドはこの型を参照することで、コンパイル時に API 型不一致を検知できます。
+バックエンドの `springdoc-openapi` が出力する OpenAPI 仕様書（`/v3/api-docs`、Controller の `@Schema` 注釈付き DTO）から、`npm run gen:api`（`openapi-typescript`）を実行して TypeScript 型定義ファイル `src/api/schema.gen.ts` を自動生成しています。フロントエンドは `src/api/client.ts` 内で `components['schemas']` としてこの型を参照し、コンパイル時に API 型不一致を検知します。
 
 ### コードの場所
 - **型共有設定 & コントローラ**:
   - `frontend/package.json` (`gen:api` スクリプト)
   - `backend/src/main/java/com/example/runbuddy/activity/RunController.java` (`@Schema` 注釈)
   - `frontend/src/api/schema.gen.ts` (生成成果物)
+  - `frontend/src/api/client.ts` (生成型の利用)
 
 ### 守っているテスト
 - `frontend/package.json`（`npm run build` 時の `tsc --noEmit` 型チェック）
@@ -270,14 +271,15 @@ Garmin API 連携における外部通信例外のドメイン例外・ProblemDe
 画面間でのデータ取得の重複、月切替時の編集状態・下書きの混入、および UI 記述における色や余白の不整合（デザインの散逸）が発生する問題があります。
 
 ### 工夫
-1. **ルーティングとデータ取得**: TanStack Router のルート定義（`plans.$month.tsx`）で `loader` と TanStack Query (`useQuery`) を組み合わせ、`remountDeps: ({ params }) => params.month` により月切替時にコンポーネントを再構築し、下書き状態の混入を防止。
-2. **Props 専用コンポーネント**: `PlanEditor` などのUIコンポーネントは状態管理を抱え込まず、Pure な props 受取専用として設計し、単体テストを容易に化。
-3. **デザイントークン**: `DESIGN.md` で定義されたデザインガイドライン（温かいクリーム地、セリフ体、コーラル色など）を `src/styles/tokens.css` の CSS 変数に展開し、カラーコードの直接記述を禁止。
+1. **ルーティングとデータ取得の分離**: TanStack Router のルート定義（`plans.$month.tsx`）で `loader` と TanStack Query (`useQuery`) を組み合わせ、`remountDeps: ({ params }) => params.month` により月切替時にコンポーネントを再構築し、下書き状態の混入を防止。
+2. **Props 専用コンポーネント**: `PlanEditor` などの UI コンポーネントは取得ロジックや状態管理を抱え込まず、Pure な props 受取専用として設計し、単体テストを容易化。
+3. **デザイントークン**: `DESIGN.md` で定義されたデザインガイドライン（温かいクリーム地、セリフ体、コーラル色など）を `src/styles/tokens.css` の CSS 変数に展開し、コンポーネント内でのカラーコード直接記述を禁止。
 
 ### コードの場所
 - **フロントエンドコンポーネント & デザイン体系**:
   - `frontend/src/routes/plans.$month.tsx`
   - `frontend/src/components/PlanEditor.tsx`
+  - `frontend/src/styles/tokens.css`
   - `frontend/DESIGN.md`
   - `docs/adr/0006-design-system.md`
 
@@ -292,7 +294,7 @@ Garmin API 連携における外部通信例外のドメイン例外・ProblemDe
 Docker Compose、Spring Boot、ローカル開発環境で異なる環境変数設定ファイルを個別に管理すると、不整合や API キー等の秘密情報の漏洩が起きやすくなります。
 
 ### 工夫
-リポジトリルートの `.env` ファイル（`.env.example` からコピー作成）を唯一の構成源として設定。Docker Compose が自動読み込みするとともに、Spring Boot 側も `spring.config.import=optional:file:.env[.properties],optional:file:../.env[.properties]` により直接参照します。また「OS 環境変数 > `.env` > デフォルト値」という優先順位ルールを定めています。
+リポジトリルートの `.env` ファイル（`.env.example` からコピー作成）を唯一の構成源として設定。Docker Compose が自動読み込みするとともに、Spring Boot 側も `application.properties` 内の `spring.config.import=optional:file:.env[.properties],optional:file:../.env[.properties]` により直接参照します。また「OS 環境変数 > `.env` > デフォルト値」という優先順位ルールを定めています。
 
 ### コードの場所
 - **環境設定**:
