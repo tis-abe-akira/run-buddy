@@ -43,7 +43,7 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=memory
 ```
 
-永続化は jOOQ（既定）と Spring Data JDBC を `runbuddy.persistence=jooq|jdbc` で切り替えられます（[ADR-0007](docs/adr/0007-persistence-library.md) のスパイク中）。
+永続化は jOOQ（既定）、Spring Data JDBC、JdbcClient を `runbuddy.persistence=jooq|jdbc|jdbcclient` で切り替えられます（[ADR-0007](docs/adr/0007-persistence-library.md) のスパイク中）。
 マイグレーションを変更したら、jOOQ のコードを生成し直します（Docker が必要です）。
 
 ```bash
