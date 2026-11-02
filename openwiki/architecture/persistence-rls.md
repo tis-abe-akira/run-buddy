@@ -3,9 +3,6 @@ type: "設計ドキュメント"
 title: "永続化: jOOQ と行レベルセキュリティ"
 description: "なぜ jOOQ を採用したか、RlsTransactionManager と PostgreSQL RLS によるマルチテナント保護、port での default メソッド禁止と ArchUnit 検査、jOOQ コード生成と Record 変換パターンを解説します。"
 tags: ["persistence", "jooq", "postgresql", "rls", "archunit"]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
