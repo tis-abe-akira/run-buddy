@@ -134,6 +134,15 @@ public interface RunResultRepositoryContract {
         assertThat(repository().latestStart()).isEmpty();
     }
 
+    @Test
+    default void aRunIsFoundByItsId() {
+        RunResult stored = run("a", 2);
+        repository().saveAll(List.of(stored, run("b", 3)));
+
+        assertThat(repository().findById("a")).contains(stored);
+        assertThat(repository().findById("missing")).isEmpty();
+    }
+
     private static RunResult run(String id, int day) {
         return run(id, LocalDateTime.of(2026, 11, day, 6, 30), 8);
     }

@@ -7,6 +7,7 @@ package com.example.runbuddy.persistence.jooq.generated.tables;
 import com.example.runbuddy.persistence.jooq.generated.Indexes;
 import com.example.runbuddy.persistence.jooq.generated.Keys;
 import com.example.runbuddy.persistence.jooq.generated.Public;
+import com.example.runbuddy.persistence.jooq.generated.tables.RunFitFile.RunFitFilePath;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RunResultRecord;
 
 import java.time.LocalDateTime;
@@ -17,10 +18,14 @@ import java.util.List;
 import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.ForeignKey;
 import org.jooq.Index;
+import org.jooq.InverseForeignKey;
 import org.jooq.Name;
+import org.jooq.Path;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
+import org.jooq.Record;
 import org.jooq.SQL;
 import org.jooq.Schema;
 import org.jooq.Stringly;
@@ -140,6 +145,39 @@ public class RunResult extends TableImpl<RunResultRecord> {
         this(DSL.name("run_result"), null);
     }
 
+    public <O extends Record> RunResult(Table<O> path, ForeignKey<O, RunResultRecord> childPath, InverseForeignKey<O, RunResultRecord> parentPath) {
+        super(path, childPath, parentPath, RUN_RESULT);
+    }
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    public static class RunResultPath extends RunResult implements Path<RunResultRecord> {
+
+        private static final long serialVersionUID = 1L;
+        public <O extends Record> RunResultPath(Table<O> path, ForeignKey<O, RunResultRecord> childPath, InverseForeignKey<O, RunResultRecord> parentPath) {
+            super(path, childPath, parentPath);
+        }
+        private RunResultPath(Name alias, Table<RunResultRecord> aliased) {
+            super(alias, aliased);
+        }
+
+        @Override
+        public RunResultPath as(String alias) {
+            return new RunResultPath(DSL.name(alias), this);
+        }
+
+        @Override
+        public RunResultPath as(Name alias) {
+            return new RunResultPath(alias, this);
+        }
+
+        @Override
+        public RunResultPath as(Table<?> alias) {
+            return new RunResultPath(alias.getQualifiedName(), this);
+        }
+    }
+
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
@@ -153,6 +191,19 @@ public class RunResult extends TableImpl<RunResultRecord> {
     @Override
     public UniqueKey<RunResultRecord> getPrimaryKey() {
         return Keys.RUN_RESULT_PKEY;
+    }
+
+    private transient RunFitFilePath _runFitFile;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>public.run_fit_file</code> table
+     */
+    public RunFitFilePath runFitFile() {
+        if (_runFitFile == null)
+            _runFitFile = new RunFitFilePath(this, null, Keys.RUN_FIT_FILE__RUN_FIT_FILE_USER_ID_ACTIVITY_ID_FKEY.getInverseKey());
+
+        return _runFitFile;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.runbuddy.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.runbuddy.activity.RunFileRepository;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.plan.MonthlyPlan;
@@ -30,6 +31,8 @@ public interface RowLevelSecurityContract {
     RunResultRepository runs();
 
     RaceRepository races();
+
+    RunFileRepository files();
 
     @Test
     default void anotherUserSeesNothing() {
@@ -92,6 +95,19 @@ public interface RowLevelSecurityContract {
 
         currentUser().switchTo(alice);
         assertThat(races().findAll()).containsExactly(race);
+    }
+
+    @Test
+    default void anotherUserSeesNoActivityFile() {
+        String alice = currentUser().switchToNewUser();
+        runs().saveAll(List.of(run("a")));
+        files().save("a", new byte[] {1, 2, 3});
+
+        currentUser().switchToNewUser();
+        assertThat(files().find("a")).isEmpty();
+
+        currentUser().switchTo(alice);
+        assertThat(files().find("a")).hasValueSatisfying(zip -> assertThat(zip).containsExactly(1, 2, 3));
     }
 
     private static Race race(String name) {

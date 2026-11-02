@@ -34,6 +34,11 @@ public class InMemoryRunResultRepository implements RunResultRepository {
     }
 
     @Override
+    public Optional<RunResult> findById(String activityId) {
+        return Optional.ofNullable(runsById.get(activityId));
+    }
+
+    @Override
     public Optional<LocalDateTime> latestStart() {
         return runsById.values().stream().map(RunResult::startedAt).max(Comparator.naturalOrder());
     }

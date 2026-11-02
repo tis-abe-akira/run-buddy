@@ -7,6 +7,7 @@ import static org.jooq.impl.DSL.excluded;
 import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.RunResultRepository;
+import com.example.runbuddy.persistence.jooq.generated.tables.records.RunResultRecord;
 import com.example.runbuddy.shared.Distance;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -93,7 +94,25 @@ public class JooqRunResultRepository implements RunResultRepository {
                 .where(RUN_RESULT.STARTED_AT.ge(month.atDay(1).atStartOfDay()))
                 .and(RUN_RESULT.STARTED_AT.lt(month.plusMonths(1).atDay(1).atStartOfDay()))
                 .orderBy(RUN_RESULT.STARTED_AT)
-                .fetch(row -> new RunResult(
+                .fetch(JooqRunResultRepository::toRunResult);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RunResult> findById(String activityId) {
+        return dsl.selectFrom(RUN_RESULT)
+                .where(RUN_RESULT.ACTIVITY_ID.eq(activityId))
+                .fetchOptional(JooqRunResultRepository::toRunResult);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<LocalDateTime> latestStart() {
+        return Optional.ofNullable(dsl.select(max(RUN_RESULT.STARTED_AT)).from(RUN_RESULT).fetchOne(0, LocalDateTime.class));
+    }
+
+    private static RunResult toRunResult(RunResultRecord row) {
+        return new RunResult(
                         row.getActivityId(),
                         row.getStartedAt(),
                         Distance.ofMeters(row.getDistanceMeters()),
@@ -104,12 +123,6 @@ public class JooqRunResultRepository implements RunResultRepository {
                                 row.getAverageCadence(),
                                 row.getMaxCadence(),
                                 row.getAverageStrideLengthCm(),
-                                row.getElevationGainMeters())));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<LocalDateTime> latestStart() {
-        return Optional.ofNullable(dsl.select(max(RUN_RESULT.STARTED_AT)).from(RUN_RESULT).fetchOne(0, LocalDateTime.class));
+                                row.getElevationGainMeters()));
     }
 }

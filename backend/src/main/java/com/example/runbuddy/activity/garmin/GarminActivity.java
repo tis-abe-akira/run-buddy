@@ -44,6 +44,9 @@ record GarminActivity(
     /** typeId of {@link #RUNNING}, as returned by the API (observed 2026-10-31). */
     static final long RUNNING_TYPE_ID = 1;
 
+    /** Run ids are Garmin's activity id behind this prefix, so they never clash with the dummy's. */
+    static final String ID_PREFIX = "garmin-";
+
     private static final DateTimeFormatter LOCAL_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /** @param parentTypeId the parent's typeId; 17 means this type is a parent itself */
@@ -72,7 +75,7 @@ record GarminActivity(
         }
         Integer heartRate = averageHR == null ? null : (int) Math.round(averageHR);
         return Optional.of(new RunResult(
-                "garmin-" + activityId, startedAt(), meters, time, heartRate, metrics(heartRate)));
+                ID_PREFIX + activityId, startedAt(), meters, time, heartRate, metrics(heartRate)));
     }
 
     /**

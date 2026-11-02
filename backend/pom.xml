@@ -77,6 +77,12 @@
         </dependency>
 
         <dependency>
+            <!-- Garmin's FIT SDK reads the activity files (ADR-0012). Garmin's own licence: used, not redistributed. -->
+            <groupId>com.garmin</groupId>
+            <artifactId>fit</artifactId>
+            <version>21.218.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>

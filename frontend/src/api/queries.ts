@@ -12,6 +12,13 @@ export const runsQuery = (month: Month) =>
 export const dayQuery = (date: IsoDate) =>
   queryOptions({ queryKey: ['day', date], queryFn: () => api.day(date) })
 
+/**
+ * A run's laps (ADR-0012). The first look downloads the activity file from Garmin, so a failure is
+ * not retried behind the runner's back: they press "再試行" instead. Once loaded it does not change.
+ */
+export const runDetailQuery = (activityId: string) =>
+  queryOptions({ queryKey: ['run-detail', activityId], queryFn: () => api.runDetail(activityId), retry: false, staleTime: Infinity })
+
 export const planQuery = (month: Month) =>
   queryOptions({ queryKey: ['plan', month], queryFn: () => api.plan(month) })
 

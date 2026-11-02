@@ -44,6 +44,11 @@ class DummyActivitySourceTest {
     }
 
     @Test
+    void generatedRunsHaveNoActivityFile() {
+        assertThat(sourceAsOf(LocalDate.of(2027, 1, 1)).fetchFitZip("dummy-2026-11-01")).isEmpty();
+    }
+
+    @Test
     void noRunsAfterToday() {
         LocalDate today = LocalDate.of(2026, 11, 15);
 

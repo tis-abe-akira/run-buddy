@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException;
+import com.example.runbuddy.activity.RunDetail;
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.activity.fit.FitRunDetailReader;
 import com.example.runbuddy.shared.DateRange;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -46,5 +49,19 @@ class GarminLiveTest {
         assertThatThrownBy(() -> source.fetchRuns(DateRange.of(YearMonth.now())))
                 .isInstanceOfSatisfying(ActivitySourceUnavailableException.class,
                         e -> assertThat(e.reason()).isEqualTo(Reason.CREDENTIALS_REJECTED));
+    }
+
+    /** ADR-0012: the latest run's activity file downloads and has laps; nothing about the run is printed. */
+    @Test
+    void downloadsAndReadsTheLatestRunsActivityFile() {
+        GarminActivitySource source = GarminActivitySource.connect(BASE_URL, System.getenv("GARMIN_API_KEY"), Clock.systemDefaultZone());
+        YearMonth thisMonth = YearMonth.now();
+        List<RunResult> runs = source.fetchRuns(new DateRange(thisMonth.minusMonths(1).atDay(1), LocalDate.now()));
+        assertThat(runs).isNotEmpty();
+
+        byte[] zip = source.fetchFitZip(runs.getLast().activityId()).orElseThrow();
+        RunDetail detail = new FitRunDetailReader().read(zip);
+
+        assertThat(detail.laps()).isNotEmpty();
     }
 }

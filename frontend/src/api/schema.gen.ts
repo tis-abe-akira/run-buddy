@@ -132,6 +132,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/{activityId}/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/export/{month}.csv": {
         parameters: {
             query?: never;
@@ -350,6 +366,46 @@ export interface components {
              * @description meters
              */
             elevationGainMeters: number | null;
+        };
+        LapResponse: {
+            /** Format: int32 */
+            number: number;
+            /** Format: int64 */
+            startOffsetSeconds: number;
+            /** Format: double */
+            distanceKm: number;
+            /** Format: int64 */
+            durationSeconds: number;
+            /**
+             * Format: int64
+             * @description null for a lap without distance
+             */
+            paceSecondsPerKm: number | null;
+            /** Format: int32 */
+            averageHeartRate: number | null;
+            /** Format: int32 */
+            maxHeartRate: number | null;
+            /**
+             * Format: int32
+             * @description steps per minute
+             */
+            averageCadence: number | null;
+            /**
+             * Format: int32
+             * @description steps per minute
+             */
+            maxCadence: number | null;
+            /**
+             * Format: int32
+             * @description meters
+             */
+            elevationGainMeters: number | null;
+        };
+        RunDetailResponse: {
+            available: boolean;
+            laps: components["schemas"]["LapResponse"][];
+            /** Format: int32 */
+            trackPoints: number;
         };
         DayResponse: {
             /** Format: date */
@@ -648,6 +704,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RunResponse"][];
+                };
+            };
+        };
+    };
+    detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                activityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RunDetailResponse"];
                 };
             };
         };
