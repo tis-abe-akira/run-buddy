@@ -3,9 +3,6 @@ type: concept
 title: アーキテクチャ概要
 description: run-buddy の Monorepo 全体構造（Spring Boot 4 / Java 25 と Vite + React + TanStack Router）、バックエンドの 10 個のパッケージ構成と依存の向き、SpaConfig による単一オリジン統合配信、および Tailscale による個人アクセス運用モデルを解説する。
 tags: [architecture, monorepo, backend, spring-boot, frontend, vite, spa-config, tailscale, race, day]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-cc9ac771b9086a58897b0e1c
     resource: repo://backend/pom.xml

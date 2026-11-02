@@ -3,9 +3,6 @@ type: concept
 title: その他のアーキテクチャ上の工夫
 description: Ports & Adapters パターン、契約テスト、不変ドメインモデル、Spring AI 統合（AdvisorTools/AdvisorDirectory）、Garmin 連携、OpenAPI 型連携、フロントエンドコンポーネント設計、設定と秘密情報管理を解説する。
 tags: [architecture, patterns, ports-and-adapters, spring-ai, garmin, openapi, domain-model, testing, configuration]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example

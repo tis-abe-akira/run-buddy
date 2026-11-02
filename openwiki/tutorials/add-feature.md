@@ -3,9 +3,6 @@ type: tutorial
 title: "チュートリアル: 機能を1つ追加してみる"
 description: "CSV エクスポート機能を手本とした TDD での機能追加手順と、DB スキーマ変更を伴う 5 ステップの課題開発フロー（Flyway、jOOQ 再生成、契約テスト、ドメイン/コントローラ、OpenAPI 型生成、UI）を解説します。"
 tags: [tutorial, tdd, flyway, jooq, openapi, testing]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-9eb5287ccf13806e65e224d1
     resource: repo://backend/scripts/generate-jooq.sh
