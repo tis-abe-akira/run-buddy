@@ -97,6 +97,18 @@ npx openwiki@0.7.2 visualize openwiki
 
 どちらのビューアーも、ライブラリ（mermaid など）を公開 CDN から読み込むので、インターネット接続が必要です。
 
+## 漏れている内容を追記させる
+
+いつもの更新（`update`）は、変わったコードに関係するページを部分的に書き直すだけなので、新しい機能が Wiki に載らないことがある。
+Wiki 全体を作り直さずに、その部分だけ書き足させるには、指示を付けて手動で実行する。
+
+1. GitHub の Actions → OpenWiki Update → Run workflow
+2. mode は `update` のまま、**message** に追記してほしいことを書く。例：
+   > 最大心拍・ケイデンスなどの測定値（RunMetrics）と日別詳細ページ（DayDetail、/days）、AI 相談がレースを読むツール（AdvisorTools.upcomingRaces とテーパリングの指示）を、アーキテクチャ概要と設計パターンのページに追記して
+3. できた PR「docs: update OpenWiki」を確認してマージする。
+
+あわせて `openwiki/INSTRUCTIONS.md` にも書いておくと、以後の更新でも抜けにくくなる。
+
 ## 方針を変える
 
 - **書いてほしい内容を変える:** `openwiki/INSTRUCTIONS.md` を直して main に入れると、OpenWiki Update が動きます。

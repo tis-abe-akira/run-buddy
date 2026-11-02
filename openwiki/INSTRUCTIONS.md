@@ -66,11 +66,18 @@
   ツール呼び出し（`AdvisorTools`、1回ごとに短いトランザクション）、構造化出力、
   モデルの提案は信用しない入力として `AdvisorAnswer.toPlan` を通すこと、モデル呼び出しをトランザクションの中でしないこと。
   会話ごとにプロバイダとモデルを選べる仕組み（`AdvisorDirectory`）。
+  AI が目標のレースを読むツール（`AdvisorTools.upcomingRaces`：残りの日数と週数、目標タイムと必要なペース）と、
+  システムプロンプトでレースから逆算し、最後の 2〜3 週は量を落とす（テーパリング）よう指示していること。
 - **Garmin 連携（ADR-0009）**: 外部 API の知識を `GarminActivitySource` に閉じ込め、失敗を理由つきの
   `ActivitySourceUnavailableException` に変換し、HTTP の ProblemDetail（`reason`）まで届ける流れ。
 - **OpenAPI で型を共有**: springdoc の出力を `npm run gen:api` で TypeScript の型にする。
 - **frontend**: ルートがデータを取り、コンポーネントは props だけを受ける（ネットワークなしでテストできる）。
   DESIGN.md のトークンとコンポーネントクラス（ADR-0006）。
+- **ランの測定値と日別詳細ページ**: Garmin の一覧 API から取り込む最大心拍・ケイデンス・歩幅・上昇を、
+  値オブジェクト `RunMetrics` にまとめ、自分で不変条件を検査すること（Garmin の変換では、おかしな値はその値だけを捨て、ランは残す）。
+  その日の予定とランを `DayDetail` にまとめ、日別詳細ページ `/days/{日付}` で表示すること（1日に複数回走った日は並べる）。
+- **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
+  ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。
 
 ### 4. チュートリアル: 機能を1つ追加してみる
