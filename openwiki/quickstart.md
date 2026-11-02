@@ -1,11 +1,11 @@
 ---
 type: concept
-title: 開発の始め方とテスト実行
-description: run-buddyのローカル開発環境のセットアップ手順、OpenWikiタスクルーティング、およびバックエンド/フロントエンドの各種テスト階層（単体・MvcTest・Testcontainers・Vitest）の実行方法を解説します。
+title: 開発の始め方とテストの回し方
+description: run-buddy の開発環境セットアップ、アプリ起動・運用手順、テスト階層（単体・@WebMvcTest・Testcontainers DB・Vitest）の分類と実行方法、および OpenWiki タスク別ルーティングマップを解説します。
 tags: [quickstart, setup, testing, navigation, openwiki]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T23:04:12.652Z
+    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-3421d35cc2d552c5979c7b87
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java
@@ -21,10 +21,10 @@ sources:
     resource: repo://frontend/vite.config.ts
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 
-# 開発の始め方とテスト実行
+# 開発の始め方とテストの回し方
 
 本ページでは、OpenWiki ドキュメント内の**タスク別ルーティングマップ**、run-buddy の**ローカル開発環境のセットアップ手順**、日常の運用・トラブルシューティング、およびバックエンド・フロントエンドにまたがる**テスト階層の分類と実行方法**を解説します。
 
@@ -47,9 +47,9 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
 
 ## 2. ローカル開発環境のセットアップとアプリ起動
 
-### 2.1 前提条件
+詳細なセットアップ手順や挙動の仕組みは [`../README.md`](../README.md) を参照してください。
 
-ローカル開発には以下の環境が必要です（参照: [`../README.md`](../README.md)）。
+### 2.1 前提条件
 
 | ツール | 要求バージョン | 用途 |
 |---|---|---|
@@ -59,13 +59,13 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
 
 ### 2.2 設定ファイル (`.env`) の作成
 
-ローカルの環境変数および秘密情報は、リポジトリルートの `.env` で管理します（参照: [`../.env.example`](../.env.example)）。
+ローカルの環境変数および秘密情報はリポジトリルートの `.env` で管理します（参照: [`../.env.example`](../.env.example)）。
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` ファイルで設定可能な主要項目:
+主要設定項目（詳細: [`../README.md`](../README.md)）:
 *   `GEMINI_API_KEY`: AI 相談機能で Gemini を利用する際の API キー（空の場合は開発用 Fake プロバイダのみ利用可）
 *   `RUNBUDDY_ACTIVITY_SOURCE`: ランニング記録の取得先（`dummy`［既定値］または `garmin`）
 *   `GARMIN_API_KEY`: Garmin Connect Personal API のキー（`garmin` 設定時に必須）
@@ -76,13 +76,12 @@ cp .env.example .env
 ### 2.3 セットアップと起動手順
 
 1. **PostgreSQL データベースの起動**
-
    リポジトリルート（[`../compose.yaml`](../compose.yaml) がある場所）で実行します。
 
    ```bash
    docker compose up -d --wait
    ```
-   `--wait` オプションによりヘルスチェック（`pg_isready`）が成功するまで待機します。初回起動時にアプリ用ロール `runbuddy_app` が自動作成され、バックエンド起動時に Flyway によりテーブル定義が適用されます（参照: [`../docs/guides/database.md`](../docs/guides/database.md)）。
+   `--wait` オプションにより DB の健全性が確認されるまで待機します。初回起動時にアプリ用ロール `runbuddy_app` が自動作成され、バックエンド起動時に Flyway によりテーブル定義が適用されます（参照: [`../docs/guides/database.md`](../docs/guides/database.md)）。
 
 2. **バックエンドの起動（開発モード）**
 
@@ -90,7 +89,7 @@ cp .env.example .env
    cd backend
    ./mvnw spring-boot:run
    ```
-   起動確認: `curl http://localhost:8080/health`（`{"status":"ok"}` が返却されます）。
+   起動確認: `curl http://localhost:8080/health`（`{"status":"ok"}` 返却）。
 
 3. **フロントエンドの起動**
 
@@ -99,61 +98,54 @@ cp .env.example .env
    npm install
    npm run dev
    ```
-   ブラウザで `http://localhost:5173` にアクセスして動作確認します（Vite 開発サーバー経由で `/api` リクエストはバックエンド `http://localhost:8080` へプロキシされます）。
+   `http://localhost:5173` で開発サーバーが起動し、`/api` リクエストはバックエンド `http://localhost:8080` へプロキシされます。
 
 4. **統合配信ビルド（任意: モバイル/リモート利用時）**
-
-   バックエンドとフロントエンドを 1 つの静的資産として統合配信する場合:
 
    ```bash
    cd backend
    ./mvnw spring-boot:run -Papp
    ```
-   `-Papp` プロファイル指定によりフロントエンドが自動ビルドされ、バックエンドの静的リソース（`target/classes/static`）に埋め込まれて `http://localhost:8080` から一元配信されます（参照: [`../README.md`](../README.md)）。
+   `-Papp` プロファイル指定によりフロントエンドが自動ビルドされ、バックエンドの静的リソース（`target/classes/static`）として `http://localhost:8080` から一元配信されます。
 
 5. **Tailscale によるリモート利用（任意）**
-
-   Tailscale を使用して宅内やモバイル端末からセキュアにアクセスする場合（参照: [`../docs/guides/tailscale.md`](../docs/guides/tailscale.md)）:
 
    ```bash
    tailscale serve --bg 8080
    ```
-   `https://<マシン名>.<tailnet名>.ts.net` でアクセス可能となります。インターネットへ無制限公開する `tailscale funnel` はセキュリティ上利用しないでください。
+   `https://<マシン名>.<tailnet名>.ts.net` でアクセス可能となります。セキュリティ上、インターネット全体に公開する `tailscale funnel` は絶対に使用しないでください（参照: [`../docs/guides/tailscale.md`](../docs/guides/tailscale.md)）。
 
 ---
 
 ## 3. 日常運用とトラブルシューティング
 
-日常の開発作業および DB 操作における代表的コマンドです（参照: [`../docs/guides/database.md`](../docs/guides/database.md)）。
+詳細な DB 操作や対話モード手順は [`../docs/guides/database.md`](../docs/guides/database.md) を参照してください。
 
-*   **ポート 5432 の競合が発生する場合:**
-    `.env` 内で `RUNBUDDY_DB_PORT=5433` のように変更し、`docker compose down && docker compose up -d --wait` を実行して再起動します。
-*   **データベースを完全にリセットして初期化したい場合:**
+*   **ポート 5432 の競合が発生する場合:** `.env` 内で `RUNBUDDY_DB_PORT=5433` 等に変更し、`docker compose down && docker compose up -d --wait` を実行。
+*   **データベースの完全リセット:**
 
     ```bash
     docker compose down -v
     docker compose up -d --wait
     ```
-*   **ダミーの取り込みデータのみを削除したい場合:**
-    Garmin 連携切替時にデータが重複した場合は、DB 内のダミーデータのみを削除できます。
+*   **ダミー取り込みデータのみの削除:**
 
     ```bash
     docker compose exec postgres psql -U runbuddy -d runbuddy -c "delete from run_result where activity_id like 'dummy-%';"
     ```
 *   **jOOQ コードの自動生成:**
-    DB マイグレーション（`backend/src/main/resources/db/migration/`）を追加後、型安全な jOOQ コードを再生成します。
 
     ```bash
     cd backend
     ./scripts/generate-jooq.sh
     ```
-    生成されたコード（`persistence/jooq/generated`）はリポジトリにコミットする必要があります。
+    生成されたコード（`persistence/jooq/generated`）は Git コミット対象となります。
 
 ---
 
 ## 4. テスト階層の分類と実行ガイド
 
-run-buddy では、テストの目的に応じて厳密に階層化されたテスト構成を採用しています。
+run-buddy では、検証目的と実行速度に応じてテストを明確に階層化しています。
 
 ```mermaid
 flowchart TD
@@ -162,7 +154,7 @@ flowchart TD
     end
 
     subgraph Backend["バックエンドテスト (JUnit 5 + Spring Boot)"]
-        BE_Domain["ドメイン単体テスト\n(Spring/DB非依存, 高速)"]
+        BE_Domain["ドメイン単体テスト\n(Spring/DB非依存, 超高速)"]
         BE_Web["Controller / Web層テスト\n(@WebMvcTest / MockMvc)"]
         BE_DB["DB統合テスト\n(Testcontainers + PostgreSQL / RLS)"]
         BE_Live["実API導通テスト\n(GeminiLiveTest / GarminLiveTest)"]
@@ -172,38 +164,35 @@ flowchart TD
     BE_Domain --> BE_Cmd["./mvnw test"]
     BE_Web --> BE_Cmd
     BE_DB --> BE_Cmd
-    BE_Live --> BE_LiveCmd["環境変数付与時のみ実行\nGEMINI_API_KEY=... ./mvnw test -Dtest=..."]
+    BE_Live --> BE_LiveCmd["環境変数設定時のみ実行\nGEMINI_API_KEY=... ./mvnw test -Dtest=..."]
 ```
+図1: バックエンドおよびフロントエンドのテスト階層と実行チャネル
 
 ### 4.1 バックエンドテスト階層と使い分け
 
-バックエンドのテストは 4 つのレベルに整理されています。
+バックエンドのテストは 4 つのレベルに区分され、目的に応じて使い分けます。
 
-| テスト階層 | 対象・特徴 | 主な実装例 / 基底クラス | 実行コマンド |
-|---|---|---|---|
-| **1. ドメイン単体テスト** | 純粋な Java 25 ロジックの検証。Spring や DB に依存せず超高速に実行 | `MonthlyPlanTest`, `RunResultTest`, `PlanAchievementTest` | `./mvnw test` |
-| **2. Controller / Web層テスト** | `@WebMvcTest` を使用し、HTTP 契約、JSON シリアライズ、ProblemDetail（`reason` 等）のエラーハンドリングを検証 | `RunControllerTest`, `AdvisorControllerTest`, `ExportControllerTest` | `./mvnw test` |
-| **3. DB 統合テスト** | `DatabaseTest` を継承。Testcontainers で本物の PostgreSQL 17（`postgres:17-alpine`）を起動。アプリロール `runbuddy_app` で接続し RLS 動作およびスキーマ安全性を検証 | `DatabaseTest`, `JooqPersistenceTest`, `DatabaseSafetyTest`, `RowLevelSecurityContract` | `./mvnw test` (要 Docker) |
-| **4. 実 API 導通テスト (Live Tests)** | 外部 API（Gemini / Garmin）との実導通テスト。課金・利用制限防止のため普段の `./mvnw test` では無効化され、環境変数が明示された場合のみ起動 | `GeminiLiveTest`, `GarminLiveTest` | `GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest` |
+| テスト階層 | 対象・特徴 | 用途（いつ使うか） | 主な実装例 / 基底クラス | 実行コマンド |
+|---|---|---|---|---|
+| **1. ドメイン単体テスト** | 純粋な Java 25 ロジックの検証。Spring や DB に依存せずミリ秒単位で超高速実行 | ドメインモデルのビジネスルール、集約の不変条件、計算ロジックを TDD で実装・検証する際 | `MonthlyPlanTest`, `RunResultTest`, `PlanAchievementTest` | `./mvnw test` |
+| **2. Controller / Web層テスト** | `@WebMvcTest` を使用。HTTP 契約、JSON シリアライズ/デシリアライズ、`ProblemDetail`（`reason` 等）の例外ハンドリング構造を検証 | REST コントローラのルーティング、リクエスト/レスポンス変換、エラーレスポンス形式の検証 | `RunControllerTest`, `AdvisorControllerTest`, `ExportControllerTest` | `./mvnw test` |
+| **3. DB 統合テスト** | `DatabaseTest` を継承。Testcontainers で本物の PostgreSQL 17（`postgres:17-alpine`）を起動。`runbuddy_app` ロールで接続し RLS 動作およびスキーマ安全性を検証 | Repository / jOOQ クエリの実動作、RLS セキュリティポリシー、DB スキーマ変更の検証 | `DatabaseTest`, `JooqPersistenceTest`, `DatabaseSafetyTest`, `RowLevelSecurityContract` | `./mvnw test` (要 Docker) |
+| **4. 実 API 導通テスト (Live Integration Tests)** | 外部 API（Gemini / Garmin）との実導通テスト。`@EnabledIfEnvironmentVariable` により普段の `./mvnw test` では自動スキップ | 外部サービスとのトークン交換や API スキーマ互換性を手動で導通確認する際 | `GeminiLiveTest`, `GarminLiveTest` | `GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest` |
 
 #### DB テストのアイソレーション・メカニズム (`DatabaseTest`)
-`DatabaseTest` を継承するテストクラスでは、`@BeforeEach` のタイミングで `currentUser.switchToNewUser()` が呼び出され、テストメソッドごとに異なるランダムなユーザー ID が割り当てられます。これにより、行レベルセキュリティ（RLS）によってデータが分離されるため、テスト間での明示的な DB クリア処理を行うことなく完全な並行性・独立性が保証されます。
+`DatabaseTest` を継承するテストクラスでは、`@BeforeEach` のタイミングで `currentUser.switchToNewUser()` が呼び出され、テストメソッドごとにランダムな新しいユーザー ID コンテキストが設定されます。これにより、PostgreSQL の行レベルセキュリティ（RLS）によってデータが完全に分離されるため、テスト間でのテーブルクリーンアップを行わずに高い並行性と独立性が保証されます。
 
 ### 4.2 フロントエンドテストと API 型生成
 
-フロントエンドでは Vitest と React Testing Library を組み合わせ、コンポーネントおよびユーティリティのテストを実施します。
+フロントエンドでは Vitest と React Testing Library を使用し、コンポーネントやロジックの動作を検証します。
 
 *   **テストの実行:**
-
-    ```bash
-    cd frontend
-    npm test              # シングルラン (vitest run)
-    npm run test:watch    # ウォッチモード (vitest)
-    npm run typecheck     # TypeScript 型チェック (tsc --noEmit)
-    ```
-
+    *   `npm test`: Vitest による単体テスト一括実行（`vitest run`）
+    *   `npm run test:watch`: 変更検知ウォッチモード（`vitest`）
+    *   `npm run typecheck`: TypeScript 型チェック（`tsc --noEmit`）
+*   **用途（いつ使うか）:** UI コンポーネントの表示・ユーザー操作・ステート遷移の動作確認やリファクタリング時に実行します。
 *   **OpenAPI スキーマからの TypeScript 型自動生成:**
-    バックエンド起動後、REST API 定義からフロントエンド用型定義ファイル（`src/api/schema.gen.ts`）を更新します。
+    バックエンド起動後、REST API 仕様からフロントエンド用型定義ファイル（`src/api/schema.gen.ts`）を最新化します。
 
     ```bash
     cd frontend

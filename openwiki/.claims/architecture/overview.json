@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8ccc46fd49a8cbd52824187686144f6509544ce3a376e4cb82ff161c82fcf918",
+  "pageVersion": "sha256:f8a4f7ea9f780201a7270b92dbae6b76e904e614dfe24635aceb61e67388196a",
   "claims": [
     {
       "id": "claim_8028c37f138e4593af340b51a32dbd83",
@@ -22,11 +22,19 @@
     },
     {
       "id": "claim_6067fef4cec549438d0752fdd1f9d832",
-      "statement": "バックエンドは Spring Boot 4.1.2 および Java 25 を採用し、Package by Feature (plan, activity, dashboard, advisor, export, shared, persistence, web) 構造で構成されている。",
+      "statement": "バックエンドは Spring Boot 4.1.2 および Java 25 を採用し、Package by Feature (plan, activity, dashboard, day, race, advisor, export, shared, persistence, web) の 10 パッケージ構造で構成されている。",
       "evidence": [
         {
           "resource": "repo://backend/pom.xml#L10-L20",
           "version": "repo-lines-v1:sha256:052e2fcdb7bb94f6dd1c1f52c705270ebc7dafc3458ac8a13c27c414dbd45123:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzNzkyYzJjNDhlNWY4MmFjNzFmZjZmZmRkYWRlMTUxZjAzNzE4YTU0YmQ5NzliNDBiYTI5NzE0OGQ0ZDc5NDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMWYyNWJmNWNhMDRiMGMxMDc5MTRiMTQxYWI0ODM3M2Y0Yzg2OTRlNDFlYjEzZWZhYWQ2YTBlYTJlNzQ1YjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNTE4YWVkNGQwZmMxY2E4ZWM5NjE2YTM0ZjdhYjlkMDE2NzE3NGNlMjdkMjg2Mjg5OGIzYTUxZjk3NjczY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0YzdkZTdkNjBlMWU5YTVhODkwMmFiZjY3NzM2NjI5OTgwMTg3MmJkZWUyMDc0N2JjMjU2NDc0YTE1NWQ0MjEifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayController.java#L17-L39",
+          "version": "repo-lines-v1:sha256:bf2263ca505931840a077e72fbf00a35148ef5bada8fdc1b54a07db7e5f18871:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwMmI1ZjJkZmE2OTM5MDYxOGY2NmFkYjZiNzk2YzM0NjYyMzIxYzc3YjQwZjAzZGFiZTUwYmUyMTg3ZmU3ZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5NTRjYmRlNWRlODQ5M2ZmYWZmNTc1NGNhMjQyODU0MGZmNGZmMTc3ZTQ2NzFiNGVmYzZmNzgzMTYzODUwMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYmIxMjc3NzkxOTE4ZmZjOGRiZDBhYjA2ZjI3MmE3MWRiOGIwNjM0Y2MzOWJlMWYxNDEzMGQwMWRmOTU5MDQifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/race/RaceController.java#L22-L39",
+          "version": "repo-lines-v1:sha256:9ab2b16bd12380a5bdaa029b5c7ab384dcddec48ee8320f427f024f744c75d7b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwMmI1ZjJkZmE2OTM5MDYxOGY2NmFkYjZiNzk2YzM0NjYyMzIxYzc3YjQwZjAzZGFiZTUwYmUyMTg3ZmU3ZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiMTJlZDk1MTVlOGQ0MDMzMTJlMWVkZDM5NDJmNDc0NGVlNmM0YmM2ZWNlZWJkYjE5YjI1YjUxNWI2OGFhZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4YTZlY2QzYzU1NDcyNTY2ZjVlNzU0Nzc4ZjQyZTc5ZjJiN2I1OWMxYjk2NmE1OGJhODRiMzEwZDBkOTk1ZmMifQ"
         },
         {
           "resource": "repo://docs/adr/0003-backend-spring-boot-java.md#L12-L17",
@@ -36,7 +44,7 @@
     },
     {
       "id": "claim_d3223c0dcd0146d98cb29515cf3635a7",
-      "statement": "ドメインコアのモデルおよびリポジトリインターフェースは標準 Java のみで実装されており、Spring Framework、jOOQ、Spring AI 等の外部フレームワークへのコンパイル時依存を持たない。",
+      "statement": "ドメインコアのモデル（MonthlyPlan, RunResult, Race, DayDetail, Distance 等）およびリポジトリ／ソースポートは標準 Java のみで実装されており、Spring Framework、jOOQ、Spring AI 等の外部フレームワークへのコンパイル時依存を持たない。",
       "evidence": [
         {
           "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunResult.java#L1-L61",
@@ -53,6 +61,14 @@
         {
           "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java#L1-L11",
           "version": "repo-lines-v1:sha256:1642cf417d167b7a7de95ca94be7be59c3a0c79f877dbeeb49334e9dcd285af3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4Y2QwYWIyODNiNGU2NmE0ZmJhZTllZDRhYzMzODkzNjliZWQ4ZWM4ZWMyN2QwYWNkZjY1YTlhNjc2NzVhM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/race/Race.java#L11-L66",
+          "version": "repo-lines-v1:sha256:d939d52d4e183c5d5291352366d17682b2aee58db3cf081d78a45209e67461f3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MTgwMjZmM2YwYjQ5MzcwMDQwZTRkYTgwZDMwMzNlZWI0MzRiMDA3MThlY2U3N2RkN2E5YTk0ODQwMDEzZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/race/RaceRepository.java#L1-L16",
+          "version": "repo-lines-v1:sha256:bc4ba8abd139a21d9b830bf3028271691f2f3bae3888ef083bb1a6cb580ff4ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0Mjg1ZTI2YjM4MmEzZWE2NjA3NDRkOWFjN2ZiYzRlNzIxYTNhYjc0NDg4YzA4NzFmMDRjNTViZTdhM2UzZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1M2Y5YmU3MWNiMDRjODNhNTViNWNhY2JmNjAxNDFlY2Q0NDY5NmZhNTI4Yzk0ZTg3MTU4YTI1OGQ2ZDM3MTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NzllMDI5NDAyZTFlMjFiYzdlMzg5MTZjZWNlOWJkMDVjNTU2NjI4MTlhNzg3MTE4Y2YzNjFkZDMxMjk5NDIifQ"
         }
       ]
     },
@@ -97,10 +113,32 @@
           "version": "repo-lines-v1:sha256:8c067b20d94884a0cb37b154499462acfabf215c6a38661b1b00eeeb16035bc2:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTExYzRjNWJhZjFkZTEwMTZiOTNjZDIwOWUzZjQ1M2ViNGZlNTk3MGJiODdlOTYzMGZkMGRlNjk3ZTk0YWI0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjE4ODUzZjI2ODNlY2Q1YWM3NjMxZWMwZjA1Y2ExMGM3MTgwZTA5NzAwMWE3MGMxMmFjOTU3NmQxZTg1MTAyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWUwODE5Y2M3MjM3YWFkYmY2NjI0NWMwY2Q2ODgwYmMyN2NiNmNlZWQzMzJlZjZlOTI0MDRhZTdmYThhMzg2ZSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_4591dbb9f21d47458b397939e8121056",
+      "statement": "目標レース（Race）ドメインは目標タイムから目標キロペース（targetPace）およびカウントダウン日数を計算し、日別詳細（DayDetail）は指定日の計画ワークアウトと走行実績を統合して集計する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayController.java#L28-L39",
+          "version": "repo-lines-v1:sha256:accfddfa8fb4ad670b8bdfb31190b6258415da2cef71d734540fd2cdc1e42cde:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0YWFmMDY4Y2RmY2JiYjc3M2JiYzVjYmQyMTk4OGNmMzZkMGMzNWYzYjhkYjVmMWQ2NTk1MDU5MGQzMTMyYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyMzgxNWUzM2NiNjY5NjI3NTQ3NWI3ZDg1MWRjNjg3ZjE0M2JjYzdmODI2ZTA3OGI4NjRmMzBmYTBiMjQzY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYmIxMjc3NzkxOTE4ZmZjOGRiZDBhYjA2ZjI3MmE3MWRiOGIwNjM0Y2MzOWJlMWYxNDEzMGQwMWRmOTU5MDQifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayDetail.java#L1-L30",
+          "version": "repo-lines-v1:sha256:e84009ad4f88a8fa345e48c9115f358c9e599457c328955a7c5cd31c1ffadee8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NTFiZDMzMjYwZTVjYTY0ZTJjNzIyOTBiYTYzNzczMDNlN2RmYTAwNWU4ODllZmQzNDVhMGVjYzYyYWE3NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMjdhMjM4YWYzZmU1OGQyM2MzZjU3ZDU2ZGYwNWRkODU3Nzg4ODlkM2M3YjY1YjliZWNlZGM5NjdmZTU0NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwMGU5NWU1YTFmNDgwZmVjMDRmMDRjY2JlYmNlMDcyOWQzZjdhNzg2NzZhMjBmYWU0NDUxMjE1Yjk0OTYxYzcifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/race/Race.java#L11-L66",
+          "version": "repo-lines-v1:sha256:d939d52d4e183c5d5291352366d17682b2aee58db3cf081d78a45209e67461f3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MTgwMjZmM2YwYjQ5MzcwMDQwZTRkYTgwZDMwMzNlZWI0MzRiMDA3MThlY2U3N2RkN2E5YTk0ODQwMDEzZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/race/RaceController.java#L35-L93",
+          "version": "repo-lines-v1:sha256:5239dc3211141661d6b8511fa5857f15bd22ec2e481e01de179d94b76e904f7e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1NzFhODJiNjExYmQ4Y2Y3MzI5ZTI5MmFkNzA5Zjk2YWNlNjM3ZjVjNzNmYjA2NDUwYWQwM2VhMGY4MmU4YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY0MWRiMGI4NzJlNjdkN2I5MmUyMDcxYjdiOGVkN2Y1MTA4MzliOWNjYWQzMWVlOTc4OWYwOWI4ZmM2ZjNhMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjMzgzYTBmMjhmNDk0OTA2YWFlMTk5Njc0OTkyZDc1MGFmYWE0YTIzOTZiYTIxYzVmZTQwNDBhYTY4MWRkYzgifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T23:04:12.652Z"
+    "at": "2026-11-02T05:35:33.013Z"
   }
 }

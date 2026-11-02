@@ -1,11 +1,11 @@
 ---
 type: tutorial
-title: "チュートリアル: 機能の追加"
-description: "テスト駆動開発（TDD）に沿った機能追加の手順を解説。月次 CSV エクスポートを手本とした最小フローと、DB スキーマ変更を伴う 5 ステップの課題開発フローを説明します。"
+title: "チュートリアル: 機能を1つ追加してみる"
+description: "CSV エクスポート機能を手本とした TDD での機能追加手順と、DB スキーマ変更を伴う 5 ステップの課題開発フロー（Flyway、jOOQ 再生成、契約テスト、ドメイン/コントローラ、OpenAPI 型生成、UI）を解説します。"
 tags: [tutorial, tdd, flyway, jooq, openapi, testing]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T23:04:12.652Z
+    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-9eb5287ccf13806e65e224d1
     resource: repo://backend/scripts/generate-jooq.sh
@@ -29,24 +29,24 @@ sources:
     resource: repo://frontend/src/api/client.ts
   - id: openwiki-source-9ad52ddc523140b03411a027
     resource: repo://frontend/src/components/ExportLink.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 
-# チュートリアル: 機能の追加
+# チュートリアル: 機能を1つ追加してみる
 
 `run-buddy` プロジェクトでは、「型安全性の重視」「契約テストによる品質担保」「行レベルセキュリティ（RLS）の不変条件維持」を基本設計方針としています。本チュートリアルでは、テスト駆動開発（TDD）のサイクル（赤 → 緑 → リファクタリング）に沿って新機能を追加・拡張する実践的な手順を解説します。
 
 本チュートリアルは以下の 2 つのパートで構成されています：
-1. **最小機能変更フロー (手本)**: DB スキーマ変更を伴わない既存の**月次 CSV エクスポート機能** (`com.example.runbuddy.export` パッケージ) を手本としたアーキテクチャと変更手順の解説。
-2. **DB スキーマ変更を伴う 5 ステップ TDD ワークフロー (課題形式)**: DB テーブルへのカラム追加（`run_result` テーブルへの詳細メトリクス `RunMetrics` 追加）を通じた、Flyway・jOOQ・契約テスト・OpenAPI・フロントエンド同期の通し手順。
+1. **既存機能を手本とした TDD フロー (月次 CSV エクスポート)**: DB スキーマ変更を伴わない既存の月次 CSV エクスポート機能 (`GET /api/export/{YYYY-MM}.csv`) を手本に、ドメイン → 整形 → コントローラ → フロントエンドの開発手順を解説。
+2. **DB スキーマ変更を伴う 5 ステップ TDD ワークフロー (課題解説)**: DB スキーマの変更を伴う新機能追加を「やってみる」課題として、Flyway マイグレーション、jOOQ 再生成、契約テスト、OpenAPI 型同期、フロントエンド開発の通し手順を解説。
 
 システムの全体構成は [アーキテクチャ概要](../architecture/overview.md)、主要設計パターンは [主要設計パターン](../architecture/patterns.md)、永続化と RLS の詳細は [永続化層の設計: jOOQ と行レベルセキュリティ](../architecture/persistence-rls.md) を参照してください。
 
 ---
 
-## 1. 手本としての月次 CSV エクスポート機能 (最小機能変更フロー)
+## 1. 既存機能を手本とした TDD フロー (月次 CSV エクスポート)
 
-データベーススキーマの変更を行わない機能追加や集計ロジックの変更では、ドメインオブジェクト・フォーマッタ・Web コントローラ・UI コンポーネントが直接連携するシンプルな設計を採用します。
+データベーススキーマの変更を行わない機能追加や集計ロジックの変更では、ドメインモデル・フォーマッタ・Web コントローラ・UI コンポーネントが直接連携するシンプルな設計を採用します。
 
 ### CSV エクスポートの構成とデータフロー
 
@@ -68,39 +68,39 @@ sequenceDiagram
 ```
 月次 CSV エクスポートにおけるコンポーネント間の呼び出しとデータフロー
 
-### レイヤー別の役割と実装
+### レイヤー別の役割と実装順序（TDD ステップ）
 
 1. **ドメインモデル (`com.example.runbuddy.export.DailyLog`)**:
-   - `MonthlyPlan`（計画）と `List<RunResult>`（走行実績）を受け取り、指定月の全日付に対応する `Day` 不変 record のリストを生成します。
+   - `MonthlyPlan`（計画）と `List<RunResult>`（走行実績）を受け取り、指定月の全日付に対応する `Day` 不変 record のリストを生成します (`DailyLog.of(monthlyPlan, runResults)`)。
    - 計画距離 (`plannedDistance`)、実績距離 (`actualDistance`)、走行回数 (`runCount`)、総時間 (`totalTime`)、走行時間で加重平均した心拍数 (`averageHeartRate`) などのドメイン集計計算を行います。
+   - **TDD 手順 (Red → Green)**: まず `DailyLogTest` に新しい計算仕様（例: 特定の心拍数集計条件）のアサーションを追加して失敗させ（Red）、`DailyLog.of` や関連メソッドに集計論理を実装して成功させます（Green）。
+
 2. **フォーマッタ (`com.example.runbuddy.export.DailyLogCsv`)**:
-   - `DailyLog` オブジェクトをヘッダー行（`日付`, `曜日`, `予定_種別`, `予定_km`, `予定_メモ`, `実績_回数`, `実績_km`, `実績_時間`, `実績_ペース(/km)`, `実績_平均心拍`）、日別行、および「合計」行を含む CSV 文字列へとフォーマットします。
+   - `DailyLog` オブジェクトをヘッダー行（`日付`, `曜日`, `予定_種別`, `予定_km`, `予定_メモ`, `実績_回数`, `実績_km`, `実績_時間`, `実績_ペース(/km)`, `実績_平均心拍`）、日別行、および「合計」行を含む CSV 文字列へとフォーマットします (`DailyLogCsv.write(dailyLog)`)。
    - 表計算ソフトで数値として直接扱えるよう、`km` 表示（`10.5` など）や `pace` 表示（`5:30` など）を整えます。
-3. **コントローラ (`com.example.runbuddy.export.ExportController`)**:
-   - 端点 `GET /api/export/{month}.csv` を提供します。
+   - **TDD 手順 (Red → Green)**: `DailyLogCsvTest` にフォーマット結果の文字列アサーション（新カラムや合計行出力）を追加して失敗を確認（Red）後、`DailyLogCsv` の `row` やヘッダー生成処理を更新して緑にします（Green）。
+
+3. **Web コントローラ (`com.example.runbuddy.export.ExportController`)**:
+   - エンドポイント `GET /api/export/{month}.csv` を提供します。
    - `MonthlyPlanRepository` と `RunResultRepository` からデータを取得し、`DailyLog` および `DailyLogCsv` を呼び出して `text/csv` レスポンス（`Content-Disposition: attachment; filename="run-buddy-YYYY-MM.csv"`）を返します。
-4. **フロントエンド (`frontend/src/components/ExportLink.tsx` / `DashboardView.tsx`)**:
-   - `DashboardView` 内で `ExportLink` コンポーネントを配置し、`/api/export/{month}.csv` への直リンクを提供してブラウザでのダウンロードを可能にします。
+   - **TDD 手順 (Red → Green)**: `ExportControllerTest` で MockMvc を用いたレスポンスヘッダーや Content-Type、CSV 本文の検証テストを書いて失敗させ（Red）、コントローラのハンドラメソッドを実装して通過させます（Green）。
 
-### スキーマ変更なしの TDD 追加手順
-
-新規集計値の追加など DB スキーマを変更しない機能改修では、以下の TDD サイクルで進めます：
-1. **赤 (Red)**: `ExportControllerTest` や `DailyLogTest` に新しい要件（例: 新規集計列のアサーション）をテストとして記述し、テストが失敗することを確認します。
-2. **緑 (Green)**: `DailyLog` や `DailyLogCsv` にドメイン計算・フォーマット論理を実装し、テストを成功させます。
-3. **回帰検証**: `./mvnw test` を実行し、既存機能に影響がないことを確認します。
+4. **フロントエンド (`frontend/src/components/ExportLink.tsx`)**:
+   - `exportCsvUrl(month)` 関数により `/api/export/${month}.csv` を生成し、`<a href={exportCsvUrl(month)} download ...>` アンカー要素を提供してブラウザ直接ダウンロードを実現します。
+   - **TDD 手順 (Red → Green)**: `ExportLink.test.tsx` で href 属性と download 属性のアサーションを書いて確認（Red）後、コンポーネント実装を完成させます（Green）。
 
 ---
 
 ## 2. DB スキーマ変更を伴う機能追加の 5 ステップ TDD ワークフロー (課題解説)
 
-データベーススキーマの変更（新規テーブル作成やカラム追加）を伴う機能追加では、Flyway マイグレーション・jOOQ コード生成・契約テスト・OpenAPI スキーマ同期・フロントエンド TypeScript 型更新を連携させた 5 ステップの TDD ワークフローを実行します。
+データベーススキーマの変更（新規テーブル作成や既存テーブルへのカラム追加）を伴う機能追加では、Flyway マイグレーション・jOOQ コード生成・契約テスト・OpenAPI スキーマ同期・フロントエンド TypeScript 型更新を連携させた 5 ステップの TDD ワークフローを実行します。
 
-本セクションでは課題形式として、**「走行記録 (`run_result`) に Garmin から取得した追加メトリクス (`RunMetrics`: 最高心拍数、平均/最高ピッチ、ストライド長、獲得標高) を保存・取得・表示できるように拡張する」** タスクをテーマに解説します。
+本セクションでは「やってみる」課題の手順として、データベース変更から UI 同期までのステップを解説します。
 
 ```mermaid
 flowchart TD
-    Step1["1. Flyway マイグレーション追加<br/>(V2__add_run_metrics.sql)"] --> Step2["2. ./scripts/generate-jooq.sh 実行<br/>& コンパイルエラー修復 (Red/Green)"]
-    Step2 --> Step3["3. 契約テストへの振る舞い追加<br/>(RunResultRepositoryContract) (Red/Green)"]
+    Step1["1. Flyway マイグレーション追加<br/>(V2__add_run_metrics.sql / V3__create_race.sql)"] --> Step2["2. ./scripts/generate-jooq.sh 実行<br/>& コンパイルエラー修復 (Red/Green)"]
+    Step2 --> Step3["3. 契約テストへの振る舞い追加<br/>(RepositoryContract) (Red/Green)"]
     Step3 --> Step4["4. ドメイン / コントローラ / OpenAPI / FE 更新<br/>(npm run gen:api) (Red/Green)"]
     Step4 --> Step5["5. 全体検証<br/>(./mvnw test, npm test, npm run build)"]
 ```
@@ -113,20 +113,33 @@ DB スキーマ変更を伴う TDD 機能追加の 5 ステップワークフロ
 データベーススキーマ変更の唯一の正解（Single Source of Truth）として、Flyway バージョンマイグレーション SQL ファイルを作成します。
 
 #### 作業内容
-`backend/src/main/resources/db/migration/` に新しい SQL ファイル（例: `V2__add_run_metrics.sql`）を追加します。
+`backend/src/main/resources/db/migration/` に新しい SQL ファイル（例: レース管理用の `V3__create_race.sql` やメトリクス拡張の `V2__add_run_metrics.sql`）を追加します。
 
 ```sql
--- V2__add_run_metrics.sql
-alter table run_result
-    add column max_heart_rate           integer check (max_heart_rate > 0),
-    add column average_cadence          integer check (average_cadence > 0),
-    add column max_cadence              integer check (max_cadence > 0),
-    add column average_stride_length_cm integer check (average_stride_length_cm > 0),
-    add column elevation_gain_meters    integer check (elevation_gain_meters >= 0);
+-- V3__create_race.sql の例
+create table race (
+    user_id         text   not null default app_current_user_id(),
+    id              uuid   not null,
+    name            text   not null check (length(name) between 1 and 100),
+    race_date       date   not null,
+    distance_meters bigint not null check (distance_meters > 0),
+    target_seconds  bigint check (target_seconds > 0),
+    primary key (user_id, id)
+);
+
+create index race_user_date on race (user_id, race_date);
+
+alter table race enable row level security;
+alter table race force row level security;
+create policy own_rows on race
+    using (user_id = (select app_current_user_id()))
+    with check (user_id = (select app_current_user_id()));
+
+grant select, insert, update, delete on race to runbuddy_app;
 ```
 
 #### RLS (行レベルセキュリティ) に関する必須遵守事項
-新規テーブルを追加する場合は、`V1__create_plans_and_runs.sql` の定義パターンを厳密に継承してください：
+新規テーブルを追加する場合は、以下のパターンを厳密に適用します：
 - **`user_id` 列の定義**: `user_id text not null default app_current_user_id()` を指定する。
 - **RLS 有効化と強制**: `alter table <table_name> enable row level security;` および `alter table <table_name> force row level security;` を指定する。
 - **`own_rows` ポリシーの設定**:
@@ -149,98 +162,46 @@ alter table run_result
 cd backend
 ./scripts/generate-jooq.sh
 ```
-このスクリプトはローカル Docker 上で PostgreSQL 17 コンテナを一時起動し、Flyway マイグレーションを順次適用した後、`src/main/java/com/example/runbuddy/persistence/jooq/generated` 配下に Java DSL クラスを自動生成します。
+このスクリプトはローカル Docker 上で PostgreSQL 17 (17-alpine) コンテナを一時起動し、Flyway マイグレーションを順次適用した後、`src/main/java/com/example/runbuddy/persistence/jooq/generated` 配下に Java DSL クラスを自動生成します。
 
 #### 2. 赤 (Red): コンパイルエラーの発生
-コード生成直後に `./mvnw compile` を実行すると、既存のリポジトリコード (`JooqRunResultRepository.java`) やドメインモデルと jOOQ 生成コードの不整合により**コンパイルエラー**が発生します。
+コード生成直後に `./mvnw compile` を実行すると、リポジトリ層 (`JooqRaceRepository.java` など) やドメインモデルと jOOQ 生成コードの不整合により**コンパイルエラー**が発生します。
 
-- **失敗箇所**: `JooqRunResultRepository.java`（および `RunResult.java` や `RunMetrics.java` のレコード定義修正前）。
-- **失敗理由**: jOOQ が生成した `RUN_RESULT` テーブル型に新カラムが追加された一方、`insertInto` や `fetch` のマッピングコードで新カラムが処理されていないため。
+- **失敗箇所**: リポジトリ実装クラスおよびドメインモデル。
+- **失敗理由**: jOOQ が生成した DSL クラスに新テーブル/新カラムが追加された一方、Java 側のドメイン record やマッピングコードに存在しないフィールド参照が発生するため。
 
 #### 3. 緑 (Green): ドメイン record およびリポジトリの修正
-1. **ドメイン Record `RunResult.java` / `RunMetrics.java` の更新**:
-   `RunMetrics` レコードを導入し、`RunResult` のコンストラクタで受け取るよう修正します。
-   ```java
-   public record RunMetrics(
-           Integer maxHeartRate,
-           Integer averageCadence,
-           Integer maxCadence,
-           Integer averageStrideLengthCm,
-           Integer elevationGainMeters) {
-       public static final RunMetrics NONE = new RunMetrics(null, null, null, null, null);
-   }
-   ```
-2. **`JooqRunResultRepository.java` の修正**:
-   `insertInto` / `onConflict().doUpdate()` および `fetch` マッピングで `RUN_RESULT` の各種メトリクスカラムを設定・還元するよう修正します。
+1. **ドメイン Record の定義・更新**: 新規エンティティ（例: `Race`）や拡張フィールドを含む record を作成/修復します。
+2. **jOOQ リポジトリ実装の更新**: jOOQ の `insertInto`, `update`, `fetch` マッピング処理で新テーブル/カラムを扱えるよう修復します。
 
 修正後、`./mvnw compile` を実行しコンパイルが成功（緑）することを確認します。
 
 ---
 
-### ステップ 3: 契約テストへの振る舞い追加 (Red → Green)
+### ステップ 3: 契約テストの追加と修復 (Red → Green)
 
-RunBuddy では、リポジトリの永続化仕様をインメモリ実装 (`InMemoryRunResultRepository`) と PostgreSQL / jOOQ 実装 (`JooqRunResultRepository`) の双方で同等に担保するため、**契約テスト (Contract Test)** インターフェースを使用します。
+RunBuddy では、リポジトリの永続化仕様をインメモリ実装 (`InMemoryRaceRepository` 等) と PostgreSQL / jOOQ 実装 (`JooqRaceRepository`) の双方で同等に担保するため、**契約テスト (Contract Test)** インターフェース (`RaceRepositoryContract` / `RunResultRepositoryContract`) を使用します。
 
 #### 1. 赤 (Red): 契約テストの追加と失敗
-`backend/src/test/java/com/example/runbuddy/activity/RunResultRepositoryContract.java` に、新メトリクスが正しく保存・復元されるかを検証するテストメソッドを追加します。
+契約テストインターフェースに新機能の保存・検索・削除の振る舞いを検証するテストメソッドを追加します。
 
-```java
-@Test
-default void metricsAreStoredAndReadBack() {
-    RunMetrics metrics = new RunMetrics(181, 172, 188, 98, 42);
-    RunResult measured = new RunResult(
-            "a", LocalDateTime.of(2026, 11, 2, 6, 0), Distance.ofKilometers(10), Duration.ofMinutes(55), 150,
-            metrics);
-
-    repository().saveAll(List.of(measured));
-
-    assertThat(repository().findByMonth(NOVEMBER)).singleElement()
-            .satisfies(run -> assertThat(run.metrics()).isEqualTo(metrics));
-}
-```
-
-この状態で `./mvnw test` を実行すると、`InMemoryRunResultRepository` 側のデータ保持処理やテストファクトリが新フィールドに対応していないため、テストが失敗（赤）します。
+この状態で `./mvnw test` を実行すると、インメモリ実装 (`InMemoryRaceRepository`) やテストファクトリが新フィールド・新規メソッドに対応していないため、テストが失敗（赤）します。
 
 #### 2. 緑 (Green): インメモリ実装およびテストの修復
-`InMemoryRunResultRepository.java` を更新し、新フィールドが保持・検索可能となるよう修正します。
+インメモリリポジトリを更新し、契約テストを満たすよう修正します。
 
-`./mvnw test -Dtest=InMemoryRunResultRepositoryTest,JooqPersistenceTest` を実行し、`InMemoryRunResultRepositoryTest` と PostgreSQL を使用する `JooqPersistenceTest` の双方で契約テストが成功（緑）することを確認します。
+`./mvnw test` を実行し、インメモリテストと PostgreSQL / Testcontainers を使用する `JooqPersistenceTest` の双方で契約テストが成功（緑）することを確認します。
 
 ---
 
-### ステップ 4: Web コントローラ / OpenAPI / フロントエンドの更新 (Red → Green)
+### ステップ 4: コントローラ / OpenAPI / フロントエンドの更新 (Red → Green)
 
 バックエンドの API レスポンス型を拡張し、フロントエンドに型安全な変化を伝播させます。
 
 #### 1. バックエンド REST コントローラの更新と Web テスト (Red → Green)
-`RunController.java` のレスポンス DTO `RunResponse` に `@Schema` アノテーション付きで新フィールドを追加します。
+コントローラ（例: `RaceController.java`）のレスポンス DTO に `@Schema` アノテーション付きでフィールドを定義・追加します。
 
-```java
-public record RunResponse(
-        String activityId,
-        LocalDateTime startedAt,
-        double distanceKm,
-        long durationSeconds,
-        long paceSecondsPerKm,
-        @Schema(types = {"integer", "null"}) Integer averageHeartRate,
-        @Schema(types = {"integer", "null"}, description = "beats per minute") Integer maxHeartRate,
-        @Schema(types = {"integer", "null"}, description = "steps per minute") Integer averageCadence,
-        @Schema(types = {"integer", "null"}, description = "steps per minute") Integer maxCadence,
-        @Schema(types = {"integer", "null"}, description = "centimeters") Integer averageStrideLengthCm,
-        @Schema(types = {"integer", "null"}, description = "meters") Integer elevationGainMeters) {
-
-    public static RunResponse from(RunResult run) {
-        RunMetrics metrics = run.metrics();
-        return new RunResponse(
-                run.activityId(), run.startedAt(), run.distance().toKilometers(),
-                run.duration().toSeconds(), run.pace().toSeconds(), run.averageHeartRate(),
-                metrics.maxHeartRate(), metrics.averageCadence(), metrics.maxCadence(),
-                metrics.averageStrideLengthCm(), metrics.elevationGainMeters());
-    }
-}
-```
-
-- **赤 (Red)**: `./mvnw test` を実行すると `RunControllerTest` や Web 階層の結合テストが JSON 構造の変化により失敗します。
+- **赤 (Red)**: `./mvnw test` を実行すると、コントローラテストや Web 階層の結合テストが JSON 構造やステータスコードの違いにより失敗します。
 - **緑 (Green)**: テスト用モックおよびアサーションを更新して Web テストをすべて通過させます。
 
 #### 2. OpenAPI 型の自動生成と型同期
@@ -250,18 +211,18 @@ Spring Boot バックエンドを起動した状態で、`frontend` ディレク
 cd frontend
 npm run gen:api
 ```
-このコマンドは `openapi-typescript http://localhost:8080/v3/api-docs -o src/api/schema.gen.ts` を呼び出し、バックエンドの OpenAPI スキーマから `src/api/schema.gen.ts` へ TypeScript 型定義を自動生成・同期します。
+このコマンドは `openapi-typescript http://localhost:8080/v3/api-docs -o src/api/schema.gen.ts` を実行し、バックエンドの OpenAPI スキーマから `src/api/schema.gen.ts` へ TypeScript 型定義を自動生成・同期します。`src/api/client.ts` では `schema.gen.ts` から型（`components['schemas']`）をインポートして各型エイリアスを再エクスポートします。
 
 #### 3. フロントエンドの型エラーとテスト失敗 (Red)
-型同期後、`npm run typecheck` または `npm test` を実行すると、フロントエンドのモックデータやコンポーネントで型不整合が発生してテストが失敗（赤）します。
+型同期後、`npm run typecheck` または `npm test` を実行すると、フロントエンドの型不整合や TanStack Query フック (`queries.ts`)、コンポーネントモックで型チェックエラーおよびテスト失敗（赤）が発生します。
 
-#### 4. フロントエンド UI コンポーネントの修正 (Green)
-`client.ts` が参照する `Run` 型 (`RunResponse`) に従って `RunsTable.tsx` や `DashboardView.tsx` などの UI コンポーネントおよびテストモックを更新します。
-`npm run typecheck` と `npm test` を実行し、フロントエンドの型チェックとコンポーネントテストがすべて成功（緑）することを確認します。
+#### 4. フロントエンド UI コンポーネントおよび API クエリの修正 (Green)
+`client.ts` の型定義に従って、`queries.ts` や UI コンポーネント、コンポーネントテストを更新します。
+`npm run typecheck` と `npm test` を実行し、型チェックとコンポーネントテストがすべて成功（緑）することを確認します。
 
 ---
 
-### ステップ 5: フルビルドと総合検証
+### ステップ 5: 各種テスト実行と総合検証
 
 すべてのレイヤーの改修が完了したら、システム全体でリグレッションがないことを最終検証します。
 
@@ -288,7 +249,7 @@ npm run gen:api
 ## 3. トラブルシューティングと開発上の注意点
 
 1. **`generate-jooq.sh` 実行時の Docker エラー**:
-   - `generate-jooq.sh` はローカルの Docker デーモンを使用して PostgreSQL 17 コンテナを起動します。Docker デーモンが起動していること、およびローカルの 5432 ポート周辺が他のデータベースプロセスで占有されていないか確認してください。
+   - `generate-jooq.sh` はローカルの Docker デーモンを使用して PostgreSQL 17 (17-alpine) コンテナを起動します。Docker デーモンが起動していること、およびローカルの 5432 ポート周辺が他のデータベースプロセスで占有されていないか確認してください。
 2. **`app.user_id is not set` 例外の発生**:
    - データベースを操作するテストやリポジトリ処理で `app_current_user_id()` が設定されていない場合、PostgreSQL / RLS から例外がスローされます。DB アクセスを行うテストクラスには `@Transactional` や `RlsTransactionManager` によるコンテクスト設定（または `JooqPersistenceTest` 内のベース構成）が適切に含まれているかを確認してください。
 3. **`npm run gen:api` 実行時の接続エラー**:
