@@ -8,8 +8,11 @@ import com.example.runbuddy.plan.MonthlyPlan;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
 import com.example.runbuddy.plan.PlannedWorkout;
 import com.example.runbuddy.plan.WorkoutType;
+import com.example.runbuddy.race.Race;
+import com.example.runbuddy.race.RaceRepository;
 import com.example.runbuddy.shared.Distance;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
@@ -25,6 +28,8 @@ public interface RowLevelSecurityContract {
     MonthlyPlanRepository plans();
 
     RunResultRepository runs();
+
+    RaceRepository races();
 
     @Test
     default void anotherUserSeesNothing() {
@@ -54,6 +59,42 @@ public interface RowLevelSecurityContract {
         assertThat(added).isEqualTo(1);
         currentUser().switchTo(alice);
         assertThat(plans().findByMonth(NOVEMBER)).contains(plan(100));
+    }
+
+    @Test
+    default void anotherUserSeesNoRaces() {
+        String alice = currentUser().switchToNewUser();
+        Race race = race("Alice's marathon");
+        races().save(race);
+
+        currentUser().switchToNewUser();
+
+        assertThat(races().findAll()).isEmpty();
+        assertThat(races().findById(race.id())).isEmpty();
+
+        currentUser().switchTo(alice);
+        assertThat(races().findAll()).containsExactly(race);
+    }
+
+    @Test
+    default void anotherUserCanNeitherOverwriteNorDeleteARace() {
+        String alice = currentUser().switchToNewUser();
+        Race race = race("Alice's marathon");
+        races().save(race);
+
+        currentUser().switchToNewUser();
+        // Alice's race is invisible, so there is nothing to delete...
+        assertThat(races().delete(race.id())).isFalse();
+        // ...and saving the same id creates this user's own race instead of changing hers.
+        races().save(new Race(race.id(), "Mallory's race", race.date(), race.distance(), null));
+        assertThat(races().findAll()).extracting(Race::name).containsExactly("Mallory's race");
+
+        currentUser().switchTo(alice);
+        assertThat(races().findAll()).containsExactly(race);
+    }
+
+    private static Race race(String name) {
+        return Race.plan(name, LocalDate.of(2026, 11, 22), Distance.ofMeters(42_195), Duration.ofHours(5));
     }
 
     private static MonthlyPlan plan(double targetKm) {

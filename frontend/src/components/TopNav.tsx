@@ -17,6 +17,9 @@ export function TopNav() {
           <Link to="/plans/$month" params={{ month }} className="nav-link">
             プラン
           </Link>
+          <Link to="/races" className="nav-link">
+            レース
+          </Link>
           <Link to="/advisor" search={{}} className="nav-link">
             AI相談
           </Link>

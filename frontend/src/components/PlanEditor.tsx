@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
-import type { Plan, WorkoutType } from '../api/client'
-import { formatKm } from '../lib/format'
+import type { Plan, Race, WorkoutType } from '../api/client'
+import { formatDay, formatKm } from '../lib/format'
 import { containsDate, daysOf, formatMonth, type Month } from '../lib/month'
+import { formatGoal } from '../lib/race'
 import { isWeekend } from '../lib/weekday'
 import { WORKOUT_TYPES } from '../lib/workout'
 import { WeekdayChip } from './DayLabel'
@@ -13,6 +14,8 @@ type Props = {
   saving: boolean
   saved: boolean
   serverError?: string
+  /** Races in this month, marked on their day. */
+  races?: Race[]
 }
 
 /** Text fields stay strings while editing, so a half-typed value is never coerced. */
@@ -50,7 +53,8 @@ function hasErrors(errors: Errors) {
   return errors.targetKm !== undefined || Object.keys(errors.workouts).length > 0
 }
 
-export function PlanEditor({ month, initial, onSave, saving, saved, serverError }: Props) {
+export function PlanEditor({ month, initial, onSave, saving, saved, serverError, races = [] }: Props) {
+  const raceDates = new Set(races.map((race) => race.date))
   const [draft, setDraft] = useState<Draft>(() => toDraft(initial))
   const [errors, setErrors] = useState<Errors>({ workouts: {} })
   const [openMemos, setOpenMemos] = useState<ReadonlySet<number>>(new Set())
@@ -103,6 +107,12 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
         <h2 id="workouts-heading" className="title-md">
           予定ワークアウト
         </h2>
+        {races.map((race) => (
+          <p key={race.id} className="body-sm race-in-month" style={{ margin: 0 }}>
+            この月のレース：<span className="numeric">{formatDay(race.date)}</span> {race.name}
+            <span className="muted"> · {formatGoal(race)}</span>
+          </p>
+        ))}
         {draft.workouts.length === 0 && <p className="body-sm muted" style={{ margin: 0 }}>まだ予定がありません。「ワークアウトを追加」から入力してください。</p>}
         <div className="workout-list">
         {draft.workouts.map((workout, index) => {
@@ -127,6 +137,7 @@ export function PlanEditor({ month, initial, onSave, saving, saved, serverError 
                       {daysOf(month).map((date) => (
                         <option key={date} value={date}>
                           {Number(date.slice(8))}
+                          {raceDates.has(date) ? '（レース）' : ''}
                         </option>
                       ))}
                     </select>

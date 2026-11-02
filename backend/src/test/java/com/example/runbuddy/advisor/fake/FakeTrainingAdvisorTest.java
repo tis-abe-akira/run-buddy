@@ -9,7 +9,9 @@ import com.example.runbuddy.advisor.AdvisorTools;
 import com.example.runbuddy.advisor.ChatTurn;
 import com.example.runbuddy.advisor.Consultation;
 import com.example.runbuddy.plan.InMemoryMonthlyPlanRepository;
+import com.example.runbuddy.race.InMemoryRaceRepository;
 import com.example.runbuddy.shared.Distance;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -22,7 +24,7 @@ class FakeTrainingAdvisorTest {
 
     private final InMemoryRunResultRepository runs = new InMemoryRunResultRepository();
     private final FakeTrainingAdvisor advisor =
-            new FakeTrainingAdvisor(new AdvisorTools(new InMemoryMonthlyPlanRepository(), runs));
+            new FakeTrainingAdvisor(new AdvisorTools(new InMemoryMonthlyPlanRepository(), runs, new InMemoryRaceRepository(), Clock.systemUTC()));
 
     @Test
     void reviewsThePreviousMonthFromRealData() {

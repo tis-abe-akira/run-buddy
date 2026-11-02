@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { Plan } from '../api/client'
+import { aRace } from '../test/races'
 import { PlanEditor } from './PlanEditor'
 
 const EMPTY_PLAN: Plan = { targetKm: 0, workouts: [] }
@@ -11,6 +12,14 @@ function renderEditor(onSave = vi.fn(), initial: Plan = EMPTY_PLAN) {
 }
 
 describe('PlanEditor', () => {
+  it('marks the races of the month', () => {
+    render(
+      <PlanEditor month="2026-11" initial={EMPTY_PLAN} onSave={vi.fn()} saving={false} saved={false} races={[aRace()]} />,
+    )
+
+    expect(screen.getByText(/この月のレース/)).toHaveTextContent('この月のレース：11/22（日） Autumn marathon · 目標 5:00:00 · 7:06/km')
+  })
+
   it('sends the target and workouts as numbers', async () => {
     const user = userEvent.setup()
     const onSave = renderEditor()

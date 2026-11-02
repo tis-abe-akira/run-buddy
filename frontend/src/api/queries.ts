@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api, type ConsultationRequest, type Plan } from './client'
+import { api, type ConsultationRequest, type Plan, type RaceInput } from './client'
 import type { IsoDate } from '../lib/day'
 import type { Month } from '../lib/month'
 
@@ -46,4 +46,19 @@ export const advisorProvidersQuery = () =>
 
 export function useConsult() {
   return useMutation({ mutationFn: (consultation: ConsultationRequest) => api.consult(consultation) })
+}
+
+export const racesQuery = () => queryOptions({ queryKey: ['races'], queryFn: api.races })
+
+export function useRaceMutations() {
+  const queryClient = useQueryClient()
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['races'] })
+  return {
+    create: useMutation({ mutationFn: (race: RaceInput) => api.createRace(race), onSuccess: refresh }),
+    update: useMutation({
+      mutationFn: ({ id, race }: { id: string; race: RaceInput }) => api.updateRace(id, race),
+      onSuccess: refresh,
+    }),
+    remove: useMutation({ mutationFn: (id: string) => api.deleteRace(id), onSuccess: refresh }),
+  }
 }

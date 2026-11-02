@@ -8,6 +8,8 @@ import com.example.runbuddy.persistence.RowLevelSecurityContract;
 import com.example.runbuddy.persistence.TestCurrentUser;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
 import com.example.runbuddy.plan.MonthlyPlanRepositoryContract;
+import com.example.runbuddy.race.RaceRepository;
+import com.example.runbuddy.race.RaceRepositoryContract;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
@@ -21,6 +23,9 @@ class JooqPersistenceTest extends DatabaseTest {
 
     @Autowired
     RunResultRepository runs;
+
+    @Autowired
+    RaceRepository races;
 
     @Autowired
     MockMvc mockMvc;
@@ -42,6 +47,14 @@ class JooqPersistenceTest extends DatabaseTest {
     }
 
     @Nested
+    class Races implements RaceRepositoryContract {
+        @Override
+        public RaceRepository repository() {
+            return races;
+        }
+    }
+
+    @Nested
     class Isolation implements RowLevelSecurityContract {
         @Override
         public TestCurrentUser currentUser() {
@@ -56,6 +69,11 @@ class JooqPersistenceTest extends DatabaseTest {
         @Override
         public RunResultRepository runs() {
             return runs;
+        }
+
+        @Override
+        public RaceRepository races() {
+            return races;
         }
     }
 

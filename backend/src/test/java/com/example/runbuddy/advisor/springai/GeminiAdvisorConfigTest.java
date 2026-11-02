@@ -6,6 +6,7 @@ import com.example.runbuddy.activity.InMemoryRunResultRepository;
 import com.example.runbuddy.advisor.AdvisorTools;
 import com.example.runbuddy.advisor.TrainingAdvisor;
 import com.example.runbuddy.plan.InMemoryMonthlyPlanRepository;
+import com.example.runbuddy.race.InMemoryRaceRepository;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -15,7 +16,7 @@ class GeminiAdvisorConfigTest {
 
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withUserConfiguration(GeminiAdvisorConfig.class)
-            .withBean(AdvisorTools.class, () -> new AdvisorTools(new InMemoryMonthlyPlanRepository(), new InMemoryRunResultRepository()))
+            .withBean(AdvisorTools.class, () -> new AdvisorTools(new InMemoryMonthlyPlanRepository(), new InMemoryRunResultRepository(), new InMemoryRaceRepository(), Clock.systemUTC()))
             .withBean(Clock.class, Clock::systemUTC)
             .withPropertyValues("runbuddy.ai.gemini.models=gemini-3.5-flash,gemini-3.1-pro-preview");
 

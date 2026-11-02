@@ -6,7 +6,7 @@ changing the structure.
 
 ## Design
 
-- Domain types (`plan`, `activity`, `dashboard`, `shared`) are immutable records or final classes
+- Domain types (`plan`, `activity`, `dashboard`, `day`, `race`, `shared`) are immutable records or final classes
   that check their own invariants. Do not add setters, no-arg constructors or persistence
   annotations to them.
 - Repositories are ports (interfaces in the domain packages). Adapters live in `persistence/`.

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { planQuery, useSavePlan } from '../api/queries'
+import { planQuery, racesQuery, useSavePlan } from '../api/queries'
 import { ErrorBand } from '../components/ErrorBand'
 import { PlanEditor } from '../components/PlanEditor'
-import { formatMonth, isMonth, shiftMonth } from '../lib/month'
+import { containsDate, formatMonth, isMonth, shiftMonth } from '../lib/month'
 
 export const Route = createFileRoute('/plans/$month')({
   beforeLoad: ({ params }) => {
@@ -13,7 +13,11 @@ export const Route = createFileRoute('/plans/$month')({
   },
   // Remount per month so the draft and the save state never leak into another month.
   remountDeps: ({ params }) => params.month,
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(planQuery(params.month)),
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(planQuery(params.month)),
+      context.queryClient.ensureQueryData(racesQuery()),
+    ]),
   component: PlanPage,
   errorComponent: ({ error }) => <ErrorBand error={error} />,
 })
@@ -22,6 +26,7 @@ function PlanPage() {
   const { month } = Route.useParams()
   const plan = useQuery(planQuery(month))
   const savePlan = useSavePlan(month)
+  const races = useQuery(racesQuery())
 
   if (!plan.data) {
     return null
@@ -57,6 +62,7 @@ function PlanPage() {
             saving={savePlan.isPending}
             saved={savePlan.isSuccess}
             serverError={savePlan.error?.message}
+            races={(races.data ?? []).filter((race) => containsDate(month, race.date))}
           />
         </div>
       </section>

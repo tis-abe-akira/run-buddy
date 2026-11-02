@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import type { Dashboard, ImportResult, Run } from '../api/client'
+import type { Dashboard, ImportResult, Race, Run } from '../api/client'
 import { formatKm, formatPace, formatRate } from '../lib/format'
 import { formatMonth, shiftMonth, type Month } from '../lib/month'
 import { ExportLink } from './ExportLink'
 import { MonthSwitcher } from './MonthSwitcher'
+import { NextRaceCard } from './NextRaceCard'
 import { ProgressChart } from './ProgressChart'
 import { RunsTable } from './RunsTable'
 import { StatTile } from './StatTile'
@@ -20,9 +21,11 @@ type Props = {
   importing: boolean
   lastImport?: ImportResult
   importError?: string
+  /** The next race from today on, whatever month is shown. */
+  nextRace?: Race
 }
 
-export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMonthChange, onImport, importing, lastImport, importError }: Props) {
+export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMonthChange, onImport, importing, lastImport, importError, nextRace }: Props) {
   const month = dashboard.month
   const remainingKm = Math.max(dashboard.targetKm - dashboard.actualKm, 0)
 
@@ -39,6 +42,7 @@ export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMon
             <span className="spacer" />
             <MonthSwitcher month={month} onChange={onMonthChange} />
           </div>
+          {nextRace && <NextRaceCard race={nextRace} />}
           <div className="row">
             <button type="button" className="button button-primary" onClick={onImport} disabled={importing}>
               {importing ? '取り込み中…' : 'Garminから取り込む'}

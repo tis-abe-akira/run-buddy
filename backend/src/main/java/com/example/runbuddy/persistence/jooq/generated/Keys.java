@@ -6,9 +6,11 @@ package com.example.runbuddy.persistence.jooq.generated;
 
 import com.example.runbuddy.persistence.jooq.generated.tables.MonthlyPlan;
 import com.example.runbuddy.persistence.jooq.generated.tables.PlannedWorkout;
+import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.MonthlyPlanRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.PlannedWorkoutRecord;
+import com.example.runbuddy.persistence.jooq.generated.tables.records.RaceRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RunResultRecord;
 
 import org.jooq.ForeignKey;
@@ -32,6 +34,7 @@ public class Keys {
 
     public static final UniqueKey<MonthlyPlanRecord> MONTHLY_PLAN_PKEY = Internal.createUniqueKey(MonthlyPlan.MONTHLY_PLAN, DSL.name("monthly_plan_pkey"), new TableField[] { MonthlyPlan.MONTHLY_PLAN.USER_ID, MonthlyPlan.MONTHLY_PLAN.MONTH }, true);
     public static final UniqueKey<PlannedWorkoutRecord> PLANNED_WORKOUT_PKEY = Internal.createUniqueKey(PlannedWorkout.PLANNED_WORKOUT, DSL.name("planned_workout_pkey"), new TableField[] { PlannedWorkout.PLANNED_WORKOUT.USER_ID, PlannedWorkout.PLANNED_WORKOUT.MONTH, PlannedWorkout.PLANNED_WORKOUT.POSITION }, true);
+    public static final UniqueKey<RaceRecord> RACE_PKEY = Internal.createUniqueKey(Race.RACE, DSL.name("race_pkey"), new TableField[] { Race.RACE.USER_ID, Race.RACE.ID }, true);
     public static final UniqueKey<RunResultRecord> RUN_RESULT_PKEY = Internal.createUniqueKey(RunResult.RUN_RESULT, DSL.name("run_result_pkey"), new TableField[] { RunResult.RUN_RESULT.USER_ID, RunResult.RUN_RESULT.ACTIVITY_ID }, true);
 
     // -------------------------------------------------------------------------
