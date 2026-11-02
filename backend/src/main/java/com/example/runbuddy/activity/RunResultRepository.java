@@ -18,6 +18,8 @@ public interface RunResultRepository {
     /** Runs started in the month, oldest first. */
     List<RunResult> findByMonth(YearMonth month);
 
+    Optional<RunResult> findById(String activityId);
+
     /** When the most recent stored run started; empty when nothing is stored. */
     Optional<LocalDateTime> latestStart();
 }

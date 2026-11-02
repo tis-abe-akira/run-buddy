@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { DayDetail, Run } from '../api/client'
 import { formatStartTime } from '../lib/day'
 import { formatDuration, formatKm, formatPace } from '../lib/format'
@@ -7,7 +8,13 @@ import { workoutTypeLabel } from '../lib/workout'
  * One day: the plan, then every run of the day. Most days have one run, so this reads as the run's
  * detail page; a day with a morning and an evening run stacks them, numbered in the order they started.
  */
-export function DayDetailView({ day }: { day: DayDetail }) {
+type Props = {
+  day: DayDetail
+  /** The laps of a run, loaded on their own; nothing below the measurements when absent (e.g. in tests). */
+  renderLaps?: (run: Run) => ReactNode
+}
+
+export function DayDetailView({ day, renderLaps }: Props) {
   return (
     <div className="stack" style={{ gap: 'var(--spacing-lg)' }}>
       <section className="feature-card stack" aria-labelledby="day-plan-heading" style={{ gap: 'var(--spacing-sm)' }}>
@@ -35,14 +42,19 @@ export function DayDetailView({ day }: { day: DayDetail }) {
         <p className="body-sm muted">この日のランはありません</p>
       ) : (
         day.runs.map((run, i) => (
-          <RunDetail key={run.activityId} run={run} number={day.runs.length > 1 ? i + 1 : undefined} />
+          <RunDetail
+            key={run.activityId}
+            run={run}
+            number={day.runs.length > 1 ? i + 1 : undefined}
+            laps={renderLaps?.(run)}
+          />
         ))
       )}
     </div>
   )
 }
 
-function RunDetail({ run, number }: { run: Run; number: number | undefined }) {
+function RunDetail({ run, number, laps }: { run: Run; number: number | undefined; laps?: ReactNode }) {
   const title = `${number ? `ラン ${number} · ` : ''}${formatStartTime(run.startedAt)} スタート`
   return (
     <section className="outline-card stack" aria-label={title} style={{ gap: 'var(--spacing-lg)' }}>
@@ -60,6 +72,7 @@ function RunDetail({ run, number }: { run: Run; number: number | undefined }) {
         <Measurement label="歩幅" value={run.averageStrideLengthCm} unit="cm" />
         <Measurement label="上昇" value={run.elevationGainMeters} unit="m" />
       </dl>
+      {laps}
     </section>
   )
 }

@@ -1,5 +1,6 @@
 package com.example.runbuddy.activity.garmin;
 
+import com.example.runbuddy.activity.ActivityFileSource;
 import com.example.runbuddy.activity.ActivitySource;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException;
@@ -11,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,9 +30,11 @@ import org.springframework.web.client.RestClientResponseException;
  * Runs from the Garmin Connect Personal API (ADR-0009): the activity search over a range of local
  * start dates, page by page, keeping only running activities.
  */
-public class GarminActivitySource implements ActivitySource {
+public class GarminActivitySource implements ActivitySource, ActivityFileSource {
 
     static final String SEARCH_PATH = "/activitylist-service/activities/search/activities";
+
+    static final String DOWNLOAD_PATH = "/download-service/files/activity/{activityId}";
 
     /** The search's documented default page size; its maximum is not documented. */
     static final int PAGE_SIZE = 99;
@@ -65,8 +70,46 @@ public class GarminActivitySource implements ActivitySource {
 
     @Override
     public List<RunResult> fetchRuns(DateRange days) {
+        return translatingErrors(() -> runsIn(days));
+    }
+
+    /**
+     * The activity's original file, zipped (ADR-0012). Empty for a run that is not Garmin's, or one
+     * Garmin no longer has (404). Manual entries have a file too, with one lap and no track.
+     */
+    @Override
+    public Optional<byte[]> fetchFitZip(String activityId) {
+        if (!activityId.startsWith(GarminActivity.ID_PREFIX)) {
+            return Optional.empty();
+        }
+        long garminId;
         try {
-            return runsIn(days);
+            garminId = Long.parseLong(activityId.substring(GarminActivity.ID_PREFIX.length()));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+        return translatingErrors(() -> withToken(token -> download(garminId, token)));
+    }
+
+    private Optional<byte[]> download(long garminId, String token) {
+        try {
+            byte[] zip = client.get()
+                    .uri(DOWNLOAD_PATH, garminId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .body(byte[].class);
+            log.info("Garmin: downloaded the activity file of {} ({} bytes)", garminId, zip == null ? 0 : zip.length);
+            return Optional.ofNullable(zip).filter(bytes -> bytes.length > 0);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("Garmin: no activity file for {} (404)", garminId);
+            return Optional.empty();
+        }
+    }
+
+    /** Garmin's HTTP failures as the domain's {@link ActivitySourceUnavailableException}, with a reason. */
+    private <T> T translatingErrors(Supplier<T> call) {
+        try {
+            return call.get();
         } catch (HttpClientErrorException.Unauthorized | HttpClientErrorException.Forbidden e) {
             throw new ActivitySourceUnavailableException(Reason.CREDENTIALS_REJECTED,
                     "Garmin rejected the Personal API key (HTTP " + e.getStatusCode().value()
@@ -118,18 +161,23 @@ public class GarminActivitySource implements ActivitySource {
         return runs;
     }
 
-    /** One page. On 401 the token is renewed once; a second 401 means the key itself is rejected. */
     private List<GarminActivity> search(DateRange days, int start) {
+        return withToken(token -> search(days, start, token));
+    }
+
+    /** Calls Garmin with the access token. On 401 the token is renewed once; a second 401 means the key itself is rejected. */
+    private <T> T withToken(Function<String, T> call) {
+        // Outside the try: a token exchange answered with 401 means the key is rejected; no retry.
         String token = tokens.current();
         try {
-            return search(days, start, token);
+            return call.apply(token);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() != HttpStatus.UNAUTHORIZED) {
                 throw e;
             }
             log.warn("Garmin: access token rejected (401); requesting a new one and retrying once");
             tokens.invalidate();
-            return search(days, start, tokens.current());
+            return call.apply(tokens.current());
         }
     }
 

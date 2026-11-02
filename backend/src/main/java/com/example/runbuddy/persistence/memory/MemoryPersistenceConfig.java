@@ -1,6 +1,8 @@
 package com.example.runbuddy.persistence.memory;
 
+import com.example.runbuddy.activity.InMemoryRunFileRepository;
 import com.example.runbuddy.activity.InMemoryRunResultRepository;
+import com.example.runbuddy.activity.RunFileRepository;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.plan.InMemoryMonthlyPlanRepository;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
@@ -23,6 +25,11 @@ public class MemoryPersistenceConfig {
     @Bean
     RunResultRepository runResultRepository() {
         return new InMemoryRunResultRepository();
+    }
+
+    @Bean
+    RunFileRepository runFileRepository() {
+        return new InMemoryRunFileRepository();
     }
 
     @Bean

@@ -174,6 +174,58 @@ class GarminActivitySourceTest {
     }
 
     @Test
+    void downloadsARunsActivityFileWithTheToken() {
+        byte[] zip = {80, 75, 3, 4, 1, 2, 3};
+        expectToken("token-1");
+        server.expect(once(), requestTo(BASE + "/download-service/files/activity/42"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer token-1"))
+                .andRespond(withSuccess(zip, MediaType.parseMediaType("application/x-zip-compressed")));
+
+        assertThat(source.fetchFitZip("garmin-42")).hasValueSatisfying(found -> assertThat(found).isEqualTo(zip));
+        server.verify();
+    }
+
+    @Test
+    void anActivityGarminDoesNotHaveHasNoFile() {
+        expectToken("token-1");
+        server.expect(once(), requestTo(BASE + "/download-service/files/activity/42"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        assertThat(source.fetchFitZip("garmin-42")).isEmpty();
+    }
+
+    @Test
+    void aRunThatIsNotGarminsIsNotAskedFor() {
+        assertThat(source.fetchFitZip("dummy-2026-11-01")).isEmpty();
+        assertThat(source.fetchFitZip("garmin-not-a-number")).isEmpty();
+        server.verify();
+    }
+
+    @Test
+    void aDownloadRejectedTwiceMeansTheKeyIsRejected() {
+        expectToken("token-1");
+        server.expect(once(), requestTo(BASE + "/download-service/files/activity/42")).andRespond(withUnauthorizedRequest());
+        expectToken("token-2");
+        server.expect(once(), requestTo(BASE + "/download-service/files/activity/42")).andRespond(withUnauthorizedRequest());
+
+        assertThatThrownBy(() -> source.fetchFitZip("garmin-42"))
+                .isInstanceOfSatisfying(ActivitySourceUnavailableException.class,
+                        e -> assertThat(e.reason()).isEqualTo(Reason.CREDENTIALS_REJECTED));
+    }
+
+    @Test
+    void aRateLimitedDownloadIsReportedAsSuch() {
+        expectToken("token-1");
+        server.expect(once(), requestTo(BASE + "/download-service/files/activity/42"))
+                .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+
+        assertThatThrownBy(() -> source.fetchFitZip("garmin-42"))
+                .isInstanceOfSatisfying(ActivitySourceUnavailableException.class,
+                        e -> assertThat(e.reason()).isEqualTo(Reason.RATE_LIMITED));
+    }
+
+    @Test
     void aRejectedKeyIsReportedAsSuch() {
         server.expect(once(), requestTo(TOKEN_URL)).andRespond(withUnauthorizedRequest());
 

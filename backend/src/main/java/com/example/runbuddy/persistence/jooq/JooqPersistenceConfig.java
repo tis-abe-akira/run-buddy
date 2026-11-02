@@ -20,6 +20,11 @@ public class JooqPersistenceConfig {
     }
 
     @Bean
+    JooqRunFileRepository runFileRepository(DSLContext dsl) {
+        return new JooqRunFileRepository(dsl);
+    }
+
+    @Bean
     JooqRaceRepository raceRepository(DSLContext dsl) {
         return new JooqRaceRepository(dsl);
     }

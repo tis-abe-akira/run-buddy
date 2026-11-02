@@ -1,5 +1,6 @@
 package com.example.runbuddy.activity.dummy;
 
+import com.example.runbuddy.activity.ActivityFileSource;
 import com.example.runbuddy.activity.ActivitySource;
 import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnProperty(name = "runbuddy.activity-source", havingValue = "dummy", matchIfMissing = true)
-public class DummyActivitySource implements ActivitySource {
+public class DummyActivitySource implements ActivitySource, ActivityFileSource {
 
     private static final double RUN_PROBABILITY = 0.6;
 
@@ -37,6 +39,12 @@ public class DummyActivitySource implements ActivitySource {
 
     public DummyActivitySource(Clock clock) {
         this.clock = clock;
+    }
+
+    /** Generated runs have no activity file: their day page says "no detail". */
+    @Override
+    public Optional<byte[]> fetchFitZip(String activityId) {
+        return Optional.empty();
     }
 
     @Override

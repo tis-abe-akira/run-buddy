@@ -5,7 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/** Every import endpoint reports a failing activity source the same way (ADR-0009). */
+/** Every endpoint that asks the activity source reports its failures the same way (ADR-0009, ADR-0012). */
 @RestControllerAdvice
 public class ActivitySourceExceptionHandler {
 
@@ -25,6 +25,15 @@ public class ActivitySourceExceptionHandler {
             case UNAVAILABLE -> "The activity source is unavailable";
         });
         problem.setProperty("reason", e.reason().name());
+        return problem;
+    }
+
+    /** A run's activity file that cannot be read; "reason" lets the screen say so (ADR-0012). */
+    @ExceptionHandler(UnreadableActivityFileException.class)
+    public ProblemDetail handleUnreadable(UnreadableActivityFileException e) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
+        problem.setTitle("The activity file cannot be read");
+        problem.setProperty("reason", "UNREADABLE_FILE");
         return problem;
     }
 }

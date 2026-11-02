@@ -14,3 +14,18 @@ export function describeImportError(error: Error): string {
   }
   return `取り込めませんでした: ${error.message}`
 }
+
+/** What went wrong while loading a run's laps (ADR-0012): the first look downloads its activity file from Garmin. */
+export function describeDetailError(error: Error): string {
+  if (error instanceof ApiError) {
+    switch (error.reason) {
+      case 'UNREADABLE_FILE':
+        return 'このランのアクティビティファイルを読み取れませんでした。'
+      case 'CREDENTIALS_REJECTED':
+      case 'RATE_LIMITED':
+      case 'UNAVAILABLE':
+        return describeImportError(error).replace('取り込んでください', '開いてください').replace('取り込み直してください', '開き直してください')
+    }
+  }
+  return `ラップを読み込めませんでした: ${error.message}`
+}

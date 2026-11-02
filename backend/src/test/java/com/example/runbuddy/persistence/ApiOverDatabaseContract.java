@@ -80,4 +80,16 @@ public interface ApiOverDatabaseContract {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.added").value(0));
     }
+
+    @Test
+    default void aGeneratedRunHasNoDetailAndAnUnknownOneIsNotFound() throws Exception {
+        mockMvc().perform(post("/api/runs/2026-09/import")).andExpect(status().isOk());
+        String runs = mockMvc().perform(get("/api/runs/2026-09")).andReturn().getResponse().getContentAsString();
+        String id = com.jayway.jsonpath.JsonPath.read(runs, "$[0].activityId");
+
+        mockMvc().perform(get("/api/runs/{id}/detail", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.available").value(false));
+        mockMvc().perform(get("/api/runs/garmin-0/detail")).andExpect(status().isNotFound());
+    }
 }

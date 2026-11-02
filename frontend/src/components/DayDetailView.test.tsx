@@ -83,6 +83,19 @@ describe('DayDetailView', () => {
   })
 })
 
+describe('DayDetailView with laps', () => {
+  it('puts each run\'s laps under its measurements', () => {
+    render(
+      <DayDetailView
+        day={{ date: '2026-11-08', plannedWorkouts: [], runs: [aRun({ activityId: 'garmin-1', startedAt: '2026-11-08T06:12:00' })] }}
+        renderLaps={(run) => <p>laps of {run.activityId}</p>}
+      />,
+    )
+
+    expect(within(screen.getByRole('region', { name: '6:12 スタート' })).getByText('laps of garmin-1')).toBeInTheDocument()
+  })
+})
+
 /** The value next to a measurement's label. */
 function measurement(scope: HTMLElement, label: string): HTMLElement {
   return within(scope).getByText(label).nextElementSibling as HTMLElement

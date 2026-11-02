@@ -1,5 +1,7 @@
 package com.example.runbuddy.persistence.jooq;
 
+import com.example.runbuddy.activity.RunFileRepository;
+import com.example.runbuddy.activity.RunFileRepositoryContract;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.activity.RunResultRepositoryContract;
 import com.example.runbuddy.persistence.ApiOverDatabaseContract;
@@ -28,6 +30,9 @@ class JooqPersistenceTest extends DatabaseTest {
     RaceRepository races;
 
     @Autowired
+    RunFileRepository files;
+
+    @Autowired
     MockMvc mockMvc;
 
     @Nested
@@ -42,6 +47,19 @@ class JooqPersistenceTest extends DatabaseTest {
     class Runs implements RunResultRepositoryContract {
         @Override
         public RunResultRepository repository() {
+            return runs;
+        }
+    }
+
+    @Nested
+    class Files implements RunFileRepositoryContract {
+        @Override
+        public RunFileRepository files() {
+            return files;
+        }
+
+        @Override
+        public RunResultRepository runs() {
             return runs;
         }
     }
@@ -74,6 +92,11 @@ class JooqPersistenceTest extends DatabaseTest {
         @Override
         public RaceRepository races() {
             return races;
+        }
+
+        @Override
+        public RunFileRepository files() {
+            return files;
         }
     }
 
