@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # ファイル
 
-- [開発の始め方とテスト実行](quickstart.md) - run-buddyのローカル開発環境のセットアップ手順、OpenWikiタスクルーティング、およびバックエンド/フロントエンドの各種テスト階層（単体・MvcTest・Testcontainers・Vitest）の実行方法を解説します。
+- [開発の始め方とテストの回し方](quickstart.md) - run-buddy の開発環境セットアップ、アプリ起動・運用手順、テスト階層（単体・@WebMvcTest・Testcontainers DB・Vitest）の分類と実行方法、および OpenWiki タスク別ルーティングマップを解説します。
 
 # ディレクトリ
 

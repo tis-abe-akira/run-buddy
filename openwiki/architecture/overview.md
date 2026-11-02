@@ -1,11 +1,11 @@
 ---
 type: concept
 title: アーキテクチャ概要
-description: run-buddy の Monorepo 全体構造、Spring Boot 4 と React 19 の層状設計、ドメインモデルの独立性、本番単一オリジン配信 (SpaConfig)、および Tailscale による個人アクセス運用モデルを解説する。
-tags: [architecture, monorepo, backend, spring-boot, frontend, vite, spa-config, tailscale]
+description: run-buddy の Monorepo 全体構造（Spring Boot 4 / Java 25 と Vite + React + TanStack Router）、バックエンドの 10 個のパッケージ構成と依存の向き、SpaConfig による単一オリジン統合配信、および Tailscale による個人アクセス運用モデルを解説する。
+tags: [architecture, monorepo, backend, spring-boot, frontend, vite, spa-config, tailscale, race, day]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T23:04:12.652Z
+    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-cc9ac771b9086a58897b0e1c
     resource: repo://backend/pom.xml
@@ -13,10 +13,20 @@ sources:
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/RunResult.java
   - id: openwiki-source-0585f202c5c2fa2ae22e8332
     resource: repo://backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java
+  - id: openwiki-source-a2825a1ee16b80aa76ea01ed
+    resource: repo://backend/src/main/java/com/example/runbuddy/day/DayController.java
+  - id: openwiki-source-7f5aac3bed1693077b918720
+    resource: repo://backend/src/main/java/com/example/runbuddy/day/DayDetail.java
   - id: openwiki-source-643bcac50f2f84a7718ec3ad
     resource: repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java
   - id: openwiki-source-a1489a590b1a811b9220a280
     resource: repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java
+  - id: openwiki-source-849ad19c547e77df32ad20fe
+    resource: repo://backend/src/main/java/com/example/runbuddy/race/Race.java
+  - id: openwiki-source-c6b1951a88f68bb33383c0fd
+    resource: repo://backend/src/main/java/com/example/runbuddy/race/RaceController.java
+  - id: openwiki-source-eb8e10a47e0c81e8ef5b320d
+    resource: repo://backend/src/main/java/com/example/runbuddy/race/RaceRepository.java
   - id: openwiki-source-009ed5ea81e2ba3fd68f2231
     resource: repo://backend/src/main/java/com/example/runbuddy/web/SpaConfig.java
   - id: openwiki-source-97ae9adf7f31e5151e176dc2
@@ -31,10 +41,10 @@ sources:
     resource: repo://docs/adr/0010-run-at-home-over-tailscale.md
   - id: openwiki-source-1047363cf615000e4c9bb694
     resource: repo://frontend/package.json
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 
-run-buddy は、ランニングの月間計画（Plan）作成、走行実績（Activity）の自動同期、ダッシュボード表示、および AI によるトレーニング相談（Advisor）を提供する個人向け Web アプリケーションです。
+run-buddy は、ランニングの月間計画（Plan）作成、走行実績（Activity）の自動同期、目標レース（Race）管理、日別詳細（Day）およびダッシュボード表示、ならびに AI によるトレーニング相談（Advisor）を提供する個人向け Web アプリケーションです。
 
 1 人の開発者（および AI エージェント）による高い開発速度と保守性を実現するため、リポジトリ構成、バックエンドのパッケージ設計、配信モデル、ネットワーク接続モデルにおいて一貫したアーキテクチャ方針を採用しています。
 
@@ -47,7 +57,7 @@ run-buddy は、ランニングの月間計画（Plan）作成、走行実績（
 ```
 run-buddy/
 ├── backend/    # Spring Boot 4 / Java 25 (Maven プロジェクト: backend/pom.xml)
-├── frontend/   # Vite + React 19 + TanStack Router (Node.js / npm プロジェクト: frontend/package.json)
+├── frontend/   # Vite + React + TanStack Router (Node.js / npm プロジェクト: frontend/package.json)
 └── docs/       # 設計ドキュメント・ADR (Architecture Decision Records)
 ```
 
@@ -70,7 +80,7 @@ flowchart TD
 
     subgraph Backend ["backend/ (Spring Boot 4 / Java 25)"]
         WebLayer["web / Controllers\n(SpaConfig / REST Controllers)"]
-        DomainCore["Domain Core\n(plan, activity, advisor, dashboard, export)"]
+        DomainCore["Domain Core\n(plan, activity, dashboard, day, race, advisor, export, shared)"]
         InfraAdapters["Infrastructure Adapters\n(persistence/jooq, advisor/springai, activity/garmin)"]
 
         WebLayer --> DomainCore
@@ -89,35 +99,42 @@ flowchart TD
 
 ### パッケージ設計と責務
 
+バックエンドは以下の 10 個の機能パッケージに整理されています：
+
 | パッケージ名 | 責務と主要コンポーネント |
 |---|---|
-| `plan` | 月間計画およびセッション（`MonthlyPlan`, `PlannedWorkout`, `WorkoutType`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`) と永続化ポート (`MonthlyPlanRepository.java`)、REST API (`PlanController.java`) |
-| `activity` | 走行実績（`RunResult`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`)、アクティビティ取得ポート (`ActivitySource.java`)、Garmin 連携 (`garmin/GarminActivitySource.java`)、リポジトリポート (`RunResultRepository.java`) |
-| `dashboard` | 計画対実績の達成状況や進捗データ（`DailyProgress`, `PlanAchievement`）を集計・提供するリードモデル |
-| `advisor` | AI 相談機能のドメイン抽象（`TrainingAdvisor.java` [`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`]、`Consultation`, `Advice`）、Tool 定義 (`AdvisorTools.java`)、Spring AI 実装 (`springai/SpringAiTrainingAdvisor.java`)、モック実装 (`fake/FakeTrainingAdvisor.java`) |
-| `export` | データエクスポートドメイン（`DailyLog`, `DailyLogCsv`, `Csv`）および CSV 出力 API (`ExportController.java`) |
+| `plan` | 月間計画およびセッション（`MonthlyPlan`, `PlannedWorkout`, `WorkoutType`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`)、永続化ポート (`MonthlyPlanRepository.java`)、REST API (`PlanController.java`) |
+| `activity` | 走行実績（`RunResult`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`)、取得ポート (`ActivitySource.java`)、Garmin 連携 (`garmin/GarminActivitySource.java`)、リポジトリポート (`RunResultRepository.java`)、REST API (`RunController.java`, `ImportController.java`) |
+| `dashboard` | 計画対実績の達成状況や月間進捗データ（`DailyProgress`, `PlanAchievement`, `DashboardSummary`）を集計・提供するリードモデルおよび REST API (`DashboardController.java`) |
+| `day` | 指定日の計画セッションと走行実績を統合した日別詳細データ（`DayDetail.java`）を提供する REST API (`DayController.java`) |
+| `race` | 目標レース（`Race.java`）のドメインモデル（カウントダウン日数の算定や目標ペース計算 `targetPace`）、永続化ポート (`RaceRepository.java`)、REST API (`RaceController.java`) |
+| `advisor` | AI 相談機能のドメイン抽象（`TrainingAdvisor.java` [`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`]、`Consultation`, `Advice`）、Tool 定義 (`AdvisorTools.java`)、Spring AI 実装 (`springai/SpringAiTrainingAdvisor.java`)、モック実装 (`fake/FakeTrainingAdvisor.java`)、REST API (`AdvisorController.java`) |
+| `export` | データエクスポートドメイン（`DailyLog.java`, `DailyLogCsv.java`, `Csv.java`）および CSV ダウンロード REST API (`ExportController.java`) |
 | `shared` | 共通ドメイン概念（`Distance.java`）およびシステム共通コンテキスト（`CurrentUser.java`, `ClockConfig.java`） |
-| `persistence` | データベース設定 (`DatabaseConfig.java`)、RLS トランザクション管理 (`RlsTransactionManager.java`)、jOOQ アダプター実装 (`jooq/JooqMonthlyPlanRepository.java`, `jooq/JooqRunResultRepository.java`) |
+| `persistence` | データベース接続設定 (`DatabaseConfig.java`)、RLS トランザクション管理 (`RlsTransactionManager.java`)、jOOQ アダプター実装 (`jooq/JooqMonthlyPlanRepository.java`, `jooq/JooqRunResultRepository.java`, `jooq/JooqRaceRepository.java`)、インメモリ実装 (`memory/`) |
 | `web` | SPA 配信用設定 (`SpaConfig.java` [`backend/src/main/java/com/example/runbuddy/web/SpaConfig.java`])、OpenAPI 仕様定義 (`OpenApiConfig.java`)、共通例外ハンドラー (`ApiExceptionHandler.java`) |
 
-### ドメイン非依存ルール (Domain Independence)
+### ドメイン非依存ルール (Domain Independence) と依存の向き
 
-コア・ドメインモデルおよびリポジトリ／外部ソースのインターフェース（ポート）は、フレームワーク（Spring Framework, jOOQ, Spring AI など）に対するコンパイル時依存を一切持ちません。
+コア・ドメインパッケージ（`plan`, `activity`, `race`, `day`, `advisor`, `export`, `shared`）に含まれるドメインモデルおよびリポジトリ／外部ソースのインターフェース（ポート）は、外部フレームワーク（Spring Framework, jOOQ, Spring AI など）に対するコンパイル時依存を一切持ちません。
 
-1. **純粋な Java によるドメイン表現**: `MonthlyPlan`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`）や `RunResult`（`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`）、`Distance` などのドメインクラスは Java 標準ライブラリ (`java.time`, `java.util`) のみで記述され、Spring のアノテーションやデータベースライブラリの型を含みません。
-2. **依存性逆転の原則 (DIP)**: `MonthlyPlanRepository`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`）、`RunResultRepository`、`TrainingAdvisor`（`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`）、`ActivitySource` などのインターフェースはドメインパッケージ側に定義され、具体的な技術スタック（jOOQ や Spring AI）はサブパッケージや `persistence` パッケージのアダプターが実装します。
-3. **高速なテスト**: コア・ドメインのロジックおよびリポジトリインターフェースは、`InMemoryMonthlyPlanRepository` や `FakeTrainingAdvisor` などのインメモリ／フェイク実装を用いることで、データベースや外部 API に依存せず即座に単体テストを実行できます（詳細は [アーキテクチャパターン](./patterns.md) を参照）。
+1. **純粋な Java によるドメイン表現**: `MonthlyPlan`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`）、`RunResult`（`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`）、`Race`（`backend/src/main/java/com/example/runbuddy/race/Race.java`）、`Distance` などのドメインクラスは Java 標準ライブラリ (`java.time`, `java.util`) のみで記述され、Spring アノテーションや SQL/OR マッパーの依存を含みません。
+2. **依存性逆転の原則 (DIP)**: `MonthlyPlanRepository`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`）、`RunResultRepository`、`RaceRepository`（`backend/src/main/java/com/example/runbuddy/race/RaceRepository.java`）、`TrainingAdvisor`（`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`）、`ActivitySource` などのポートはドメインパッケージ側に定義されます。技術依存の実装（jOOQ や Spring AI、Garmin RestClient）は `persistence` や各アダプターパッケージが引き受けます。
+3. **依存の向き**: アダプター層（`persistence/jooq`, `advisor/springai`, `activity/garmin`）や Web/コントローラー層はドメインモデルに依存しますが、ドメインモデルからアダプターや外部フレームワークへの依存は存在しません。
+4. **高速なテスト**: コア・ドメインのロジックおよびリポジトリインターフェースは、`InMemoryMonthlyPlanRepository` や `InMemoryRaceRepository`、`FakeTrainingAdvisor` などのインメモリ／フェイク実装を用いることで、データベースや外部 API に依存せず即座に単体テストを実行できます（詳細は [アーキテクチャパターン](./patterns.md) を参照）。
 
 ```mermaid
 flowchart TD
-    subgraph DomainCore ["Domain Core (Pure Java)"]
-        MonthlyPlan["MonthlyPlan / RunResult / Distance\n(Domain Models)"]
-        PlanRepoPort["MonthlyPlanRepository\n(Domain Interface)"]
-        AdvisorPort["TrainingAdvisor\n(Domain Interface)"]
+    subgraph DomainCore ["Domain Core (Pure Java - plan, activity, race, day, advisor, export, shared)"]
+        DomainModels["MonthlyPlan / RunResult / Race / DayDetail / Distance\n(Pure Java Domain Entities)"]
+        PlanRepoPort["MonthlyPlanRepository\n(Port Interface)"]
+        RaceRepoPort["RaceRepository\n(Port Interface)"]
+        AdvisorPort["TrainingAdvisor\n(Port Interface)"]
     end
 
     subgraph PersistenceJooq ["persistence/jooq"]
         JooqPlanRepo["JooqMonthlyPlanRepository"]
+        JooqRaceRepo["JooqRaceRepository"]
     end
 
     subgraph AdvisorSpringAi ["advisor/springai"]
@@ -131,12 +148,14 @@ flowchart TD
     end
 
     JooqPlanRepo -->|"implements"| PlanRepoPort
+    JooqRaceRepo -->|"implements"| RaceRepoPort
     SpringAiAdvisor -->|"implements"| AdvisorPort
 
     JooqPlanRepo --> jOOQ
+    JooqRaceRepo --> jOOQ
     SpringAiAdvisor --> SpringAI
 
-    DomainCore -.->|"No Imports"| Frameworks
+    DomainCore -.->|"No Import Dependencies"| Frameworks
 ```
 *ドメインコアのフレームワーク非依存性とアダプターによる依存性逆転*
 
@@ -160,7 +179,7 @@ flowchart TD
 
 * **静的ファイルが存在する場合**: `/assets/app.js` など実ファイルが存在する場合はそのまま静的ファイルを返却。
 * **サーバー API または拡張子付きファイルの場合**: `/api/...`, `/v3/...`, `/health` のパスや、拡張子を含む存在しないファイル（例: `/assets/missing.js`）は 404 Not Found を返却。API 呼び出しエラーが誤って `index.html` として返却されることを防ぎます。
-* **SPA クライアントルート**: `/plans/2026-11` や `/dashboard` などの画面パスは、物理ファイルが存在しないため `classpath:/static/index.html` を返却し、ブラウザ側の TanStack Router にルーティングを委ねます。
+* **SPA クライアントルート**: `/plans/2026-11`, `/dashboard`, `/races` などの画面パスは、物理ファイルが存在しないため `classpath:/static/index.html` を返却し、ブラウザ側の TanStack Router にルーティングを委ねます。
 * **コントローラー優先**: `@RestController` で定義されたエンドポイントは `SpaResourceResolver` より常に優先されます。
 
 ---
@@ -215,3 +234,4 @@ flowchart TD
 * [アーキテクチャパターンと設計原則](./patterns.md) - リポジトリパターン、インメモリ／フェイク実装、テスト戦略の詳細
 * [データ永続化と Row Level Security](./persistence-rls.md) - PostgreSQL RLS と jOOQ によるデータ隔離メカニズム
 * [クイックスタートガイド](../quickstart.md) - ローカル開発環境の構築手順および実行方法
+* [機能追加ガイド](../tutorials/add-feature.md) - ドメイン・API・フロントエンドの拡張手順

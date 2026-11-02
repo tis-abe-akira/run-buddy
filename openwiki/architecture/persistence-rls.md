@@ -1,11 +1,11 @@
 ---
 type: "設計ドキュメント"
-title: "永続化: jOOQ と行レベルセキュリティ (RLS)"
-description: "jOOQ 選定理由、RlsTransactionManager による PostgreSQL RLS (own_rows) 適用とアプリ SQL の分離、ArchUnit によるトランザクション境界検証メカニズムを解説します。"
+title: "永続化: jOOQ と行レベルセキュリティ"
+description: "なぜ jOOQ を採用したか、RlsTransactionManager と PostgreSQL RLS によるマルチテナント保護、port での default メソッド禁止と ArchUnit 検査、jOOQ コード生成と Record 変換パターンを解説します。"
 tags: ["persistence", "jooq", "postgresql", "rls", "archunit"]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T23:04:12.652Z
+    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
@@ -19,22 +19,30 @@ sources:
     resource: repo://backend/scripts/generate-jooq.sh
   - id: openwiki-source-9f9f025d2b6eb38c5158e3eb
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqMonthlyPlanRepository.java
+  - id: openwiki-source-04c3c066ec496ed52a5abb72
+    resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java
+  - id: openwiki-source-9688fcb5c7ef413da261a60a
+    resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRaceRepository.java
   - id: openwiki-source-8e08aef97e9473a0c95ea8ad
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java
   - id: openwiki-source-11ab5f46d252f715c246fb4c
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/RlsTransactionManager.java
   - id: openwiki-source-e7ea82776289d4033a75e19b
     resource: repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql
+  - id: openwiki-source-288972b15b5cb1bc42c1df7d
+    resource: repo://backend/src/main/resources/db/migration/V3__create_race.sql
   - id: openwiki-source-e746f97e4be346c2634864cb
     resource: repo://backend/src/test/java/com/example/runbuddy/architecture/TransactionalPortRulesTest.java
+  - id: openwiki-source-56378bd582ba948a13b7eacf
+    resource: repo://backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java
   - id: openwiki-source-0eb5dcc351550e6c2dea5b6d
     resource: repo://docs/adr/0007-persistence-library.md
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 
-# 永続化: jOOQ と行レベルセキュリティ (RLS)
+# 永続化: jOOQ と行レベルセキュリティ
 
 [関連ナビゲーション: アーキテクチャ概要](./overview.md) | [設計パターン](./patterns.md) | [クイックスタート](../quickstart.md) | [機能追加チュートリアル](../tutorials/add-feature.md)
 
@@ -49,7 +57,7 @@ RunBuddy では、データベースに PostgreSQL 17 を使用し、データ�
 ### 選定時の前提条件と重要要件
 
 1. **イミュータブルなドメインモデルの維持**:
-   ドメイン型（`MonthlyPlan` や `RunResult`）は Java 25 の不変 `record` であり、コンストラクタで不変条件を直接検証しています。永続化フレームワークの都合で無引数コンストラクタや可変フィールドを追加（ミュータブル化）することは避ける必要がありました。
+   ドメイン型（`MonthlyPlan` や `RunResult`、`Race`）は Java 25 の不変 `record` であり、コンストラクタで不変条件を直接検証しています。永続化フレームワークの都合で無引数コンストラクタや可変フィールドを追加（ミュータブル化）することは避ける必要がありました。
 2. **AI エージェント主導開発における誤り検出速度**:
    開発コードの多くを AI エージェントが記述・修正するため、SQL やマッピングのタイポ・型の不整合を実行時やテスト実行時ではなく**コンパイル時**に即座に検知できることが不可欠でした。
 3. **PostgreSQL 特有機能のフル活用**:
@@ -127,13 +135,13 @@ sequenceDiagram
     DB-->>A: PostgreSQL Record / MULTISET Result
     A-->>C: Domain Model (MonthlyPlan record)
 ```
-*図 1: リクエスト受信から RlsTransactionManager 設定、PostgreSQL RLS 適用、jOOQ MULTISET 変換までのシーケンス*
+*図 1: リクエスト受信から RlsTransactionManager 設定、PostgreSQL RLS 適用、jOOQ Record / MULTISET 変換までのシーケンス*
 
 ---
 
 ## 3. アプリケーション SQL から `user_id` を排除する構造
 
-データベースのスキーマ定義（[`V1__create_plans_and_runs.sql`](../../backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql)）により、アプリケーションコードで `user_id` を一切意識させない安全な RLS 構造が保証されています。
+データベースのスキーマ定義（[`V1__create_plans_and_runs.sql`](../../backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql), [`V3__create_race.sql`](../../backend/src/main/resources/db/migration/V3__create_race.sql)）により、アプリケーションコードで `user_id` を一切意識させない安全な RLS 構造が保証されています。
 
 ### 1. `app_current_user_id()` 関数と Fail-Fast 設計
 
@@ -158,7 +166,7 @@ $$;
 
 ### 2. DEFAULT 値と RLS ポリシー (`own_rows`)
 
-全テーブル（`monthly_plan`, `planned_workout`, `run_result`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
+全テーブル（`monthly_plan`, `planned_workout`, `run_result`, `race`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
 
 ```sql
 create table monthly_plan (
@@ -183,7 +191,7 @@ create policy own_rows on monthly_plan
 
 RLS の回避を防ぐため、権限を明確に分離しています（詳細は [データベースガイド](../../docs/guides/database.md) を参照）。
 
-- **`runbuddy` ロール（所有者 / マイグレーション用）**: スキーマ作成・変更を実行するロール。PostgreSQL 仕様上、所有者やスーパーユーザーは RLS をバイパス可能なため、Flyway マイグレーション時のみ利用します。
+- **`runbuddy` ロール（所有者 / マイグレーション用）**: スキーマ作成・変更を実行するロール。Flyway マイグレーション実行時のみ利用します。
 - **`runbuddy_app` ロール（アプリケーション接続用）**: アプリケーション本番環境および Testcontainers 統合テストが使用する専用ロール。テーブル所有者ではないため、RLS ポリシーが必ず強制適用されます。
 
 ---
@@ -234,7 +242,7 @@ jOOQ は PostgreSQL のスキーマ定義から Java クラス群を生成しま
 
 ### コード生成スクリプト (`backend/scripts/generate-jooq.sh`)
 
-Flyway マイグレーション（`V1__create_plans_and_runs.sql`, [`V2__add_run_metrics.sql`](../../backend/src/main/resources/db/migration/V2__add_run_metrics.sql)）を追加・変更した際は、次のスクリプトを実行して jOOQ 型定義クラスを再生成します（[`generate-jooq.sh`](../../backend/scripts/generate-jooq.sh)）。
+Flyway マイグレーション（`V1__create_plans_and_runs.sql`, [`V2__add_run_metrics.sql`](../../backend/src/main/resources/db/migration/V2__add_run_metrics.sql), [`V3__create_race.sql`](../../backend/src/main/resources/db/migration/V3__create_race.sql)）を追加・変更した際は、次のスクリプトを実行して jOOQ 型定義クラスを再生成します（[`generate-jooq.sh`](../../backend/scripts/generate-jooq.sh)）。
 
 ```bash
 #!/usr/bin/env bash
@@ -269,7 +277,7 @@ echo "jOOQ classes regenerated."
 
 ## 6. jOOQ Record とドメイン Record のマッピング実例
 
-以下に、jOOQ アダプタにおける実コードのマッピング実装例を示します。
+jOOQ アダプタでは、生成された jOOQ Record や DSL 結果を不変ドメイン Record にマッピングします。`runbuddy.persistence=jooq` が指定された場合、[`JooqPersistenceConfig`](../../backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java) が Spring Bean として各リポジトリアダプタを登録します。
 
 ### 1. `JooqMonthlyPlanRepository`: `MULTISET` による単一クエリ復元
 
@@ -326,9 +334,30 @@ insert.onConflict(RUN_RESULT.USER_ID, RUN_RESULT.ACTIVITY_ID)
 
 - **`excluded(...)`**: PostgreSQL の `EXCLUDED` テーブル表現であり、同一アクティビティ ID の重複取り込み時に既存行を最新データで安全に更新します。
 
+### 3. `JooqRaceRepository`: `RaceRecord` と `toRace` 変換パターン
+
+[`JooqRaceRepository`](../../backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRaceRepository.java) では、生成された `RaceRecord` を静的ヘルパーメソッド `toRace` 経由で `Race` ドメイン record に変換し、保存には `onConflict(RACE.USER_ID, RACE.ID)` による Upsert を行います。
+
+```java
+@Override
+@Transactional(readOnly = true)
+public Optional<Race> findById(UUID id) {
+    return dsl.selectFrom(RACE).where(RACE.ID.eq(id)).fetchOptional(JooqRaceRepository::toRace);
+}
+
+private static Race toRace(RaceRecord row) {
+    return new Race(
+            row.getId(),
+            row.getName(),
+            row.getRaceDate(),
+            Distance.ofMeters(row.getDistanceMeters()),
+            row.getTargetSeconds() == null ? null : Duration.ofSeconds(row.getTargetSeconds()));
+}
+```
+
 ---
 
 ## 7. テストと安全性の維持
 
-- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`）を満たします。
-- **RLS 安全性テスト**: `RowLevelSecurityContract` および `DatabaseSafetyTest` により、別ユーザーのデータ非開示とトランザクション外アクセスの即時失敗を自動検証しています。
+- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RaceRepositoryContract`）を満たします。
+- **マルチテナント隔離テスト (`RowLevelSecurityContract`)**: [`RowLevelSecurityContract`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java) により、ユーザー切り替え時のデータ非開示（`anotherUserSeesNothing`）、ID 衝突の回避（`sameMonthAndActivityIdDoNotCollideAcrossUsers`）、他ユーザーデータの更新・削除防止（`anotherUserCanNeitherOverwriteNorDeleteARace`）およびトランザクション外アクセスの即時失敗を自動検証しています。

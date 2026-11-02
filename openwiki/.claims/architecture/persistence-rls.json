@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8340ddc452891728e6c015de064f38f46e51054cb3b7e8c8388a646b6bb2ec71",
+  "pageVersion": "sha256:397adcff75420abc9394609fbacaffc049bdc0c700f555cc1575ab8e4fbd15bc",
   "claims": [
     {
       "id": "claim_c3d4546cff5841bcbbb41628a4786eeb",
@@ -125,10 +125,44 @@
           "version": "repo-lines-v1:sha256:d321d22323270dd18ff3900a37a479aa7c36ad8e2e14f84b0a4f71f57c30cd81:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmN2ExZWVlYzEzNzE3MzI2Y2MyN2FiYzZjNTg2MzgwMTM4ZTJhZjM0YWU0YWVkMGU3MDlhMzIyMTNlNDc1MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3ZWY3M2ZkNjkyMGViOTdlNDNiZDhiMjdlMGYyOTJlYmQ4MmNhYTMzOGM5YTY3YjRjMDMxM2MxMTYyNTMwODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmMjM0MmY0MzliNjc2MTM4OGM1ZmNlNDgzZWIwYmY1MjJmODcyMjA5OWU5NTBjZjY4NzhhODczN2VlZWZmYmEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ee7fece4157243a99db6f009a28c0f99",
+      "statement": "JooqRaceRepository converts generated RaceRecord objects to immutable Race domain records via toRace and executes upserts using jOOQ onConflict on user_id and id.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRaceRepository.java#L27-L68",
+          "version": "repo-lines-v1:sha256:8a260bff530276618dd1d220ce96991010f5aa318f6ea2edcb683f68448d8606:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOGIxNDdmNzU5NzUyYTg2MzM4YmFiYTQ2OGRkMTQxMmQyMmY0YTczZGRkMTg5MTNhZWE3NTcxNDJlNGEwYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2OTQ2ZTEwMWU1ZTc4ZDkwYTUxMGM2OWYyNjZlZjc2NTQwZDMwOWIxYjgyMjY5NWI1MzE3MmVkMmNhYTAyNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V3__create_race.sql#L3-L19",
+          "version": "repo-lines-v1:sha256:7b3db2f214b29ee68dea44fec44f7617f9473131a8910173543be2c3daf94046:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzYTNmYzZmZjE3NGMwOWMyYWQwOTBiMDM2Y2JhNThiYjA5MjY1NjI5ZTBlNGNmMjExODg1YmE1ZGY1MDg5MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZTM0N2UxNGEzOWZlZWQ2NDk0N2RhNGZmYjY4MjQ4NmNiOTcyMDUxOWU0NjZjYzA0N2QwYTAzOTE4ZDMzZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyYmI4MTQ3NWU2YzhlYzYyMzk0YzcyMTk1MzEzZWRlODUyNjg4MGQzODUzYTYwN2FmNjU0NTI4MWEyMDFhNTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiN2Q4ZTA5ZDA2MDg1ZGE1MmJlMzczOTE2ZjhjNjQwOWExNmRmMDQ5MWExNWE0ZTNiZDA2YzQyMDM5NDJmMGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1435ef6dbdef45728b2f6f19d5917fce",
+      "statement": "RowLevelSecurityContract defines integration tests across MonthlyPlanRepository, RunResultRepository, and RaceRepository to verify multi-tenant isolation, preventing cross-user data access, modifications, or deletions.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java#L22-L95",
+          "version": "repo-lines-v1:sha256:d66e1bd75d4e4e3424fb5c9d55ea975bd147bdbab7defb67d59c12a27ab08b12:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmODYxNzdiZDdkMTk3NTU4OTI5OTc3YjQ5NjVmZThhZGM3YzBmZTM3ZDBlM2FhZjZkZTNlNmVhN2JiNmM3Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZGI5YzcyZTY2ZWYzMjQ3YWQwNTk1Y2IzZDg0MWNlMmEzZTIyZmRlOTc1NmE3YmEwZThiZjM4YTFkODJlZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyOWRjNzZmNjExMGIzYzU2MDNhNmMzYzNkMjVhNmEwMzYwNDdkOGNlMjgwOGM3ZTM2NTc2NGViMDMxNDBmNWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_172f24e0525f47e7bd66373c35a90ac4",
+      "statement": "JooqPersistenceConfig conditionally instantiates JooqMonthlyPlanRepository, JooqRunResultRepository, and JooqRaceRepository Spring beans when runbuddy.persistence is set to jooq.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java#L8-L26",
+          "version": "repo-lines-v1:sha256:fd95ba2287bfc7b4a061d99690d64866d82b7034cb616efd37122e3562137649:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YjkyNWM5NDJmMDJkMzI5ZTljYWQwOTQyYzNiNzg3ZDkwNDA2YjgzZDNlOWU2MWU2ZGIyNTExNWNhNzRmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZGM2YzUxZWRjNDFiZDY4OTMxNTQyYTVjNTA0YWIwMGRiMmRmMzUzYTAyZDM5ZmEzZjBjMGZlMmQzNWFkMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T23:04:12.652Z"
+    "at": "2026-11-02T05:35:33.013Z"
   }
 }

@@ -1,11 +1,11 @@
 ---
 type: concept
-title: アーキテクチャ上の工夫と設計パターン
-description: ポート＆アダプタ、契約テスト、不変ドメインモデル、Spring AI 統合、Garmin 連携、OpenAPI 型連携、フロントエンド構造の解説。
+title: その他のアーキテクチャ上の工夫
+description: Ports & Adapters パターン、契約テスト、不変ドメインモデル、Spring AI 統合（AdvisorTools/AdvisorDirectory）、Garmin 連携、OpenAPI 型連携、フロントエンドコンポーネント設計、設定と秘密情報管理を解説する。
 tags: [architecture, patterns, ports-and-adapters, spring-ai, garmin, openapi, domain-model, testing, configuration]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-31T23:04:12.652Z
+    at: 2026-11-02T05:35:33.013Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example
@@ -55,10 +55,10 @@ sources:
     resource: repo://frontend/package.json
   - id: openwiki-source-b240a0614dbaf1a8d51dcd80
     resource: repo://frontend/src/routes/plans.%24month.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 
-# アーキテクチャ上の工夫と設計パターン
+# その他のアーキテクチャ上の工夫
 
 本ページでは、`run-buddy` が採用している主要な設計パターン、外部サービス連携メカニズム、テスト戦略、およびフロントエンド/バックエンド間の協調構造を解説します。システム全体の構成については [アーキテクチャ概要](overview.md)、データベースの権限設計については [永続化と RLS](persistence-rls.md) を併せて参照してください。
 
@@ -70,7 +70,7 @@ generated: { by: "openwiki/0.7.2", at: "2026-10-31T23:04:12.652Z" }
 Garmin API や LLM、永続化ストレージなどの外部サービスにドメインロジックが直接依存すると、外部 API の仕様変更や認証未準備（API キー未発行など）、ネットワーク遅延・障害によって開発やテストがストップする課題があります。
 
 ### 工夫
-ドメイン層に外部サービスとの結合境界となるインターフェース（**Port**）を配置し、具体の接続実装（**Adapter**）を外部パッケージに分離しました。起動時の設定プロパティ（`runbuddy.activity-source`、`runbuddy.persistence` など）や Spring プロファイルによって、インメモリ/ダミー実装と本物のアダプタを柔軟に切り替え可能です。
+ドメイン層に外部サービスとの結合境界となるインターフェース（**Port**）を配置し、具体の接続実装（**Adapter**）を外部パッケージに分離しました（[ADR-0004: Ports & Adapters](../../docs/adr/0004-ports-and-adapters-for-external-services.md)）。起動時の設定プロパティ（`runbuddy.activity-source`、`runbuddy.persistence` など）や Spring プロファイルによって、インメモリ/ダミー実装と本物のアダプタを柔軟に切り替え可能です。
 
 ```mermaid
 sequenceDiagram
@@ -88,12 +88,13 @@ sequenceDiagram
         Garmin-->>Domain: List of RunResult (From Garmin API)
     end
 ```
+図 1: 設定プロパティによる ActivitySource 実装の切り替えフロー
 
 ### コードの場所
 - **Port 定義**:
   - `backend/src/main/java/com/example/runbuddy/activity/ActivitySource.java`
   - `backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`
-  - `backend/src/main/java/com/example/runbuddy/plan/RunResultRepository.java`
+  - `backend/src/main/java/com/example/runbuddy/race/RaceRepository.java`
   - `backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`
 - **Adapter 実装**:
   - `backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivitySource.java`
@@ -115,14 +116,15 @@ sequenceDiagram
 ## 2. 契約テスト (Contract Testing)
 
 ### 問題
-インメモリリポジトリと jOOQ 永続化リポジトリなど、複数存在するアダプタ実装間でテストロジックを個別に記述すると、検証内容に差異が生じたり、行レベルセキュリティ (RLS) やトランザクション境界におけるデータ漏洩の検証が漏れたりするリスクがあります。
+インメモリリポジトリと jOOQ 永続化リポジトリなど、複数存在するアダプタ実装間でテストロジックを個別に記述すると、検証内容に差異が生じたり、行レベルセキュリティ (RLS) やトランザクション境界におけるデータ隔離の検証が漏れたりするリスクがあります。
 
 ### 工夫
-テスト用インターフェース（例: `MonthlyPlanRepositoryContract`、`RowLevelSecurityContract`）に JUnit 5 の `default` テストメソッドとして共通の振る舞い検証を定義し、各アダプタのテストクラスがこれを実装する構成にしました。また `DatabaseSafetyTest` を配置し、トランザクション外での DB アクセスが即座に例外となることを検証しています。
+テスト用インターフェース（例: `MonthlyPlanRepositoryContract`、`RaceRepositoryContract`、`RowLevelSecurityContract`）に JUnit 5 の `default` テストメソッドとして共通の振る舞い検証を 1 回だけ定義し、各アダプタのテストクラス（インメモリ版および jOOQ 版）がこれを実装する構成にしました。また `DatabaseSafetyTest` を配置し、トランザクション外での DB アクセスが即座に例外となることを検証しています。
 
 ### コードの場所
 - **契約インターフェース**:
   - `backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanRepositoryContract.java`
+  - `backend/src/test/java/com/example/runbuddy/race/RaceRepositoryContract.java`
   - `backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java`
 - **安全検証テスト**:
   - `backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java`
@@ -131,6 +133,8 @@ sequenceDiagram
 ### 守っているテスト
 - `backend/src/test/java/com/example/runbuddy/plan/InMemoryMonthlyPlanRepositoryTest.java` (契約を実装)
 - `backend/src/test/java/com/example/runbuddy/persistence/jooq/JooqMonthlyPlanRepositoryTest.java` (契約を実装)
+- `backend/src/test/java/com/example/runbuddy/race/InMemoryRaceRepositoryTest.java` (契約を実装)
+- `backend/src/test/java/com/example/runbuddy/persistence/jooq/JooqPersistenceTest.java` (契約を実装)
 - `backend/src/test/java/com/example/runbuddy/persistence/DatabaseSafetyTest.java`
 
 ---
@@ -148,18 +152,20 @@ Java `record` や `final` クラスのコンパクトコンストラクタを活
   - `backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`
   - `backend/src/main/java/com/example/runbuddy/shared/Distance.java`
   - `backend/src/main/java/com/example/runbuddy/export/DailyLog.java`
+  - `backend/src/main/java/com/example/runbuddy/race/Race.java`
 
 ### 守っているテスト
 - `backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanTest.java`
 - `backend/src/test/java/com/example/runbuddy/shared/DistanceTest.java`
 - `backend/src/test/java/com/example/runbuddy/export/DailyLogTest.java`
+- `backend/src/test/java/com/example/runbuddy/race/RaceTest.java`
 
 ---
 
 ## 4. Spring AI 統合と AI 相談メカニズム
 
 ### 問題
-LLM とのやり取りでは、長時間に及ぶ API 呼び出し中に DB トランザクションを維持すると接続プールが枯渇する問題や、非信頼なテキスト出力がドメインモデルの不変条件を破るリスクがあります。また、利用者がプロバイダ（Gemini 等）やモデルを動的に選択できる仕組みが必要です。
+LLM とのやり取りでは、長時間に及ぶ API 呼び出し中に DB トランザクションを維持すると接続プールが枯渇する問題や、非信頼なテキスト出力がドメインモデルの不変条件を破るリスクがあります。また、利用者がプロバイダ（Gemini 等）やモデルを動的に選択できる仕組みが必要です（[ADR-0008: AI 統合](../../docs/adr/0008-ai-integration.md)）。
 
 ### 工夫
 1. **Spring AI 閉塞**: `ChatClient` やプロバイダ特有の型は `advisor/springai` パッケージ内に隠蔽し、ドメイン層の `TrainingAdvisor` ポートには Spring AI の型を出さない。
@@ -190,6 +196,7 @@ sequenceDiagram
     Adv-->>Ctrl: Advice (reply text & proposedPlan)
     Ctrl-->>UI: Advice Response
 ```
+図 2: LLM 呼び出し（非トランザクション）と Tool 実行（短トランザクション + RLS）の協調フロー
 
 ### コードの場所
 - **AI 統合コンポーネント**:
@@ -210,7 +217,7 @@ sequenceDiagram
 ## 5. Garmin API 連携とエラー変換フロー
 
 ### 問題
-Garmin Connect Personal API の特殊な認証仕様（テキスト応答の JWT トークン交換、24 時間有効期間）、現地時刻扱い、ページング、およびレート制限や認証エラーをそのまま UI に露出すると、密結合とバグの原因になります。
+Garmin Connect Personal API の特殊な認証仕様（テキスト応答の JWT トークン交換、24 時間有効期間）、現地時刻扱い、ページング、およびレート制限や認証エラーをそのまま UI に露出すると、密結合とバグの原因になります（[ADR-0009: Garmin 連携](../../docs/adr/0009-garmin-personal-api.md)）。
 
 ### 工夫
 Garmin の知識を `activity/garmin` パッケージ（`GarminActivitySource`）内に隠蔽。トークン有効期限の 23 時間キャッシュや `401` 再試行、現地時刻ベースでのアクティビティ取得・変換を行います。エラー発生時はドメイン例外 `ActivitySourceUnavailableException`（`Reason`: `CREDENTIALS_REJECTED`, `RATE_LIMITED`, `UNAVAILABLE`）へ変換し、`RunController` の `@ExceptionHandler` で RFC 9457 `ProblemDetail`（`reason` プロパティ付き）に整形してフロントエンドへ返却します。
@@ -232,6 +239,7 @@ sequenceDiagram
     Svc-->>Ctrl: Exception Propagate
     Ctrl-->>UI: ProblemDetail (HTTP 429/502, property: reason)
 ```
+図 3: Garmin Connect API エラー発生時の例外変換と ProblemDetail 返却フロー
 
 ### コードの場所
 - **Garmin アダプタ & 例外ハンドラ**:
@@ -268,16 +276,18 @@ sequenceDiagram
 ## 7. フロントエンドコンポーネント設計とデザインシステム
 
 ### 問題
-画面間でのデータ取得の重複、月切替時の編集状態・下書きの混入、および UI 記述における色や余白の不整合（デザインの散逸）が発生する問題があります。
+画面間でのデータ取得の重複、月切替時の編集状態・下書きの混入、および UI 記述における色や余白の不整合（デザインの散逸）が発生する問題があります（[ADR-0006: デザインシステム](../../docs/adr/0006-design-system.md)）。
 
 ### 工夫
-1. **ルーティングとデータ取得の分離**: TanStack Router のルート定義（`plans.$month.tsx`）で `loader` と TanStack Query (`useQuery`) を組み合わせ、`remountDeps: ({ params }) => params.month` により月切替時にコンポーネントを再構築し、下書き状態の混入を防止。
-2. **Props 専用コンポーネント**: `PlanEditor` などの UI コンポーネントは取得ロジックや状態管理を抱え込まず、Pure な props 受取専用として設計し、単体テストを容易化。
-3. **デザイントークン**: `DESIGN.md` で定義されたデザインガイドライン（温かいクリーム地、セリフ体、コーラル色など）を `src/styles/tokens.css` の CSS 変数に展開し、コンポーネント内でのカラーコード直接記述を禁止。
+1. **ルーティングとデータ取得の分離**: TanStack Router のルート定義（`plans.$month.tsx` や `races.tsx`）で `loader` と TanStack Query (`useQuery`) を組み合わせ、`remountDeps: ({ params }) => params.month` により月切替時にコンポーネントを再構築し、下書き状態の混入を防止。
+2. **Props 専用コンポーネント**: `NextRaceCard.tsx` や `PlanEditor.tsx` などの UI コンポーネントは取得ロジックや状態管理を抱え込まず、Pure な props 受取専用として設計し、単体テストを容易化。
+3. **デザイントークン**: `DESIGN.md` で定義されたデザインガイドライン（温かいクリーム地、セリフ体、コーラル色など）を `src/styles/tokens.css` の CSS 変数やユーティリティクラスに展開し、コンポーネント内でのカラーコード直接記述を禁止。
 
 ### コードの場所
 - **フロントエンドコンポーネント & デザイン体系**:
   - `frontend/src/routes/plans.$month.tsx`
+  - `frontend/src/routes/races.tsx`
+  - `frontend/src/components/NextRaceCard.tsx`
   - `frontend/src/components/PlanEditor.tsx`
   - `frontend/src/styles/tokens.css`
   - `frontend/DESIGN.md`
@@ -285,6 +295,7 @@ sequenceDiagram
 
 ### 守っているテスト
 - `frontend/src/components/PlanEditor.test.tsx`
+- `frontend/src/components/NextRaceCard.test.tsx`
 
 ---
 
