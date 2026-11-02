@@ -13,6 +13,7 @@ import com.example.runbuddy.advisor.Consultation;
 import com.example.runbuddy.plan.InMemoryMonthlyPlanRepository;
 import com.example.runbuddy.plan.MonthlyPlan;
 import com.example.runbuddy.plan.WorkoutType;
+import com.example.runbuddy.race.InMemoryRaceRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.YearMonth;
@@ -77,7 +78,9 @@ class SpringAiTrainingAdvisorTest {
         assertThat(prompt.getInstructions().getFirst().getText())
                 .contains("Today is 2026-10-30")
                 .contains("planning 2026-11")
-                .contains("Sun: 1, 8, 15, 22, 29");
+                .contains("Sun: 1, 8, 15, 22, 29")
+                .contains("upcoming races")
+                .contains("taper");
     }
 
     @Test
@@ -170,8 +173,9 @@ class SpringAiTrainingAdvisorTest {
     }
 
     private static SpringAiTrainingAdvisor advisor(ScriptedChatModel model) {
-        AdvisorTools tools = new AdvisorTools(new InMemoryMonthlyPlanRepository(), new InMemoryRunResultRepository());
         Clock clock = Clock.fixed(Instant.parse("2026-10-30T09:00:00Z"), ZoneOffset.UTC);
+        AdvisorTools tools = new AdvisorTools(
+                new InMemoryMonthlyPlanRepository(), new InMemoryRunResultRepository(), new InMemoryRaceRepository(), clock);
         return new SpringAiTrainingAdvisor(
                 new AdvisorInfo("test", "Test", List.of("flash", "pro")),
                 model,

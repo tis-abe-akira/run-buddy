@@ -8,6 +8,8 @@ export type Dashboard = Schemas['DashboardResponse']
 export type DashboardDay = Schemas['DayBody']
 export type Run = Schemas['RunResponse']
 export type DayDetail = Schemas['DayResponse']
+export type Race = Schemas['RaceResponse']
+export type RaceInput = Schemas['RaceBody']
 export type Plan = Schemas['PlanBody']
 export type Workout = Schemas['WorkoutBody']
 export type WorkoutType = Workout['type']
@@ -45,10 +47,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T
 }
 
+/** For endpoints that answer 204 No Content. */
+async function requestNoContent(path: string, init?: RequestInit): Promise<void> {
+  const response = await fetch(path, { ...init, headers: { Accept: 'application/json' } })
+  if (!response.ok) {
+    const problem = (await response.json().catch(() => undefined)) as { detail?: string; reason?: string } | undefined
+    throw new ApiError(response.status, problem?.detail, problem?.reason)
+  }
+}
+
 export const api = {
   dashboard: (month: Month) => request<Dashboard>(`/api/dashboard/${month}`),
   runs: (month: Month) => request<Run[]>(`/api/runs/${month}`),
   day: (date: IsoDate) => request<DayDetail>(`/api/days/${date}`),
+  races: () => request<Race[]>('/api/races'),
+  createRace: (race: RaceInput) => request<Race>('/api/races', { method: 'POST', body: JSON.stringify(race) }),
+  updateRace: (id: string, race: RaceInput) =>
+    request<Race>(`/api/races/${id}`, { method: 'PUT', body: JSON.stringify(race) }),
+  deleteRace: (id: string) => requestNoContent(`/api/races/${id}`, { method: 'DELETE' }),
   activitySource: () => request<ActivitySourceInfo>('/api/activity-source'),
   importRuns: (month: Month) => request<ImportResult>(`/api/runs/${month}/import`, { method: 'POST' }),
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),

@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/races/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["update"];
+        post?: never;
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/plans/{month}": {
         parameters: {
             query?: never;
@@ -30,6 +46,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["importRuns"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list"];
+        put?: never;
+        post: operations["create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -75,7 +107,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list"];
+        get: operations["list_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -168,6 +200,39 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        RaceBody: {
+            name: string;
+            /** Format: date */
+            date: string;
+            /** Format: double */
+            distanceKm: number;
+            /**
+             * Format: int64
+             * @description target finishing time in seconds; null to just finish
+             */
+            targetSeconds: number | null;
+        };
+        RaceResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: date */
+            date: string;
+            /** Format: double */
+            distanceKm: number;
+            /** Format: int64 */
+            targetSeconds: number | null;
+            /**
+             * Format: int64
+             * @description pace that meets the target time, rounded down
+             */
+            targetPaceSecondsPerKm: number | null;
+            /**
+             * Format: int64
+             * @description days from today; 0 on race day, negative once it is over
+             */
+            daysUntil: number;
+        };
         PlanBody: {
             /** Format: double */
             targetKm: number;
@@ -315,6 +380,52 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RaceBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RaceResponse"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get: {
         parameters: {
             query?: never;
@@ -385,6 +496,50 @@ export interface operations {
             };
         };
     };
+    list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RaceResponse"][];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RaceBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RaceResponse"];
+                };
+            };
+        };
+    };
     consult: {
         parameters: {
             query?: never;
@@ -429,7 +584,7 @@ export interface operations {
             };
         };
     };
-    list: {
+    list_1: {
         parameters: {
             query?: never;
             header?: never;

@@ -6,6 +6,7 @@ package com.example.runbuddy.persistence.jooq.generated;
 
 import com.example.runbuddy.persistence.jooq.generated.tables.MonthlyPlan;
 import com.example.runbuddy.persistence.jooq.generated.tables.PlannedWorkout;
+import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
 
 
@@ -24,6 +25,11 @@ public class Tables {
      * The table <code>public.planned_workout</code>.
      */
     public static final PlannedWorkout PLANNED_WORKOUT = PlannedWorkout.PLANNED_WORKOUT;
+
+    /**
+     * The table <code>public.race</code>.
+     */
+    public static final Race RACE = Race.RACE;
 
     /**
      * The table <code>public.run_result</code>.

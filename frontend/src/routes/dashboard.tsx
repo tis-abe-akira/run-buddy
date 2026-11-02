@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { activitySourceQuery, dashboardQuery, runsQuery, useImportRuns } from '../api/queries'
+import { activitySourceQuery, dashboardQuery, racesQuery, runsQuery, useImportRuns } from '../api/queries'
 import { DashboardView } from '../components/DashboardView'
 import { ErrorBand } from '../components/ErrorBand'
 import { elapsedDays } from '../lib/elapsed'
 import { describeImportError } from '../lib/importError'
 import { currentMonth, isMonth, type Month } from '../lib/month'
+import { nextRace } from '../lib/race'
 
 type DashboardSearch = { month?: Month }
 
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/dashboard')({
       context.queryClient.ensureQueryData(dashboardQuery(deps.month)),
       context.queryClient.ensureQueryData(runsQuery(deps.month)),
       context.queryClient.ensureQueryData(activitySourceQuery()),
+      context.queryClient.ensureQueryData(racesQuery()),
     ]),
   component: DashboardPage,
   errorComponent: ({ error }) => <ErrorBand error={error} />,
@@ -31,6 +33,7 @@ function DashboardPage() {
   const dashboard = useQuery(dashboardQuery(month))
   const runs = useQuery(runsQuery(month))
   const source = useQuery(activitySourceQuery())
+  const races = useQuery(racesQuery())
   const importRuns = useImportRuns(month)
 
   if (!dashboard.data || !runs.data) {
@@ -50,6 +53,7 @@ function DashboardPage() {
       importing={importRuns.isPending}
       lastImport={importRuns.data}
       importError={importRuns.error ? describeImportError(importRuns.error) : undefined}
+      nextRace={nextRace(races.data ?? [])}
     />
   )
 }

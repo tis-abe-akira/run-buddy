@@ -5,6 +5,9 @@ import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.dashboard.PlanAchievement;
 import com.example.runbuddy.plan.MonthlyPlan;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
+import com.example.runbuddy.race.Race;
+import com.example.runbuddy.race.RaceRepository;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -32,10 +35,14 @@ public class AdvisorTools {
 
     private final MonthlyPlanRepository plans;
     private final RunResultRepository runs;
+    private final RaceRepository races;
+    private final Clock clock;
 
-    public AdvisorTools(MonthlyPlanRepository plans, RunResultRepository runs) {
+    public AdvisorTools(MonthlyPlanRepository plans, RunResultRepository runs, RaceRepository races, Clock clock) {
         this.plans = plans;
         this.runs = runs;
+        this.races = races;
+        this.clock = clock;
     }
 
     @Tool(description = "Summary of one month: target and actual distance, achievement rate, run counts and average pace.")
@@ -76,6 +83,36 @@ public class AdvisorTools {
                         .map(w -> new PlannedWorkoutView(
                                 w.date(), weekday(w.date()), w.type().name(), w.distance().toKilometers(), w.note()))
                         .toList());
+    }
+
+    @Tool(description = "The runner's races from today on, earliest first: date, distance, goal (finish, or finish "
+            + "within a target time and the pace that needs), and the days and whole weeks left. Empty when none is registered.")
+    public List<RaceView> upcomingRaces() {
+        log.info("Advisor tool: upcomingRaces()");
+        LocalDate today = LocalDate.now(clock);
+        return races.findAll().stream()
+                .filter(race -> race.isUpcoming(today))
+                .map(race -> {
+                    long daysLeft = race.daysFrom(today);
+                    return new RaceView(
+                            race.name(),
+                            race.date(),
+                            weekday(race.date()),
+                            race.distance().toKilometers(),
+                            goal(race),
+                            daysLeft,
+                            daysLeft / 7);
+                })
+                .toList();
+    }
+
+    private static String goal(Race race) {
+        if (race.targetTime() == null) {
+            return "finish";
+        }
+        long seconds = race.targetTime().toSeconds();
+        String time = "%d:%02d:%02d".formatted(seconds / 3600, seconds % 3600 / 60, seconds % 60);
+        return "finish within %s (pace %s or faster)".formatted(time, pace(race.targetPace().orElseThrow()));
     }
 
     private static YearMonth parse(String month) {
@@ -122,6 +159,10 @@ public class AdvisorTools {
     }
 
     public record PlanView(String month, double targetKm, List<PlannedWorkoutView> workouts) {
+    }
+
+    public record RaceView(
+            String name, LocalDate date, String weekday, double distanceKm, String goal, long daysLeft, long weeksLeft) {
     }
 
     public record PlannedWorkoutView(LocalDate date, String weekday, String type, double distanceKm, String note) {

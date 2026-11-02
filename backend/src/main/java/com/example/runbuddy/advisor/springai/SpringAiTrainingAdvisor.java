@@ -49,7 +49,14 @@ public class SpringAiTrainingAdvisor implements TrainingAdvisor {
             %s
 
             Before giving advice, look at their data with the tools: the summary, runs and plan of
-            recent months, and the plan they already have for %s.
+            recent months, the plan they already have for %s, and their upcoming races.
+
+            When a race is coming, plan backwards from it, using the weeks left that the tool reports:
+            build the long runs up while there is time, keep the hardest weeks before the last three,
+            and taper in the last two to three weeks (less distance, some short race-pace running, rest
+            before race day). If the race has a target time, use its pace as the reference for race-pace
+            and tempo runs, and say honestly whether recent runs suggest the target is realistic. Put the
+            race itself on its date with type RACE when it falls in the month being planned.
 
             Answer in the language the runner writes in. Keep the reply short and concrete.
             Write the reply as plain text: no Markdown (no **, *, # or tables); use line breaks and

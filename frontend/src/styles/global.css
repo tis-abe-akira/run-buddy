@@ -437,3 +437,12 @@ a.text-link,
 }
 .day-link { color: inherit; text-decoration: underline; text-decoration-color: var(--color-on-dark-soft); text-underline-offset: 3px; }
 .day-link:hover { text-decoration-color: currentColor; }
+
+/* ---------- races ---------- */
+
+.race-form { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.race-item { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-lg); }
+.race-item.past { opacity: 0.75; }
+.race-countdown { font-size: 18px; font-weight: 500; color: var(--color-ink); }
+.next-race { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.race-in-month { padding: var(--spacing-xs) var(--spacing-sm); border-left: 3px solid var(--color-ink); background: var(--color-surface-card); border-radius: 4px; }

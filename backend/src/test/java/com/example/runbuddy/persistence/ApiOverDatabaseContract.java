@@ -1,5 +1,6 @@
 package com.example.runbuddy.persistence;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -44,5 +45,23 @@ public interface ApiOverDatabaseContract {
         mockMvc().perform(get("/api/dashboard/2026-09"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.runCount").value(org.hamcrest.Matchers.greaterThan(0)));
+    }
+
+    @Test
+    default void aRaceIsAddedListedAndDeleted() throws Exception {
+        String body = mockMvc().perform(post("/api/races").contentType(MediaType.APPLICATION_JSON).content("""
+                        {"name":"Autumn marathon","date":"2026-11-22","distanceKm":42.195,"targetSeconds":18000}
+                        """))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String id = com.jayway.jsonpath.JsonPath.read(body, "$.id");
+
+        mockMvc().perform(get("/api/races"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].targetPaceSecondsPerKm").value(426));
+
+        mockMvc().perform(delete("/api/races/{id}", id)).andExpect(status().isNoContent());
+        mockMvc().perform(get("/api/races")).andExpect(jsonPath("$.length()").value(0));
     }
 }

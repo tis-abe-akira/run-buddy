@@ -27,7 +27,7 @@
 ### 1. アーキテクチャ概要
 
 - monorepo（`backend/` = Spring Boot 4 / Java 25、`frontend/` = Vite + React + TanStack Router）の全体像。
-- backend のパッケージ構成（`plan`, `activity`, `dashboard`, `advisor`, `export`, `persistence`, `shared`, `web`）と依存の向き。
+- backend のパッケージ構成（`plan`, `activity`, `dashboard`, `day`, `race`, `advisor`, `export`, `persistence`, `shared`, `web`）と依存の向き。
   ドメインのパッケージが Spring・jOOQ・Spring AI に依存していないことを図で示す。
 - 本番の形: `-Papp` で frontend を jar の `static/` に同梱し、1つのオリジンで配信する（`web/SpaConfig`）。
   手元のマシンで動かし Tailscale でつなぐ（ADR-0010）。

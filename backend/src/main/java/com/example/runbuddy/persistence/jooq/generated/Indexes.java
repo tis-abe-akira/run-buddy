@@ -4,6 +4,7 @@
 package com.example.runbuddy.persistence.jooq.generated;
 
 
+import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
 
 import org.jooq.Index;
@@ -22,5 +23,6 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index RACE_USER_DATE = Internal.createIndex(DSL.name("race_user_date"), Race.RACE, new OrderField[] { Race.RACE.USER_ID, Race.RACE.RACE_DATE }, false);
     public static final Index RUN_RESULT_USER_STARTED_AT = Internal.createIndex(DSL.name("run_result_user_started_at"), RunResult.RUN_RESULT, new OrderField[] { RunResult.RUN_RESULT.USER_ID, RunResult.RUN_RESULT.STARTED_AT }, false);
 }
