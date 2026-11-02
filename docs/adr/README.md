@@ -15,6 +15,7 @@
 | [0009](0009-garmin-personal-api.md) | Garmin Connect Personal API でランの実績を取り込む | Accepted |
 | [0010](0010-run-at-home-over-tailscale.md) | クラウドに公開せず、手元のマシンで動かして Tailscale でつなぐ | Accepted |
 | [0011](0011-generate-wiki-with-openwiki-in-ci.md) | OpenWiki で Wiki を CI から自動生成し、GitHub Pages に公開する | Accepted |
+| [0012](0012-fit-files-for-laps-and-tracks.md) | ラップと GPS 軌跡は FIT ファイルから取り、原本を DB に保存して、開いたときに読む | Proposed |
 
 ## テンプレート
 
