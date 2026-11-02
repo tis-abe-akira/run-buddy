@@ -119,6 +119,21 @@ public interface RunResultRepositoryContract {
                 .satisfies(run -> assertThat(run.metrics()).isEqualTo(metrics));
     }
 
+    @Test
+    default void theLatestStartIsTheMostRecentRunAcrossMonths() {
+        repository().saveAll(List.of(
+                run("oct", LocalDateTime.of(2026, 10, 31, 18, 0), 5),
+                run("nov-early", LocalDateTime.of(2026, 11, 2, 6, 0), 5),
+                run("nov-later", LocalDateTime.of(2026, 11, 2, 19, 30), 5)));
+
+        assertThat(repository().latestStart()).contains(LocalDateTime.of(2026, 11, 2, 19, 30));
+    }
+
+    @Test
+    default void withoutRunsThereIsNoLatestStart() {
+        assertThat(repository().latestStart()).isEmpty();
+    }
+
     private static RunResult run(String id, int day) {
         return run(id, LocalDateTime.of(2026, 11, day, 6, 30), 8);
     }

@@ -3,6 +3,7 @@ package com.example.runbuddy.activity.dummy;
 import com.example.runbuddy.activity.ActivitySource;
 import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.shared.DateRange;
 import com.example.runbuddy.shared.Distance;
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -39,7 +40,17 @@ public class DummyActivitySource implements ActivitySource {
     }
 
     @Override
-    public List<RunResult> fetchRuns(YearMonth month) {
+    public List<RunResult> fetchRuns(DateRange days) {
+        // Generated a month at a time, so a range sees exactly the runs its months would.
+        List<RunResult> runs = days.months().stream()
+                .flatMap(month -> runsIn(month).stream())
+                .filter(run -> days.contains(run.date()))
+                .toList();
+        log.info("Dummy: generated {} runs for {} (not real data)", runs.size(), days);
+        return runs;
+    }
+
+    private List<RunResult> runsIn(YearMonth month) {
         Random random = new Random(month.getYear() * 100L + month.getMonthValue());
         LocalDate today = LocalDate.now(clock);
         List<RunResult> runs = new ArrayList<>();
@@ -51,7 +62,6 @@ public class DummyActivitySource implements ActivitySource {
                 runs.add(run);
             }
         }
-        log.info("Dummy: generated {} runs for {} (not real data)", runs.size(), month);
         return runs;
     }
 

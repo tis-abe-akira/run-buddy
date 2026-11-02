@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/latest/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["importLatest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/races": {
         parameters: {
             query?: never;
@@ -249,6 +265,16 @@ export interface components {
         };
         ImportResult: {
             month: string;
+            /** Format: int32 */
+            fetched: number;
+            /** Format: int32 */
+            added: number;
+        };
+        LatestImportResult: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
             /** Format: int32 */
             fetched: number;
             /** Format: int32 */
@@ -492,6 +518,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ImportResult"];
+                };
+            };
+        };
+    };
+    importLatest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LatestImportResult"];
                 };
             };
         };

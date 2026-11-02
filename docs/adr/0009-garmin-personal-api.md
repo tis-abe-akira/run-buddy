@@ -71,6 +71,12 @@ Phase 4（concept.md UC-6）では、ダミーの `ActivitySource`（ADR-0004）
   - 録画したレスポンス `src/test/resources/garmin/activities-2026-10.json` は、実際のレスポンスの**形**（項目名・型・null の出方・手入力や 0 m の例）をまねて作ったもの。ID・名前・数値は作り物で、位置・氏名・地名は入れていない。
   - `GarminLiveTest`: 本物の API を呼ぶ。OS の環境変数 `GARMIN_API_KEY` があるときだけ動く（`GeminiLiveTest` と同じ方針）。
 
+## 追記：差分取り込み（2026-11-02、#12）
+
+- **「最新を取り込む」**（`POST /api/runs/latest/import`）：保存済みの最新のランの**前日**〜今日を取り込む。前日からにするのは、日付の境目やタイムゾーン（`startTimeLocal` は走った場所の現地時刻）で取りこぼさないため。ランが1件もなければ今月の1日から。最新のランの日付が今日より後（旅先で記録した場合など）でも、期間は今日で終わる。
+- Personal API には更新日時の項目も Webhook もないので、差分は**開始日**でしか決められない。Garmin 側で編集・削除したランは差分取り込みでは拾えないため、**月ごとの取り込みは「○月を取り込み直す」として残す**。
+- 取得元のポート `ActivitySource` は、月ではなく**日付の範囲**（`DateRange`、両端を含む）を受け取るようにした。Garmin の一覧 API は `startDate` / `endDate` に任意の期間を取れるので、月をまたぐ範囲も1回の検索（とそのページング）で済む。ダミーは月ごとに作ったランを範囲で絞るので、月で取っても範囲で取っても同じランになる。
+
 ## 検討した選択肢
 
 | 案 | 判断 |
@@ -95,4 +101,4 @@ Phase 4（concept.md UC-6）では、ダミーの `ActivitySource`（ADR-0004）
 - ランニングのサブタイプ（`trail_running`、`treadmill_running` など）の実例はまだ見ていない。判定は「`parentTypeId` が親の `typeId` を指す」という Swagger の説明と、running の `typeId` が 1 だったことに基づく。
 - マルチスポーツ（トライアスロンなど）のラン区間は、`excludeChildren` の既定値（true）によって取り込まれない。
 - ダミーで取り込んだあとに garmin へ切り替えると、同じ月にダミーのラン（`dummy-…`）と本物のラン（`garmin-…`）が両方残り、合計距離が二重になる。今は消す API がないので、DB を作り直す（`docker compose down -v`）か、`run_result` から `dummy-` で始まる行を消す必要がある（[データベースガイド](../guides/database.md)）。
-- 取り込みは手動（ボタン）だけ。定期実行や、前回からの差分だけを取る仕組みはまだない。
+- 取り込みは手動（ボタン）だけ。定期実行はまだない。

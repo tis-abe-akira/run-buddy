@@ -30,6 +30,20 @@ export function useImportRuns(month: Month) {
   })
 }
 
+/** Imports what is new since the latest stored run. It can touch any month, so every month's data is refreshed. */
+export function useImportLatest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: api.importLatest,
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['runs'] }),
+        queryClient.invalidateQueries({ queryKey: ['day'] }),
+      ]),
+  })
+}
+
 export function useSavePlan(month: Month) {
   const queryClient = useQueryClient()
   return useMutation({

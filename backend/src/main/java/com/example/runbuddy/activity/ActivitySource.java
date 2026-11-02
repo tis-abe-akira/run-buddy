@@ -1,6 +1,6 @@
 package com.example.runbuddy.activity;
 
-import java.time.YearMonth;
+import com.example.runbuddy.shared.DateRange;
 import java.util.List;
 
 /**
@@ -9,5 +9,6 @@ import java.util.List;
 @FunctionalInterface
 public interface ActivitySource {
 
-    List<RunResult> fetchRuns(YearMonth month);
+    /** Runs whose local start date falls in the range, both ends included. */
+    List<RunResult> fetchRuns(DateRange days);
 }

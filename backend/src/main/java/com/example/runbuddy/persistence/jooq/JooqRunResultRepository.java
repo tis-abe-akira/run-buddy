@@ -1,6 +1,7 @@
 package com.example.runbuddy.persistence.jooq;
 
 import static com.example.runbuddy.persistence.jooq.generated.Tables.RUN_RESULT;
+import static org.jooq.impl.DSL.max;
 import static org.jooq.impl.DSL.excluded;
 
 import com.example.runbuddy.activity.RunMetrics;
@@ -8,11 +9,13 @@ import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.shared.Distance;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.jooq.DSLContext;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,5 +105,11 @@ public class JooqRunResultRepository implements RunResultRepository {
                                 row.getMaxCadence(),
                                 row.getAverageStrideLengthCm(),
                                 row.getElevationGainMeters())));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<LocalDateTime> latestStart() {
+        return Optional.ofNullable(dsl.select(max(RUN_RESULT.STARTED_AT)).from(RUN_RESULT).fetchOne(0, LocalDateTime.class));
     }
 }

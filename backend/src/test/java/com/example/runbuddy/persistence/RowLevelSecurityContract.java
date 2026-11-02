@@ -41,6 +41,7 @@ public interface RowLevelSecurityContract {
 
         assertThat(plans().findByMonth(NOVEMBER)).isEmpty();
         assertThat(runs().findByMonth(NOVEMBER)).isEmpty();
+        assertThat(runs().latestStart()).isEmpty();
 
         currentUser().switchTo(alice);
         assertThat(plans().findByMonth(NOVEMBER)).contains(plan(100));

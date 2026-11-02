@@ -64,4 +64,20 @@ public interface ApiOverDatabaseContract {
         mockMvc().perform(delete("/api/races/{id}", id)).andExpect(status().isNoContent());
         mockMvc().perform(get("/api/races")).andExpect(jsonPath("$.length()").value(0));
     }
+
+    @Test
+    default void repeatingTheLatestImportAddsNothingNew() throws Exception {
+        mockMvc().perform(post("/api/runs/latest/import"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.from").isString())
+                .andExpect(jsonPath("$.added").isNumber());
+        // The next import starts the day before the latest run, so it may pick up a run from a day
+        // the first one (starting on the 1st) did not look at.
+        mockMvc().perform(post("/api/runs/latest/import")).andExpect(status().isOk());
+
+        // From then on, with nothing new at the source, nothing is added.
+        mockMvc().perform(post("/api/runs/latest/import"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.added").value(0));
+    }
 }

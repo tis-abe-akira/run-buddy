@@ -14,6 +14,7 @@ export type Plan = Schemas['PlanBody']
 export type Workout = Schemas['WorkoutBody']
 export type WorkoutType = Workout['type']
 export type ImportResult = Schemas['ImportResult']
+export type LatestImportResult = Schemas['LatestImportResult']
 export type AdvisorInfo = Schemas['AdvisorInfo']
 export type ChatMessage = Schemas['MessageBody']
 export type Advice = Schemas['AdviceBody']
@@ -67,6 +68,7 @@ export const api = {
   deleteRace: (id: string) => requestNoContent(`/api/races/${id}`, { method: 'DELETE' }),
   activitySource: () => request<ActivitySourceInfo>('/api/activity-source'),
   importRuns: (month: Month) => request<ImportResult>(`/api/runs/${month}/import`, { method: 'POST' }),
+  importLatest: () => request<LatestImportResult>('/api/runs/latest/import', { method: 'POST' }),
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),
   savePlan: (month: Month, plan: Plan) =>
     request<Plan>(`/api/plans/${month}`, { method: 'PUT', body: JSON.stringify(plan) }),

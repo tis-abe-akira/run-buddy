@@ -1,10 +1,12 @@
 package com.example.runbuddy.activity;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** In-memory storage for the "memory" profile and for tests. Data is lost on restart. */
@@ -29,5 +31,10 @@ public class InMemoryRunResultRepository implements RunResultRepository {
                 .filter(run -> YearMonth.from(run.startedAt()).equals(month))
                 .sorted(Comparator.comparing(RunResult::startedAt))
                 .toList();
+    }
+
+    @Override
+    public Optional<LocalDateTime> latestStart() {
+        return runsById.values().stream().map(RunResult::startedAt).max(Comparator.naturalOrder());
     }
 }
