@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # ファイル
 
-- [開発の始め方とテストの回し方](quickstart.md) - OpenWiki（run-buddy）のタスク別ナビゲーションマップ、ローカル開発環境の構築手順、Docker/PostgreSQL/Tailscaleの起動方法、およびテスト階層の構造と実行手順を解説します。
+- [開発の始め方とテスト実行](quickstart.md) - run-buddyのローカル開発環境のセットアップ手順、OpenWikiタスクルーティング、およびバックエンド/フロントエンドの各種テスト階層（単体・MvcTest・Testcontainers・Vitest）の実行方法を解説します。
 
 # ディレクトリ
 

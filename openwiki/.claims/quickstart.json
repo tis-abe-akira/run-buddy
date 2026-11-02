@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0b037f25d8d9e3645620bf9eb1bb8ca36e005c6f4b7307d50369d4683b848673",
+  "pageVersion": "sha256:f8d7dace95925d054a25f81929d562ac64689c78027bbdb7135ca40d8d3091f0",
   "claims": [
     {
       "id": "claim_313cb1cbcc9a47f5a7bc4e9a0b8cc690",
@@ -87,96 +87,10 @@
           "version": "repo-lines-v1:sha256:379ffbfeb89de43131755350cb51f91f2d6f55844e949f51f65f1f8e7cb129ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzNmRmN2E1YTNhYWYxODBjZmZkMWQ2NWM2NDZlZjZhZWEzNTJjYzI3Nzc0Njg2MTk5Y2Q4ZmIzZTg5OWM3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTdiZDYyYjY4MWRiOTQ0YjBiMTgwMTA2YWViMWFjNmZhOTQzZjdlOWU3YjcxZTkxYjhmNmEyOGJjMTczMDJhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODU4MGI3NjUxOGRhZTk3OWZhZWJkMDIzNjdhMjkyOTJhNTBkOTc2MDkyMjUxYTM4YTZjZTMwODgwYmE0MjgyNSJ9"
         }
       ]
-    },
-    {
-      "id": "claim_a2ef866091964457857465558e1d7836",
-      "statement": "タスク別ルーティングマップは、開発目的（全体構成把握、設計パターン確認、DB/RLS設計、新機能TDD追加）に応じて適切なWikiドキュメントへ誘導する。",
-      "evidence": [
-        {
-          "resource": "repo://README.md#L8-L18",
-          "version": "repo-lines-v1:sha256:196b55bb6026f5d943538a068c45436174fd9db793b8501e0a830d5050833d66:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwOTRjZTU5NGJiNDhhMzgxOTliZWYxYmIwNzEyZTIwZDVlODhhMzg5NjZkYTdkN2FlMDNjNjkwMzcxNWFjNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhNzRhNGQyODcxZmNhZDQ4NTNjMzRhYjg2ZTNjNmZhY2E0Y2VjYzU0Y2RlZjg1NTZmMTJhZTQyZDhmOTFkOTUifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_b6097a19b46746738d58a2bad9fb5e40",
-      "statement": "ローカル開発環境は JDK 25、Node.js 22.12 以上、Docker Compose v2 を前提とし、docker compose up -d --wait で PostgreSQL とアプリロールを自動初期化する。",
-      "evidence": [
-        {
-          "resource": "repo://README.md#L21-L40",
-          "version": "repo-lines-v1:sha256:2804886fd2acf38915f78a6e3e8d7aff6c02c174af907c78508aeb4e62868dee:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExYWE1ZmIzYTIxZjJiZTBmMjFjOTA0NDI1NDk4ZDU4MDEzOGQ0MGQ0ODllNDcwOWMxNTk0NGVlZWYwZjIzYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZWMyZGM4MmRmNWI2ZjgwNTNkMDY4N2NhZDgzZDIzNWUzNGFkZTQzNDM2ZDViYmI0N2VlNjMyZjcwNjlkNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkN2YzOWFlOTVlZTJkMDVlMDRhNTliZmI0NTBjZGY5MWM2MGQ1YWVkMTdmOTYwM2Q0MDliYzFkNmE5NTA1MWEifQ"
-        },
-        {
-          "resource": "repo://compose.yaml#L1-L24",
-          "version": "repo-lines-v1:sha256:9e55743f10f5c503a828ad2db06b9d83f84fe2d9aa837fd61c28edceacd209fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5ODU3ZWE0YzY5MzU1OGFlM2RkNTE2ODg2OTM1ZDZlNTg3ODczOTZhOWU3NDYwYmY2NmQ0MzU5MTNlZDE3NGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMWMxNDhjYzk4Y2ZjZGVlMWViOTA4Y2E0ZTgwODgwMTM1OGFmODQyMTM5MTgyYmFlYzNjZDRmZGY4MGM2MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_386d730ff4db4b0fb139d23da369a9e3",
-      "statement": "統合配信ビルド（-Papp）はフロントエンド静的資産をビルドしてバックエンドの static ディレクトリに埋め込み、ポート 8080 で一元配信する。",
-      "evidence": [
-        {
-          "resource": "repo://README.md#L97-L107",
-          "version": "repo-lines-v1:sha256:798d1241796bac718c5b50492251530533a0bb332e32daca602bd2aee45f0b70:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZTJmNTMyOGVlNmU4MDUwZThhYWZkOGRjODY5YTA2OWNkOTU4NGVkYWFmNTRmZTU4OWQ3M2MzYjdkY2Q3OTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MzUwZjUyOWRlMGFmODE2OTI3YTJhYTFkNjA0ZGNmYWE3YWRiYTBhZmVmZTJkZDQyMDFjZThjZGFlMWZkMzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1YzE2MjBiZTE0OWFhNjdkNDQ2YTM4NzFhMjk1N2EyMWUyZGUwZGQ0OGUzODM1Yjk1MGI2MzYyMzRlYjFiNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMTBmMDNjODJiZmM4ZDlmOGZiZTgwNGM0OWQ2MzU3M2JiMmZiYTFjNjk1ZmNhMWVlNTMxNjQxN2JkN2M3NTAifQ"
-        },
-        {
-          "resource": "repo://docs/guides/tailscale.md#L30-L42",
-          "version": "repo-lines-v1:sha256:eb4b19d3bb6fa87eacd75649c1d5c6d5887c6a2eef181f14abf4a391945a137d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2N2JhMDUzM2I5YjAyOTU3Mzk3MzFhODNkZDU0OTE2NTUzNzUwZWU4NDdlNWJkN2MyZTcwYmZlYzJlNDhkZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzNTg1OTcxY2JkZjQwOGJhMzViNWEyMzI4NDMxYWIzMDA0YzcwNGQ1YzQ1ODRkMmU2ZmRjZmI0OTgwYzAwNTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlZTMxNzlkMzkyYzFkOTUzMTA2YzA0NTA3MzIyMmRhNGZhYTkyNGQ0ZjEzOTAwYWRmZDgxNGIyZjFhMWUxMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZDhmMGE2ZThmNzNhOTk4NWQwMGQ5MTMxNmU5MTBmNWRmYTQ3NWYwNTBhMTkzYjU5YWVmNTUyODQzMGEwYjkifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_958bbfa7fcba428980a64a1a4952ede5",
-      "statement": "Tailscale serve は tailnet 内でローカル 8080 ポートを HTTPS で共有する一方、認証のない tailscale funnel による無制限公開は禁止されている。",
-      "evidence": [
-        {
-          "resource": "repo://docs/guides/tailscale.md#L47-L72",
-          "version": "repo-lines-v1:sha256:46010a15e6f44614f6fa4814ed77902b3b684581c8f7c1138e398a90bcb4cc0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmNmNiODAzNTVjNzZmNThlZWE4NjA5ZWQxZmM4MTE1ZTVlM2FiODM1N2Y5ZGYxZTIwYzM0NmI0MjM0MWEwYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MDc0NGI1M2QxN2U3ZjE4NDFmZmM2N2UyZDNjZGIxZDJiMzFiYjM0YTZiNzA2MDYxZDZlOTkzYzY3MmNhZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExNDNkOWU3YmI4NTBjZTQ2ZmNkOTRiMGE4MzEyM2YyZmI3OGM4ZDQ0MGU1ZmFkZDhjMDRkYzJhMWM4N2M1NzIifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_005ae54e925c434a80d1f3da633a95f9",
-      "statement": "バックエンドテストはドメイン単体テスト、@WebMvcTest Web層テスト、Testcontainersを用いたDB統合テスト、環境変数指定時のみ実行する実API導通テストの4階層で構成される。",
-      "evidence": [
-        {
-          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/garmin/GarminLiveTest.java#L15-L21",
-          "version": "repo-lines-v1:sha256:a3878353a15928efaeea319e92e0ac970cb8c1834d2b91bec6c4313175c1f9ac:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IyYzg5OTFiYzY5ZjE5YTdhOWVmZjZmOWFiNjA4ODA4NTYwMDU2MTBmZGI3MTk2M2MyN2RjZTMwOWEyNDMxNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDJjZWJjMTU0OTkxYTE1ODBlMTI5OTRlNDg1YzAzNGRmOGFjM2ZkMDZjM2ViYWM3N2U5MWU1NmFhZTgxZjRkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg2ZjcwZjFjZmNiZGUyN2NmMTYyZjc5ZTljNmVjNzNmOTE3YjM4OTMzMWU4YmY5YWYyNTFjMmFlN2VmODUxYiJ9"
-        },
-        {
-          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java#L1-L25",
-          "version": "repo-lines-v1:sha256:e9423cc03115e534b4010fb68bddb2a7736a41f19f817faa41a045fd4bc18430:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1ODBmZTMwMzczNGQ3NDNhNjc5ZDNkZWQ5MGI2ODUxMDFmOWZlZmM4MThjNTQ2YjhmNTNkMzNkMzlhZWRkZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_d0bbe060bfaf4aae917a7323248e3e0e",
-      "statement": "DatabaseTest は @BeforeEach でランダムなユーザーIDを割り当てることで、RLS による分離を利用しテスト間での手動DBクリアなしに独立性を確保する。",
-      "evidence": [
-        {
-          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java#L1-L25",
-          "version": "repo-lines-v1:sha256:e9423cc03115e534b4010fb68bddb2a7736a41f19f817faa41a045fd4bc18430:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1ODBmZTMwMzczNGQ3NDNhNjc5ZDNkZWQ5MGI2ODUxMDFmOWZlZmM4MThjNTQ2YjhmNTNkMzNkMzlhZWRkZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_2cd02b4056c74856ace41021ed2031fc",
-      "statement": "フロントエンドテストは Vitest と React Testing Library を使用し、openapi-typescript によるバックエンド OpenAPI スキーマからの TypeScript 型自動生成をサポートする。",
-      "evidence": [
-        {
-          "resource": "repo://frontend/package.json#L21-L35",
-          "version": "repo-lines-v1:sha256:833cd5fdefcdb6e3a98f3cec6736b2b0dc495bec896cdb658ee2df0ba1edd112:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkYzRkZTdlZDM1YTIzMzY0NTM5ODY0ZGFkYjkzOGI4NzIzMzM3OTE3OWQ2MjkyYjlmZjVmNjE5YTZjMTMxNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViMzVjZDE1ZDdlOWQ5ZWVlZjQ4ZTdkNWI5ZmI0MGUzOWNhYjczNzNhODM2MjAyN2JkYjhmMDc2MDM3MTY1YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
-        },
-        {
-          "resource": "repo://frontend/package.json#L6-L14",
-          "version": "repo-lines-v1:sha256:15d59b9dd1c59a110a8e7b759d255525b2939126ab099b1e16f05cf819a2777a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MzNkNTk0OWMwM2E0MGNhOTUyNDkxNjEwYTY2NTk2NDRiM2FhNDY2MzYyZjc5OTAyMGRiZjE5ODE1NDdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQ1YTQxYTI5YWI0NGUxZGJjNmIyOGJjMTRhZTE1YWFhOGQwMTM0NjU4NTc0YzgzNDA5MmFjMmNiY2M4NTQ3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGQxODYzNDI4NjM0ODg0NjAyN2Y5YWVlNmYzZmFkYTBmMGY2Mzg3MzRmMWNhMWRlYmYxYzIzMzNiOTU3YWRiYSJ9"
-        }
-      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T22:55:43.691Z"
+    "at": "2026-10-31T23:04:12.652Z"
   }
 }

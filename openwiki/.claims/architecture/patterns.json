@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:061b13a92a2cfba485adb9711f68e8fdf605e0d8b447a98dccb268aa6c8b9e31",
+  "pageVersion": "sha256:e359b617ffdd3c61ef5055d7135431095519830f3d327bad9ab67ca7fe2ddd8f",
   "claims": [
     {
       "id": "claim_7f093817effb4f08abbdc8aa813f7aca",
@@ -113,16 +113,12 @@
       "statement": "フロントエンドとバックエンド間の API 型整合性は springdoc-openapi が出力する /v3/api-docs をソースに npm run gen:api (openapi-typescript) を実行して src/api/schema.gen.ts を生成することで保持される。",
       "evidence": [
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunController.java#L58-L70",
-          "version": "repo-lines-v1:sha256:76fc35cd8af18d047de2a860612df0c1bf2e017f2517dfbc7ceb30fa81e420ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkMmRmMDdkNDdhY2M4Y2Q0YmM5ZDEyNTE5ZGQ4NTk2ZjZlY2MyNzIyMWU0OTQ0ODBmOWFmNTgyMDU2MDY4ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNmNhN2UxNTYwMzRjNGRiYmIzNDIxMWE4Y2EyZWNjM2EzZGNmMTkzZjE1OGE4YzBjOWMwNjU3NjY3N2M3MzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlNjU0YzU1YWViM2I3NTVkYzhlMjA5ZWY3MzZmZDUyMmZjMjI1ZTIxYmJiZjY4Y2VhODE0YjlhNjhlY2NkMTAifQ"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunController.java#L58-L69",
+          "version": "repo-lines-v1:sha256:4fd1f0e3bebf5cf913fb7f78e1d33243f4538f0566c6acac3b04d39ddcbd3025:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkMmRmMDdkNDdhY2M4Y2Q0YmM5ZDEyNTE5ZGQ4NTk2ZjZlY2MyNzIyMWU0OTQ0ODBmOWFmNTgyMDU2MDY4ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NzMzMTNkODU2MGZlODY0M2I0NTg5MGI0NmJjMDZlYmU3MjQwODQ0OWJhMzdlMjlmNzdkMDYxMjljM2VmZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNmNhN2UxNTYwMzRjNGRiYmIzNDIxMWE4Y2EyZWNjM2EzZGNmMTkzZjE1OGE4YzBjOWMwNjU3NjY3N2M3MzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkZmNmNmM1ZWIzNjE4Mzk3ZWMxYWRlYWJlYmUxN2NjMmIxMmQ4Y2YyN2RjMTJjZjAwOWM1ZDVjMGY1NjIyYTUifQ"
         },
         {
           "resource": "repo://frontend/package.json#L13-L13",
           "version": "repo-lines-v1:sha256:31e564e3a230abcb0835ada5fe86623e1f1e3c8e717651f6d29149435ca43ed5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTY0ZTNhMjMwYWJjYjA4MzVhZGE1ZmU4NjYyM2UxZjFlM2M4ZTcxNzY1MWY2ZDI5MTQ5NDM1Y2E0M2VkNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTY0ZTNhMjMwYWJjYjA4MzVhZGE1ZmU4NjYyM2UxZjFlM2M4ZTcxNzY1MWY2ZDI5MTQ5NDM1Y2E0M2VkNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWQxMGRiY2M5ZDNhYTIzZjRmMTUzMjJmN2E4ZjFkNTE4MGU5OTAwM2IyNDgxODBlMGQwNzY1NjM5MTcyNjVkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTliZTE0NzM1YmQ1MGI0NjllOGY1NjFlMzI0M2FmMTI1ODg4OWZiZjg4OTM3Yzg4MmQ5ZjI2NDUxOThlMzU2YiJ9"
-        },
-        {
-          "resource": "repo://frontend/src/api/client.ts#L1-L20",
-          "version": "repo-lines-v1:sha256:5155ca0414100ed6dc49620d19aa147b0a5e47c9c07be5157a14ab97fa0e6e87:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzYzUzYzQ4ODkwNzYyZTcwYjQyOGQ0ZjNlMWVjOTg4NzM5ZTczMTQxYmI2YTZlYzY1YWM4NDZiOWJlMjc3MWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3MmJmMzY0MzgxNGQwMzhkMDdmZjVmYTNhMTliYjY3Njk4NDBkYjY1ZDc2NGIyM2RlOGE4ZjUxYWVjZWQyNWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5OTY2MDQ2MTEyMmY3OTY5ZWVmMTVjZWJjODBhOWVkNGQ1ZTU2NjA5YjNlOGJjNDMwOTZkOWM3NzQ1OThjYzAifQ"
         }
       ]
     },
@@ -165,6 +161,6 @@
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-31T22:55:43.691Z"
+    "at": "2026-10-31T23:04:12.652Z"
   }
 }
