@@ -14,14 +14,16 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withTooManyRequests;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
 
-import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
+import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.RunMetrics;
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.shared.DateRange;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -48,7 +50,7 @@ class GarminActivitySourceTest {
 
     private static final String BASE = "https://garmin.test";
     private static final String TOKEN_URL = BASE + GarminTokens.TOKEN_PATH;
-    private static final YearMonth OCTOBER = YearMonth.of(2026, 10);
+    private static final DateRange OCTOBER = DateRange.of(YearMonth.of(2026, 10));
 
     private final MutableClock clock = new MutableClock(Instant.parse("2026-10-31T00:00:00Z"));
     private final RestClient.Builder builder = RestClient.builder().baseUrl(BASE);
@@ -96,6 +98,20 @@ class GarminActivitySourceTest {
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
 
         assertThat(source.fetchRuns(OCTOBER)).isEmpty();
+        server.verify();
+    }
+
+    @Test
+    void aRangeAcrossMonthsIsAskedForInOneSearchAndItsEndsAreKept() {
+        DateRange days = new DateRange(LocalDate.of(2026, 10, 30), LocalDate.of(2026, 11, 2));
+        expectToken("token-1");
+        expectSearch(0)
+                .andExpect(queryParam("startDate", "2026-10-30"))
+                .andExpect(queryParam("endDate", "2026-11-02"))
+                .andRespond(json("[" + activity(1, "2026-10-29 23:59:59") + "," + activity(2, "2026-10-30 06:00:00") + ","
+                        + activity(3, "2026-11-02 21:00:00") + "," + activity(4, "2026-11-03 00:00:00") + "]"));
+
+        assertThat(source.fetchRuns(days)).extracting(RunResult::activityId).containsExactly("garmin-2", "garmin-3");
         server.verify();
     }
 

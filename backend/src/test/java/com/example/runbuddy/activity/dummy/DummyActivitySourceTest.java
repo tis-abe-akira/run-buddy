@@ -3,6 +3,7 @@ package com.example.runbuddy.activity.dummy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.shared.DateRange;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class DummyActivitySourceTest {
 
-    private static final YearMonth NOVEMBER = YearMonth.of(2026, 11);
+    private static final DateRange NOVEMBER = DateRange.of(YearMonth.of(2026, 11));
 
     @Test
     void sameMonthAlwaysYieldsTheSameRuns() {
@@ -27,6 +28,19 @@ class DummyActivitySourceTest {
         List<RunResult> runs = sourceAsOf(LocalDate.of(2027, 1, 1)).fetchRuns(NOVEMBER);
 
         assertThat(runs).allSatisfy(run -> assertThat(run.metrics()).hasNoNullFieldsOrProperties());
+    }
+
+    @Test
+    void aRangeAcrossMonthsHasExactlyTheRunsOfItsDaysInThoseMonths() {
+        DummyActivitySource source = sourceAsOf(LocalDate.of(2027, 1, 1));
+        DateRange days = new DateRange(LocalDate.of(2026, 10, 25), LocalDate.of(2026, 11, 5));
+
+        List<RunResult> expected = java.util.stream.Stream.concat(
+                        source.fetchRuns(DateRange.of(YearMonth.of(2026, 10))).stream(),
+                        source.fetchRuns(NOVEMBER).stream())
+                .filter(run -> days.contains(run.date()))
+                .toList();
+        assertThat(source.fetchRuns(days)).isEqualTo(expected).isNotEmpty();
     }
 
     @Test

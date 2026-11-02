@@ -1,6 +1,6 @@
 import { ApiError } from '../api/client'
 
-/** What went wrong with "Garminから取り込む", and what to do about it, in the user's words. */
+/** What went wrong with an import from Garmin, and what to do about it, in the user's words. */
 export function describeImportError(error: Error): string {
   if (error instanceof ApiError) {
     switch (error.reason) {

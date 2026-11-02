@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { activitySourceQuery, dashboardQuery, racesQuery, runsQuery, useImportRuns } from '../api/queries'
+import { activitySourceQuery, dashboardQuery, racesQuery, runsQuery, useImportLatest, useImportRuns } from '../api/queries'
 import { DashboardView } from '../components/DashboardView'
 import { ErrorBand } from '../components/ErrorBand'
 import { elapsedDays } from '../lib/elapsed'
@@ -35,6 +35,9 @@ function DashboardPage() {
   const source = useQuery(activitySourceQuery())
   const races = useQuery(racesQuery())
   const importRuns = useImportRuns(month)
+  const importLatest = useImportLatest()
+
+  const importError = importLatest.error ?? importRuns.error
 
   if (!dashboard.data || !runs.data) {
     return null
@@ -47,12 +50,21 @@ function DashboardPage() {
       elapsedDays={elapsedDays(month)}
       onMonthChange={(next) => {
         importRuns.reset()
+        importLatest.reset()
         void navigate({ search: { month: next } })
       }}
-      onImport={() => importRuns.mutate()}
-      importing={importRuns.isPending}
-      lastImport={importRuns.data}
-      importError={importRuns.error ? describeImportError(importRuns.error) : undefined}
+      onImportLatest={() => {
+        importRuns.reset()
+        importLatest.mutate()
+      }}
+      onImportMonth={() => {
+        importLatest.reset()
+        importRuns.mutate()
+      }}
+      importing={importLatest.isPending ? 'latest' : importRuns.isPending ? 'month' : null}
+      lastLatest={importLatest.data}
+      lastMonth={importRuns.data}
+      importError={importError ? describeImportError(importError) : undefined}
       nextRace={nextRace(races.data ?? [])}
     />
   )

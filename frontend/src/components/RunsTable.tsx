@@ -31,7 +31,7 @@ export function RunsTable({ runs, dayLink }: Props) {
       </div>
       {runs.length === 0 ? (
         <p className="body-sm" style={{ color: 'var(--color-on-dark-soft)', margin: 0 }}>
-          まだ記録がありません。「Garminから取り込む」で今月のランを取得してください。
+          まだ記録がありません。「最新を取り込む」で Garmin からランを取得してください。
         </p>
       ) : (
         <div className="table-scroll">

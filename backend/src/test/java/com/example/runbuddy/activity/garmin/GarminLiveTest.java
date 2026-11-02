@@ -3,9 +3,10 @@ package com.example.runbuddy.activity.garmin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
+import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.shared.DateRange;
 import java.time.Clock;
 import java.time.YearMonth;
 import java.util.List;
@@ -27,9 +28,9 @@ class GarminLiveTest {
         GarminActivitySource source = GarminActivitySource.connect(BASE_URL, System.getenv("GARMIN_API_KEY"), Clock.systemDefaultZone());
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
-        List<RunResult> runs = source.fetchRuns(lastMonth);
+        List<RunResult> runs = source.fetchRuns(DateRange.of(lastMonth));
         // A second month reuses the token.
-        source.fetchRuns(lastMonth.minusMonths(1));
+        source.fetchRuns(DateRange.of(lastMonth.minusMonths(1)));
 
         assertThat(runs).allSatisfy(run -> {
             assertThat(run.activityId()).startsWith("garmin-");
@@ -42,7 +43,7 @@ class GarminLiveTest {
     void aWrongKeyIsReportedAsRejected() {
         GarminActivitySource source = GarminActivitySource.connect(BASE_URL, "not-a-real-key", Clock.systemDefaultZone());
 
-        assertThatThrownBy(() -> source.fetchRuns(YearMonth.now()))
+        assertThatThrownBy(() -> source.fetchRuns(DateRange.of(YearMonth.now())))
                 .isInstanceOfSatisfying(ActivitySourceUnavailableException.class,
                         e -> assertThat(e.reason()).isEqualTo(Reason.CREDENTIALS_REJECTED));
     }

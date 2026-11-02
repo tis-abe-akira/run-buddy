@@ -51,7 +51,7 @@ describe('RunsTable', () => {
   it('explains what to do when there are no runs', () => {
     render(<RunsTable runs={[]} />)
 
-    expect(screen.getByText(/Garminから取り込む/)).toBeInTheDocument()
+    expect(screen.getByText(/最新を取り込む/)).toBeInTheDocument()
   })
 })
 

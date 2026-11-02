@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,28 +27,10 @@ public class RunController {
         return runResultRepository.findByMonth(month).stream().map(RunResponse::from).toList();
     }
 
+    /** Re-reads the whole month from the source (the "latest" import is in {@link LatestImportController}). */
     @PostMapping("/import")
     public RunImportService.ImportResult importRuns(@PathVariable YearMonth month) {
         return runImportService.importRuns(month);
-    }
-
-    /**
-     * The problem's "reason" property is the {@link ActivitySourceUnavailableException.Reason}, so the
-     * screen can tell the user what to do (renew the key, wait, check the network).
-     */
-    @ExceptionHandler(ActivitySourceUnavailableException.class)
-    ProblemDetail handleUnavailable(ActivitySourceUnavailableException e) {
-        HttpStatus status = e.reason() == ActivitySourceUnavailableException.Reason.RATE_LIMITED
-                ? HttpStatus.TOO_MANY_REQUESTS
-                : HttpStatus.BAD_GATEWAY;
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, e.getMessage());
-        problem.setTitle(switch (e.reason()) {
-            case CREDENTIALS_REJECTED -> "The activity source rejected the credentials";
-            case RATE_LIMITED -> "Rate limited";
-            case UNAVAILABLE -> "The activity source is unavailable";
-        });
-        problem.setProperty("reason", e.reason().name());
-        return problem;
     }
 
     /** A run with every measurement we have; the optional ones are null when not recorded. */

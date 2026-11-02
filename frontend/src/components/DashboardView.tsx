@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import type { Dashboard, ImportResult, Race, Run } from '../api/client'
+import type { Dashboard, ImportResult, LatestImportResult, Race, Run } from '../api/client'
 import { formatKm, formatPace, formatRate } from '../lib/format'
 import { formatMonth, shiftMonth, type Month } from '../lib/month'
 import { ExportLink } from './ExportLink'
+import { ImportControls } from './ImportControls'
 import { MonthSwitcher } from './MonthSwitcher'
 import { NextRaceCard } from './NextRaceCard'
 import { ProgressChart } from './ProgressChart'
@@ -17,15 +18,30 @@ type Props = {
   /** Days of the month that have already happened (0 for a future month). */
   elapsedDays: number
   onMonthChange: (month: Month) => void
-  onImport: () => void
-  importing: boolean
-  lastImport?: ImportResult
+  onImportLatest: () => void
+  onImportMonth: () => void
+  importing: 'latest' | 'month' | null
+  lastLatest?: LatestImportResult
+  lastMonth?: ImportResult
   importError?: string
   /** The next race from today on, whatever month is shown. */
   nextRace?: Race
 }
 
-export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMonthChange, onImport, importing, lastImport, importError, nextRace }: Props) {
+export function DashboardView({
+  dashboard,
+  runs,
+  dummySource,
+  elapsedDays,
+  onMonthChange,
+  onImportLatest,
+  onImportMonth,
+  importing,
+  lastLatest,
+  lastMonth,
+  importError,
+  nextRace,
+}: Props) {
   const month = dashboard.month
   const remainingKm = Math.max(dashboard.targetKm - dashboard.actualKm, 0)
 
@@ -44,17 +60,17 @@ export function DashboardView({ dashboard, runs, dummySource, elapsedDays, onMon
           </div>
           {nextRace && <NextRaceCard race={nextRace} />}
           <div className="row">
-            <button type="button" className="button button-primary" onClick={onImport} disabled={importing}>
-              {importing ? '取り込み中…' : 'Garminから取り込む'}
-            </button>
+            <ImportControls
+              month={month}
+              onImportLatest={onImportLatest}
+              onImportMonth={onImportMonth}
+              importing={importing}
+              lastLatest={lastLatest}
+              lastMonth={lastMonth}
+              error={importError}
+            />
             <ExportLink month={month} />
             {dummySource && <span className="badge-pill">ダミーデータ</span>}
-            {lastImport && !importing && (
-              <span className="body-sm muted" role="status">
-                {lastImport.fetched} 件を確認し、新しく {lastImport.added} 件を取り込みました
-              </span>
-            )}
-            {importError && <span className="field-error" role="alert">{importError}</span>}
           </div>
         </div>
       </section>

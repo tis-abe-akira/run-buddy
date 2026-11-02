@@ -1,13 +1,12 @@
 package com.example.runbuddy.activity.garmin;
 
 import com.example.runbuddy.activity.ActivitySource;
-import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.ActivitySourceUnavailableException.Reason;
+import com.example.runbuddy.activity.ActivitySourceUnavailableException;
 import com.example.runbuddy.activity.RunResult;
+import com.example.runbuddy.shared.DateRange;
 import java.time.Clock;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 /**
- * Runs from the Garmin Connect Personal API (ADR-0009): the activity search, one month of local
+ * Runs from the Garmin Connect Personal API (ADR-0009): the activity search over a range of local
  * start dates, page by page, keeping only running activities.
  */
 public class GarminActivitySource implements ActivitySource {
@@ -35,7 +34,7 @@ public class GarminActivitySource implements ActivitySource {
     /** The search's documented default page size; its maximum is not documented. */
     static final int PAGE_SIZE = 99;
 
-    /** A month with more activities than this means paging is not advancing; stop rather than loop. */
+    /** More pages than this means paging is not advancing (or the range is far too long); stop rather than loop. */
     static final int MAX_PAGES = 20;
 
     private static final Logger log = LoggerFactory.getLogger(GarminActivitySource.class);
@@ -65,9 +64,9 @@ public class GarminActivitySource implements ActivitySource {
     }
 
     @Override
-    public List<RunResult> fetchRuns(YearMonth month) {
+    public List<RunResult> fetchRuns(DateRange days) {
         try {
-            return runsIn(month);
+            return runsIn(days);
         } catch (HttpClientErrorException.Unauthorized | HttpClientErrorException.Forbidden e) {
             throw new ActivitySourceUnavailableException(Reason.CREDENTIALS_REJECTED,
                     "Garmin rejected the Personal API key (HTTP " + e.getStatusCode().value()
@@ -92,15 +91,15 @@ public class GarminActivitySource implements ActivitySource {
         }
     }
 
-    private List<RunResult> runsIn(YearMonth month) {
+    private List<RunResult> runsIn(DateRange days) {
         // Keyed by id: if an activity is added while we page, offsets shift and one may come twice.
         Map<Long, GarminActivity> activities = new LinkedHashMap<>();
         for (int page = 0; ; page++) {
             if (page == MAX_PAGES) {
-                throw new IllegalStateException("more than " + MAX_PAGES * PAGE_SIZE + " activities in " + month);
+                throw new IllegalStateException("more than " + MAX_PAGES * PAGE_SIZE + " activities in " + days);
             }
-            List<GarminActivity> found = search(month, page * PAGE_SIZE);
-            log.debug("Garmin: {} page {} (start {}) returned {} activities", month, page + 1, page * PAGE_SIZE, found.size());
+            List<GarminActivity> found = search(days, page * PAGE_SIZE);
+            log.debug("Garmin: {} page {} (start {}) returned {} activities", days, page + 1, page * PAGE_SIZE, found.size());
             found.stream()
                     .filter(a -> a.activityId() != null)
                     .forEach(a -> activities.putIfAbsent(a.activityId(), a));
@@ -111,36 +110,34 @@ public class GarminActivitySource implements ActivitySource {
         List<RunResult> runs = activities.values().stream()
                 .map(GarminActivity::toRunResult)
                 .flatMap(Optional::stream)
-                // The search filters by local start date already; this guards the month boundary.
-                .filter(run -> YearMonth.from(run.date()).equals(month))
+                // The search filters by local start date already; this guards the range's ends.
+                .filter(run -> days.contains(run.date()))
                 .toList();
         log.info("Garmin: {} activities in {}, {} of them runs with a distance and time (others skipped)",
-                activities.size(), month, runs.size());
+                activities.size(), days, runs.size());
         return runs;
     }
 
     /** One page. On 401 the token is renewed once; a second 401 means the key itself is rejected. */
-    private List<GarminActivity> search(YearMonth month, int start) {
+    private List<GarminActivity> search(DateRange days, int start) {
         String token = tokens.current();
         try {
-            return search(month, start, token);
+            return search(days, start, token);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() != HttpStatus.UNAUTHORIZED) {
                 throw e;
             }
             log.warn("Garmin: access token rejected (401); requesting a new one and retrying once");
             tokens.invalidate();
-            return search(month, start, tokens.current());
+            return search(days, start, tokens.current());
         }
     }
 
-    private List<GarminActivity> search(YearMonth month, int start, String token) {
-        LocalDate first = month.atDay(1);
-        LocalDate last = month.atEndOfMonth();
+    private List<GarminActivity> search(DateRange days, int start, String token) {
         List<GarminActivity> page = client.get()
                 .uri(uri -> uri.path(SEARCH_PATH)
-                        .queryParam("startDate", first)
-                        .queryParam("endDate", last)
+                        .queryParam("startDate", days.first())
+                        .queryParam("endDate", days.last())
                         // Oldest first, so activities recorded while we page land after our offset.
                         .queryParam("sortOrder", "asc")
                         .queryParam("start", start)

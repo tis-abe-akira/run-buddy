@@ -1,8 +1,10 @@
 package com.example.runbuddy.activity;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface RunResultRepository {
 
@@ -15,4 +17,7 @@ public interface RunResultRepository {
 
     /** Runs started in the month, oldest first. */
     List<RunResult> findByMonth(YearMonth month);
+
+    /** When the most recent stored run started; empty when nothing is stored. */
+    Optional<LocalDateTime> latestStart();
 }
