@@ -78,7 +78,7 @@ changing the structure.
 - Laps and tracks come from the run's FIT file, downloaded only when its detail is first opened
   and kept as the original in `run_fit_file`, then read on every look (ADR-0012). Never download
   FIT files in bulk. FIT SDK types (`com.garmin.fit`) stay in `activity/fit`; the rest of the code
-  sees `RunDetail`, `Lap` and `TrackPoint`. Track points locate the runner: never send them to the
+  sees `RunDetail`, `Lap` and `TrackPoint`. `RunDetail.route` thins the track for the map (ADR-0013). Track points locate the runner: never send them to the
   AI advisor, and build test files with `SyntheticFit` (positions near 0°N 0°E), never real ones.
 
 ## Local settings

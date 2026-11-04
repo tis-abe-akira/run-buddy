@@ -10,11 +10,11 @@ import { workoutTypeLabel } from '../lib/workout'
  */
 type Props = {
   day: DayDetail
-  /** The laps of a run, loaded on their own; nothing below the measurements when absent (e.g. in tests). */
-  renderLaps?: (run: Run) => ReactNode
+  /** The course and laps of a run, loaded on their own; nothing below the measurements when absent (e.g. in tests). */
+  renderDetail?: (run: Run) => ReactNode
 }
 
-export function DayDetailView({ day, renderLaps }: Props) {
+export function DayDetailView({ day, renderDetail }: Props) {
   return (
     <div className="stack" style={{ gap: 'var(--spacing-lg)' }}>
       <section className="feature-card stack" aria-labelledby="day-plan-heading" style={{ gap: 'var(--spacing-sm)' }}>
@@ -46,7 +46,7 @@ export function DayDetailView({ day, renderLaps }: Props) {
             key={run.activityId}
             run={run}
             number={day.runs.length > 1 ? i + 1 : undefined}
-            laps={renderLaps?.(run)}
+            detail={renderDetail?.(run)}
           />
         ))
       )}
@@ -54,7 +54,7 @@ export function DayDetailView({ day, renderLaps }: Props) {
   )
 }
 
-function RunDetail({ run, number, laps }: { run: Run; number: number | undefined; laps?: ReactNode }) {
+function RunDetail({ run, number, detail }: { run: Run; number: number | undefined; detail?: ReactNode }) {
   const title = `${number ? `ラン ${number} · ` : ''}${formatStartTime(run.startedAt)} スタート`
   return (
     <section className="outline-card stack" aria-label={title} style={{ gap: 'var(--spacing-lg)' }}>
@@ -72,7 +72,7 @@ function RunDetail({ run, number, laps }: { run: Run; number: number | undefined
         <Measurement label="歩幅" value={run.averageStrideLengthCm} unit="cm" />
         <Measurement label="上昇" value={run.elevationGainMeters} unit="m" />
       </dl>
-      {laps}
+      {detail}
     </section>
   )
 }

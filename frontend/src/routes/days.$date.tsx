@@ -3,6 +3,7 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { dayQuery, runDetailQuery } from '../api/queries'
 import { DayDetailView } from '../components/DayDetailView'
 import { ErrorBand } from '../components/ErrorBand'
+import { RunDetailPanel } from '../components/RunDetailPanel'
 import { RunLaps } from '../components/RunLaps'
 import { formatDayHeading, isIsoDate, monthOfDate, shiftDay } from '../lib/day'
 import { describeDetailError } from '../lib/importError'
@@ -54,15 +55,15 @@ function DayPage() {
       </section>
       <section className="band">
         <div className="container">
-          <DayDetailView day={day.data} renderLaps={(run) => <RunLapsLoader activityId={run.activityId} />} />
+          <DayDetailView day={day.data} renderDetail={(run) => <RunDetailLoader activityId={run.activityId} />} />
         </div>
       </section>
     </>
   )
 }
 
-/** Loads one run's laps; the first look downloads its activity file, so it loads apart from the page. */
-function RunLapsLoader({ activityId }: { activityId: string }) {
+/** Loads one run's course and laps; the first look downloads its activity file, so they load apart from the page. */
+function RunDetailLoader({ activityId }: { activityId: string }) {
   const detail = useQuery(runDetailQuery(activityId))
   if (detail.isPending) {
     return <RunLaps state={{ status: 'loading' }} />
@@ -70,5 +71,5 @@ function RunLapsLoader({ activityId }: { activityId: string }) {
   if (detail.isError) {
     return <RunLaps state={{ status: 'error', message: describeDetailError(detail.error), onRetry: () => void detail.refetch() }} />
   }
-  return <RunLaps state={{ status: 'ready', detail: detail.data }} />
+  return <RunDetailPanel detail={detail.data} />
 }
