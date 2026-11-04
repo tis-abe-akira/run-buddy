@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import L from 'leaflet'
 import { RunRoute } from './RunRoute'
 
 const route = [
@@ -39,6 +40,36 @@ describe('RunRoute', () => {
     rerender(<RunRoute route={route} highlightLap={null} />)
     expect(container.querySelector('.route-highlight')).toBeNull()
     expect(screen.queryByText(/を表示中/)).not.toBeInTheDocument()
+  })
+
+  it('keeps the map still while laps are picked one after another, as long as the lap is in view', () => {
+    const inView = vi.spyOn(L.LatLngBounds.prototype, 'contains').mockReturnValue(true)
+    const fitBounds = vi.spyOn(L.Map.prototype, 'fitBounds')
+    const { rerender } = render(<RunRoute route={route} highlightLap={null} />)
+    fitBounds.mockClear()
+
+    rerender(<RunRoute route={route} highlightLap={1} />)
+    rerender(<RunRoute route={route} highlightLap={2} />)
+    rerender(<RunRoute route={route} highlightLap={null} />)
+
+    expect(fitBounds).not.toHaveBeenCalled()
+    inView.mockRestore()
+    fitBounds.mockRestore()
+  })
+
+  it('moves to a picked lap that is out of view, without first going back to the whole course', () => {
+    const inView = vi.spyOn(L.LatLngBounds.prototype, 'contains').mockReturnValue(false)
+    const fitBounds = vi.spyOn(L.Map.prototype, 'fitBounds')
+    const { rerender } = render(<RunRoute route={route} highlightLap={1} />)
+    fitBounds.mockClear()
+
+    rerender(<RunRoute route={route} highlightLap={2} />)
+
+    expect(fitBounds).toHaveBeenCalledTimes(1)
+    const [bounds] = fitBounds.mock.calls[0]!
+    expect((bounds as L.LatLngBounds).getSouth()).toBeCloseTo(0.0005)
+    inView.mockRestore()
+    fitBounds.mockRestore()
   })
 
   it('goes away cleanly while a lap is highlighted', () => {

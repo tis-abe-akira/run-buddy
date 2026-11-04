@@ -61,7 +61,9 @@ function RouteMap({ route, highlightLap }: { route: RoutePoint[]; highlightLap: 
     }
   }, [route])
 
-  // The highlight is drawn over the course and removed again, without rebuilding the map.
+  // The highlight is drawn over the course and removed again, without rebuilding the map. The map stays
+  // where it is, so stepping through laps does not zoom out and in each time; it moves only to bring a
+  // lap into view (after the runner zoomed in elsewhere).
   useEffect(() => {
     const current = map.current
     const segment = highlightLap === null ? [] : lapSegment(route, highlightLap).map(toLatLng)
@@ -69,13 +71,12 @@ function RouteMap({ route, highlightLap }: { route: RoutePoint[]; highlightLap: 
       return
     }
     const line = L.polyline(segment, { className: 'route-highlight', interactive: false }).addTo(current)
-    current.fitBounds(L.latLngBounds(segment), { padding: [32, 32], maxZoom: 17 })
+    const bounds = L.latLngBounds(segment)
+    if (!current.getBounds().contains(bounds)) {
+      current.fitBounds(bounds, { padding: [32, 32], maxZoom: 17 })
+    }
     return () => {
       line.remove()
-      // On unmount the map's own cleanup has already removed it (cleanups run in order); only refit a live map.
-      if (map.current === current) {
-        current.fitBounds(L.latLngBounds(route.map(toLatLng)), { padding: [24, 24] })
-      }
     }
   }, [route, highlightLap])
 
