@@ -62,7 +62,7 @@ function Body({ state, selectedLap, onSelectLap }: Props) {
         )
       }
       return (
-        <div className="table-scroll">
+        <div className="table-scroll lap-table-scroll">
           <table className="table">
             <thead>
               <tr>
