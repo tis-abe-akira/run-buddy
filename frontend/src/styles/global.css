@@ -296,17 +296,18 @@ a.text-link,
 .lap-row { cursor: pointer; }
 .lap-row:hover td { background: var(--color-surface-soft); }
 .lap-row.is-selected td { background: var(--color-surface-card); font-weight: 600; }
+/* The lap number is a button only for the keyboard and screen readers; it looks like the plain number. */
 .lap-select {
   font: inherit;
   color: inherit;
   background: none;
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--rounded-xs);
-  min-width: 2em;
-  padding: 0 var(--spacing-xxs);
+  border: 0;
+  padding: 0;
   cursor: pointer;
 }
-.lap-row.is-selected .lap-select { border-color: var(--color-primary-active); color: var(--color-primary-active); }
+.lap-select:focus { outline: none; }
+.lap-row:has(.lap-select:focus-visible) td { background: var(--color-surface-soft); }
+.lap-row:has(.lap-select:focus-visible) td:first-child { box-shadow: inset 2px 0 0 var(--color-primary-active); }
 
 .dark-card .table th { color: var(--color-on-dark-soft); border-bottom-color: var(--color-surface-dark-elevated); }
 .dark-card .table td { border-bottom-color: var(--color-surface-dark-elevated); font-family: var(--font-mono); }
