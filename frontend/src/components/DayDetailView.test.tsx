@@ -88,7 +88,7 @@ describe('DayDetailView with laps', () => {
     render(
       <DayDetailView
         day={{ date: '2026-11-08', plannedWorkouts: [], runs: [aRun({ activityId: 'garmin-1', startedAt: '2026-11-08T06:12:00' })] }}
-        renderLaps={(run) => <p>laps of {run.activityId}</p>}
+        renderDetail={(run) => <p>laps of {run.activityId}</p>}
       />,
     )
 

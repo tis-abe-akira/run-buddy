@@ -26,6 +26,7 @@ describe('RunLaps', () => {
           detail: {
             available: true,
             trackPoints: 1833,
+            route: [],
             laps: [lap(), lap({ number: 2, startOffsetSeconds: 330, distanceKm: 0.62, durationSeconds: 200, paceSecondsPerKm: 323, averageHeartRate: null, maxHeartRate: null })],
           },
         }}
@@ -45,7 +46,7 @@ describe('RunLaps', () => {
   })
 
   it('says a run has no laps when the file has none', () => {
-    render(<RunLaps state={{ status: 'ready', detail: { available: true, trackPoints: 0, laps: [] } }} />)
+    render(<RunLaps state={{ status: 'ready', detail: { available: true, trackPoints: 0, route: [], laps: [] } }} />)
 
     expect(screen.getByText('ラップの記録はありません')).toBeInTheDocument()
   })
@@ -57,7 +58,7 @@ describe('RunLaps', () => {
   })
 
   it('says when the run has no detail data, as for a generated run', () => {
-    render(<RunLaps state={{ status: 'ready', detail: { available: false, trackPoints: 0, laps: [] } }} />)
+    render(<RunLaps state={{ status: 'ready', detail: { available: false, trackPoints: 0, route: [], laps: [] } }} />)
 
     expect(screen.getByText('このランには詳細データがありません')).toBeInTheDocument()
   })

@@ -274,6 +274,22 @@ a.text-link,
 .table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .table-scroll { overflow-x: auto; }
 
+/* Route map (Leaflet). The line is the "actual" series, so it is coral; the finish is the deep teal. */
+.route-map {
+  width: 100%;
+  height: 320px;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  overflow: hidden;
+  z-index: 0;
+}
+.route-line { stroke: var(--chart-actual); stroke-width: 4; stroke-linejoin: round; fill: none; }
+.route-start { fill: var(--color-canvas); stroke: var(--chart-actual); stroke-width: 3; fill-opacity: 1; }
+.route-finish { fill: var(--chart-planned); stroke: var(--color-canvas); stroke-width: 2; fill-opacity: 1; }
+@media (max-width: 600px) {
+  .route-map { height: 240px; }
+}
+
 .dark-card .table th { color: var(--color-on-dark-soft); border-bottom-color: var(--color-surface-dark-elevated); }
 .dark-card .table td { border-bottom-color: var(--color-surface-dark-elevated); font-family: var(--font-mono); }
 

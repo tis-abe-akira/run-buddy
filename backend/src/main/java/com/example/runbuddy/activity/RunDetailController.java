@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-/** A run's laps, read from its activity file on demand (ADR-0012, #13). The track's points come with #14. */
+/** A run's laps, read from its activity file on demand (ADR-0012, #13). The route is the track thinned for drawing (#14). */
 @RestController
 public class RunDetailController {
 
@@ -21,7 +21,7 @@ public class RunDetailController {
     public ResponseEntity<RunDetailResponse> detail(@PathVariable String activityId) {
         return switch (runDetailService.detail(activityId)) {
             case RunDetailService.Lookup.Found found -> ResponseEntity.ok(RunDetailResponse.from(found.detail()));
-            case RunDetailService.Lookup.NoFile noFile -> ResponseEntity.ok(new RunDetailResponse(false, List.of(), 0));
+            case RunDetailService.Lookup.NoFile noFile -> ResponseEntity.ok(new RunDetailResponse(false, List.of(), 0, List.of()));
             case RunDetailService.Lookup.RunNotFound notFound -> ResponseEntity.notFound().build();
         };
     }
@@ -29,11 +29,26 @@ public class RunDetailController {
     /**
      * @param available   false when the run's source keeps no activity file (a generated dummy run)
      * @param trackPoints how many positions the track has (0 indoors or for a manual entry)
+     * @param route       the track thinned to at most {@value #MAX_ROUTE_POINTS} points for the map
+     *                    (empty without positions). It locates the runner, so it goes to the browser only.
      */
-    public record RunDetailResponse(boolean available, List<LapResponse> laps, int trackPoints) {
+    public record RunDetailResponse(boolean available, List<LapResponse> laps, int trackPoints, List<RoutePoint> route) {
+
+        static final int MAX_ROUTE_POINTS = 300;
 
         static RunDetailResponse from(RunDetail detail) {
-            return new RunDetailResponse(true, detail.laps().stream().map(LapResponse::from).toList(), detail.track().size());
+            return new RunDetailResponse(
+                    true,
+                    detail.laps().stream().map(LapResponse::from).toList(),
+                    detail.track().size(),
+                    detail.route(MAX_ROUTE_POINTS).stream().map(RoutePoint::from).toList());
+        }
+    }
+
+    public record RoutePoint(double latitude, double longitude) {
+
+        static RoutePoint from(TrackPoint point) {
+            return new RoutePoint(point.latitude(), point.longitude());
         }
     }
 

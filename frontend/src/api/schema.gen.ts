@@ -401,11 +401,18 @@ export interface components {
              */
             elevationGainMeters: number | null;
         };
+        RoutePoint: {
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+        };
         RunDetailResponse: {
             available: boolean;
             laps: components["schemas"]["LapResponse"][];
             /** Format: int32 */
             trackPoints: number;
+            route: components["schemas"]["RoutePoint"][];
         };
         DayResponse: {
             /** Format: date */

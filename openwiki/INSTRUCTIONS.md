@@ -79,6 +79,8 @@
 - **ラップと軌跡（ADR-0012）**: FIT ファイルを初めて開いたときだけダウンロードし、原本を `run_fit_file` に保存して毎回読む設計。
   ポート `ActivityFileSource` と `ActivityFileReader`、FIT SDK を `activity/fit` に閉じ込めていること、ダウンロード中にトランザクションを開かないこと、
   テスト用の FIT を `SyntheticFit` で合成していること。
+- **ランコースの地図（ADR-0013）**: Leaflet + OpenStreetMap。`RunDetail.route` が軌跡を最大 300 点に間引く（スタートとゴールは残す）。
+  `RunRoute` は props だけを受け取り、位置のないランは地図もタイル要求も出さず「位置情報なし」と表示すること。
 - **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
   ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。
