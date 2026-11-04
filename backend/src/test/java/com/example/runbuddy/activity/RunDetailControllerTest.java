@@ -82,6 +82,8 @@ class RunDetailControllerTest {
                 .andExpect(jsonPath("$.route.length()").value(2))
                 .andExpect(jsonPath("$.route[1].latitude", number(0.0002)))
                 .andExpect(jsonPath("$.route[1].longitude", number(0.0001)))
+                .andExpect(jsonPath("$.route[0].lap").value(1))
+                .andExpect(jsonPath("$.route[1].lap").value(1))
                 .andExpect(jsonPath("$.laps.length()").value(2))
                 .andExpect(jsonPath("$.laps[0].number").value(1))
                 .andExpect(jsonPath("$.laps[0].distanceKm").value(1.0))

@@ -406,6 +406,8 @@ export interface components {
             latitude: number;
             /** Format: double */
             longitude: number;
+            /** Format: int32 */
+            lap: number | null;
         };
         RunDetailResponse: {
             available: boolean;

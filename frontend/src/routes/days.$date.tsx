@@ -3,8 +3,8 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { dayQuery, runDetailQuery } from '../api/queries'
 import { DayDetailView } from '../components/DayDetailView'
 import { ErrorBand } from '../components/ErrorBand'
+import { RunDetailPanel } from '../components/RunDetailPanel'
 import { RunLaps } from '../components/RunLaps'
-import { RunRoute } from '../components/RunRoute'
 import { formatDayHeading, isIsoDate, monthOfDate, shiftDay } from '../lib/day'
 import { describeDetailError } from '../lib/importError'
 
@@ -71,10 +71,5 @@ function RunDetailLoader({ activityId }: { activityId: string }) {
   if (detail.isError) {
     return <RunLaps state={{ status: 'error', message: describeDetailError(detail.error), onRetry: () => void detail.refetch() }} />
   }
-  return (
-    <>
-      <RunRoute route={detail.data.route} />
-      <RunLaps state={{ status: 'ready', detail: detail.data }} />
-    </>
-  )
+  return <RunDetailPanel detail={detail.data} />
 }

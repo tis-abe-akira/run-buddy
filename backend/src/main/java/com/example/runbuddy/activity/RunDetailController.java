@@ -2,6 +2,7 @@ package com.example.runbuddy.activity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.OptionalInt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,7 @@ public class RunDetailController {
     /**
      * @param available   false when the run's source keeps no activity file (a generated dummy run)
      * @param trackPoints how many positions the track has (0 indoors or for a manual entry)
-     * @param route       the track thinned to at most {@value #MAX_ROUTE_POINTS} points for the map
+     * @param route       the track thinned to about {@value #MAX_ROUTE_POINTS} points for the map
      *                    (empty without positions). It locates the runner, so it goes to the browser only.
      */
     public record RunDetailResponse(boolean available, List<LapResponse> laps, int trackPoints, List<RoutePoint> route) {
@@ -41,14 +42,19 @@ public class RunDetailController {
                     true,
                     detail.laps().stream().map(LapResponse::from).toList(),
                     detail.track().size(),
-                    detail.route(MAX_ROUTE_POINTS).stream().map(RoutePoint::from).toList());
+                    detail.route(MAX_ROUTE_POINTS).stream().map(point -> RoutePoint.of(point, detail)).toList());
         }
     }
 
-    public record RoutePoint(double latitude, double longitude) {
+    /** @param lap the lap the runner was on there, so a lap can be highlighted on the map; null outside any lap */
+    public record RoutePoint(
+            double latitude,
+            double longitude,
+            @Schema(types = {"integer", "null"}) Integer lap) {
 
-        static RoutePoint from(TrackPoint point) {
-            return new RoutePoint(point.latitude(), point.longitude());
+        static RoutePoint of(TrackPoint point, RunDetail detail) {
+            OptionalInt lap = detail.lapAt(point.offset());
+            return new RoutePoint(point.latitude(), point.longitude(), lap.isPresent() ? lap.getAsInt() : null);
         }
     }
 

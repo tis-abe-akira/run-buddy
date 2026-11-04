@@ -286,9 +286,27 @@ a.text-link,
 .route-line { stroke: var(--chart-actual); stroke-width: 4; stroke-linejoin: round; fill: none; }
 .route-start { fill: var(--color-canvas); stroke: var(--chart-actual); stroke-width: 3; fill-opacity: 1; }
 .route-finish { fill: var(--chart-planned); stroke: var(--color-canvas); stroke-width: 2; fill-opacity: 1; }
+/* A lap picked in the table: the rest of the course fades and the lap is drawn darker and wider on top. */
+.route-map.has-highlight .route-line { stroke-opacity: 0.35; }
+.route-highlight { stroke: var(--color-primary-active); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 @media (max-width: 600px) {
   .route-map { height: 240px; }
 }
+
+.lap-row { cursor: pointer; }
+.lap-row:hover td { background: var(--color-surface-soft); }
+.lap-row.is-selected td { background: var(--color-surface-card); font-weight: 600; }
+.lap-select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-xs);
+  min-width: 2em;
+  padding: 0 var(--spacing-xxs);
+  cursor: pointer;
+}
+.lap-row.is-selected .lap-select { border-color: var(--color-primary-active); color: var(--color-primary-active); }
 
 .dark-card .table th { color: var(--color-on-dark-soft); border-bottom-color: var(--color-surface-dark-elevated); }
 .dark-card .table td { border-bottom-color: var(--color-surface-dark-elevated); font-family: var(--font-mono); }

@@ -45,8 +45,66 @@ describe('RunLaps', () => {
     expect(within(second!).getByText('—')).toBeInTheDocument()
   })
 
+  it('picks a lap to show on the map, and lets go of it when picked again', async () => {
+    const user = userEvent.setup()
+    const onSelectLap = vi.fn()
+    const detail = { available: true, trackPoints: 2, route: [], laps: [lap(), lap({ number: 2 })] }
+    const { rerender } = render(
+      <RunLaps state={{ status: 'ready', detail }} selectedLap={null} onSelectLap={onSelectLap} />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'ラップ 2 を地図で表示' }))
+    expect(onSelectLap).toHaveBeenLastCalledWith(2)
+
+    rerender(<RunLaps state={{ status: 'ready', detail }} selectedLap={2} onSelectLap={onSelectLap} />)
+    const button = screen.getByRole('button', { name: 'ラップ 2 を地図で表示' })
+    expect(button).toHaveAttribute('aria-pressed', 'true')
+    expect(button.closest('tr')).toHaveClass('is-selected')
+
+    await user.click(button)
+    expect(onSelectLap).toHaveBeenLastCalledWith(null)
+  })
+
+  it('also picks a lap when its row is clicked anywhere', async () => {
+    const user = userEvent.setup()
+    const onSelectLap = vi.fn()
+    render(
+      <RunLaps
+        state={{
+          status: 'ready',
+          detail: { available: true, trackPoints: 2, route: [], laps: [lap()] },
+        }}
+        selectedLap={null}
+        onSelectLap={onSelectLap}
+      />,
+    )
+
+    await user.click(screen.getByText('1.20'))
+    expect(onSelectLap).toHaveBeenCalledWith(1)
+  })
+
+  it('offers no lap picking when there is no map to show it on', () => {
+    render(
+      <RunLaps
+        state={{
+          status: 'ready',
+          detail: { available: true, trackPoints: 0, route: [], laps: [lap()] },
+        }}
+      />,
+    )
+
+    expect(screen.queryByRole('button', { name: /地図で表示/ })).not.toBeInTheDocument()
+  })
+
   it('says a run has no laps when the file has none', () => {
-    render(<RunLaps state={{ status: 'ready', detail: { available: true, trackPoints: 0, route: [], laps: [] } }} />)
+    render(
+      <RunLaps
+        state={{
+          status: 'ready',
+          detail: { available: true, trackPoints: 0, route: [], laps: [] },
+        }}
+      />,
+    )
 
     expect(screen.getByText('ラップの記録はありません')).toBeInTheDocument()
   })
@@ -58,7 +116,14 @@ describe('RunLaps', () => {
   })
 
   it('says when the run has no detail data, as for a generated run', () => {
-    render(<RunLaps state={{ status: 'ready', detail: { available: false, trackPoints: 0, route: [], laps: [] } }} />)
+    render(
+      <RunLaps
+        state={{
+          status: 'ready',
+          detail: { available: false, trackPoints: 0, route: [], laps: [] },
+        }}
+      />,
+    )
 
     expect(screen.getByText('このランには詳細データがありません')).toBeInTheDocument()
   })
@@ -66,7 +131,15 @@ describe('RunLaps', () => {
   it('explains a failure and retries on request', async () => {
     const user = userEvent.setup()
     const onRetry = vi.fn()
-    render(<RunLaps state={{ status: 'error', message: 'Garmin の利用上限に達しました。', onRetry }} />)
+    render(
+      <RunLaps
+        state={{
+          status: 'error',
+          message: 'Garmin の利用上限に達しました。',
+          onRetry,
+        }}
+      />,
+    )
 
     expect(screen.getByRole('alert')).toHaveTextContent('Garmin の利用上限に達しました。')
     await user.click(screen.getByRole('button', { name: '再試行' }))
