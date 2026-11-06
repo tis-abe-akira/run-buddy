@@ -493,3 +493,10 @@ a.text-link,
   background: var(--color-canvas);
   box-shadow: inset 0 -1px 0 var(--color-hairline);
 }
+
+/* "What to do today" cards on the dashboard (#27): the first is the coral callout, the rest are quieter. */
+.next-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-md); }
+.next-step { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.next-step h2 { margin: 0; }
+.next-steps .callout-coral { grid-column: 1 / -1; }
+.next-step-secondary { color: var(--color-on-primary); }

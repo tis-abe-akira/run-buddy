@@ -244,6 +244,7 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 | API | 内容 |
 |---|---|
 | `GET /api/dashboard/{YYYY-MM}` | 計画と実績の比較（達成率、日ごとの累積など） |
+| `GET /api/next-steps` | 今日やること（目標からの遅れ・レース前・しばらく走っていない・次月の計画がまだ）を急ぐ順に。`kind` で区別するカードの一覧（ADR-0014） |
 | `GET /api/runs/{YYYY-MM}` | ランの記録（最大心拍・ケイデンス・歩幅・上昇を含む） |
 | `POST /api/runs/latest/import` | 最新を取り込む：保存済みの最新のランの前日〜今日（何もなければ今月の1日〜今日）を ActivitySource から取り込む。月をまたいでもよい。結果に確認した期間 `from` / `to` が入る |
 | `POST /api/runs/{YYYY-MM}/import` | ActivitySource（ダミーか Garmin）から取り込む。何度呼んでも重複しない。失敗すると ProblemDetail の `reason` に `CREDENTIALS_REJECTED` / `RATE_LIMITED` / `UNAVAILABLE` |

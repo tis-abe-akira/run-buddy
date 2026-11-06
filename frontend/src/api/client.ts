@@ -11,6 +11,7 @@ export type DayDetail = Schemas['DayResponse']
 export type RunDetail = Schemas['RunDetailResponse']
 export type Lap = Schemas['LapResponse']
 export type RoutePoint = Schemas['RoutePoint']
+export type NextStepCard = Schemas['NextStepCard']
 export type Race = Schemas['RaceResponse']
 export type RaceInput = Schemas['RaceBody']
 export type Plan = Schemas['PlanBody']
@@ -66,6 +67,7 @@ export const api = {
   day: (date: IsoDate) => request<DayDetail>(`/api/days/${date}`),
   runDetail: (activityId: string) => request<RunDetail>(`/api/runs/${encodeURIComponent(activityId)}/detail`),
   races: () => request<Race[]>('/api/races'),
+  nextSteps: () => request<Schemas['NextStepsResponse']>('/api/next-steps'),
   createRace: (race: RaceInput) => request<Race>('/api/races', { method: 'POST', body: JSON.stringify(race) }),
   updateRace: (id: string, race: RaceInput) =>
     request<Race>(`/api/races/${id}`, { method: 'PUT', body: JSON.stringify(race) }),

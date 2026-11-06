@@ -37,6 +37,17 @@ function renderChat(overrides: Partial<ComponentProps<typeof AdvisorChat>> = {})
 }
 
 describe('AdvisorChat', () => {
+  it('starts with a request already written, from a dashboard card, and waits for the runner to send it', async () => {
+    const user = userEvent.setup()
+    const props = renderChat({ initialDraft: '今月の計画を見直してください。' })
+
+    expect(screen.getByLabelText('相談内容')).toHaveValue('今月の計画を見直してください。')
+    expect(props.onSend).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: '送信' }))
+    expect(props.onSend).toHaveBeenCalledWith('今月の計画を見直してください。')
+  })
+
   it('sends the typed question', async () => {
     const user = userEvent.setup()
     const props = renderChat()

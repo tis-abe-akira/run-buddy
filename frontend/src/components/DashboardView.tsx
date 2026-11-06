@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router'
-import type { Dashboard, ImportResult, LatestImportResult, Race, Run } from '../api/client'
+import type { Dashboard, ImportResult, LatestImportResult, NextStepCard, Race, Run } from '../api/client'
 import { formatKm, formatPace, formatRate } from '../lib/format'
 import { formatMonth, shiftMonth, type Month } from '../lib/month'
 import { ExportLink } from './ExportLink'
 import { ImportControls } from './ImportControls'
 import { MonthSwitcher } from './MonthSwitcher'
 import { NextRaceCard } from './NextRaceCard'
+import { NextSteps } from './NextSteps'
 import { ProgressChart } from './ProgressChart'
 import { RunsTable } from './RunsTable'
 import { StatTile } from './StatTile'
@@ -26,6 +27,8 @@ type Props = {
   importError?: string
   /** The next race from today on, whatever month is shown. */
   nextRace?: Race
+  /** What to do today, most pressing first; given only while this month is shown. */
+  nextSteps?: NextStepCard[]
 }
 
 export function DashboardView({
@@ -41,6 +44,7 @@ export function DashboardView({
   lastMonth,
   importError,
   nextRace,
+  nextSteps,
 }: Props) {
   const month = dashboard.month
   const remainingKm = Math.max(dashboard.targetKm - dashboard.actualKm, 0)
@@ -58,6 +62,7 @@ export function DashboardView({
             <span className="spacer" />
             <MonthSwitcher month={month} onChange={onMonthChange} />
           </div>
+          {nextSteps && <NextSteps cards={nextSteps} thisMonth={month as Month} />}
           {nextRace && <NextRaceCard race={nextRace} />}
           <div className="row">
             <ImportControls

@@ -82,6 +82,9 @@
 - **ランコースの地図（ADR-0013）**: Leaflet + OpenStreetMap。`RunDetail.route` が軌跡を約 300 点に間引く（スタート・ゴールと各ラップの最初の点は残す）。
   `RunRoute` は props だけを受け取り、位置のないランは地図もタイル要求も出さず「位置情報なし」と表示すること。
   ラップの行を押すと地図でその区間を強調する仕組み（`RunDetail.lapAt` で各点にラップ番号を付け、間引きでも各ラップの最初の点を残す。`RunDetailPanel` が選択を持ち、`lapSegment` で区間を切り出す）。
+- **ダッシュボードの「いまやること」（ADR-0014）**: 状況の判定はドメイン（`SituationRules`、`TrainingSnapshot`、sealed interface の `Situation`）、
+  API はカードの種類と数値だけ（`GET /api/next-steps`、`kind` で区別するユニオン型）、文言は frontend（`lib/nextSteps.ts`）。
+  レースが近いあいだは目標からの遅れを出さないこと。カードは画面を開くだけで保存しないこと（AI 相談は `?ask=` で入力欄に入れるだけ）。
 - **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
   ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。

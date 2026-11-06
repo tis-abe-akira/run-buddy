@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { activitySourceQuery, dashboardQuery, racesQuery, runsQuery, useImportLatest, useImportRuns } from '../api/queries'
+import { activitySourceQuery, dashboardQuery, nextStepsQuery, racesQuery, runsQuery, useImportLatest, useImportRuns } from '../api/queries'
 import { DashboardView } from '../components/DashboardView'
 import { ErrorBand } from '../components/ErrorBand'
 import { elapsedDays } from '../lib/elapsed'
@@ -34,6 +34,10 @@ function DashboardPage() {
   const runs = useQuery(runsQuery(month))
   const source = useQuery(activitySourceQuery())
   const races = useQuery(racesQuery())
+  // The cards are about today, so only this month shows them. They load apart from the loader, so a
+  // failure there never blocks the dashboard.
+  const isThisMonth = month === currentMonth()
+  const nextSteps = useQuery({ ...nextStepsQuery(), enabled: isThisMonth })
   const importRuns = useImportRuns(month)
   const importLatest = useImportLatest()
 
@@ -66,6 +70,7 @@ function DashboardPage() {
       lastMonth={importRuns.data}
       importError={importError ? describeImportError(importError) : undefined}
       nextRace={nextRace(races.data ?? [])}
+      nextSteps={isThisMonth ? nextSteps.data?.cards : undefined}
     />
   )
 }
