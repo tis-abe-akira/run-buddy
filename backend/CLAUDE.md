@@ -51,6 +51,13 @@ changing the structure.
 - Database tests act as a fresh random user (`DatabaseTest`), so they need no cleanup and must not
   depend on data from other tests.
 
+## Next steps on the dashboard (ADR-0014)
+
+- `SituationRules` decides what is worth acting on today from a `TrainingSnapshot`; it is pure and takes
+  "today" as a value. Add a situation as a new `Situation` record, a rule and its place in `ORDER`, with
+  boundary tests in `SituationRulesTest` first. The API returns kinds and numbers only; wording is the
+  frontend's. A card never saves anything.
+
 ## AI advisor (ADR-0008)
 
 - `TrainingAdvisor` is the port, one implementation per provider; `AdvisorDirectory` routes by

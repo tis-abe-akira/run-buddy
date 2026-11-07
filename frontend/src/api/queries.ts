@@ -33,6 +33,7 @@ export function useImportRuns(month: Month) {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ['dashboard', month] }),
         queryClient.invalidateQueries({ queryKey: ['runs', month] }),
+        queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
       ]),
   })
 }
@@ -47,6 +48,7 @@ export function useImportLatest() {
         queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
         queryClient.invalidateQueries({ queryKey: ['runs'] }),
         queryClient.invalidateQueries({ queryKey: ['day'] }),
+        queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
       ]),
   })
 }
@@ -57,7 +59,10 @@ export function useSavePlan(month: Month) {
     mutationFn: (plan: Plan) => api.savePlan(month, plan),
     onSuccess: (saved) => {
       queryClient.setQueryData(planQuery(month).queryKey, saved)
-      return queryClient.invalidateQueries({ queryKey: ['dashboard', month] })
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['dashboard', month] }),
+        queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
+      ])
     },
   })
 }
@@ -71,9 +76,16 @@ export function useConsult() {
 
 export const racesQuery = () => queryOptions({ queryKey: ['races'], queryFn: api.races })
 
+/** Cards for today (#27). Anything that changes runs, plans or races refreshes them. */
+export const nextStepsQuery = () => queryOptions({ queryKey: ['next-steps'], queryFn: api.nextSteps })
+
 export function useRaceMutations() {
   const queryClient = useQueryClient()
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['races'] })
+  const refresh = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['races'] }),
+      queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
+    ])
   return {
     create: useMutation({ mutationFn: (race: RaceInput) => api.createRace(race), onSuccess: refresh }),
     update: useMutation({

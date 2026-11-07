@@ -25,14 +25,16 @@ type Props = {
   onAdopt: (index: number) => void
   adoption?: Adoption
   onReset: () => void
+  /** A request written by a dashboard card (#27); the runner reads it and sends it, or edits it first. */
+  initialDraft?: string
 }
 
 const SUGGESTIONS = ['先月の走りを振り返って', 'プランを作って', '週末にロング走を入れたい']
 
 /** A conversation with the advisor. The provider and model can be changed before any message. */
 export function AdvisorChat(props: Props) {
-  const { month, providers, provider, model, onChoose, entries, pending, error, onSend, onAdopt, adoption, onReset } = props
-  const [draft, setDraft] = useState('')
+  const { month, providers, provider, model, onChoose, entries, pending, error, onSend, onAdopt, adoption, onReset, initialDraft } = props
+  const [draft, setDraft] = useState(initialDraft ?? '')
   const models = providers.find((p) => p.id === provider)?.models ?? []
 
   function send(text: string) {

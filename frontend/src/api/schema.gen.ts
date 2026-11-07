@@ -148,6 +148,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/next-steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["nextSteps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/export/{month}.csv": {
         parameters: {
             query?: never;
@@ -415,6 +431,64 @@ export interface components {
             /** Format: int32 */
             trackPoints: number;
             route: components["schemas"]["RoutePoint"][];
+        };
+        BehindTargetCard: {
+            /** @enum {string} */
+            kind: "BEHIND_TARGET";
+            month: string;
+            /**
+             * Format: double
+             * @description how far behind the pace that reaches the target
+             */
+            shortfallKm: number;
+            /**
+             * Format: double
+             * @description still to run to reach the target
+             */
+            remainingKm: number;
+            /**
+             * Format: int32
+             * @description days left in the month, today included
+             */
+            daysLeft: number;
+        };
+        MonthEndingCard: {
+            /** @enum {string} */
+            kind: "MONTH_ENDING";
+            nextMonth: string;
+            /**
+             * Format: int32
+             * @description days left in this month after today; 0 on its last day
+             */
+            daysLeft: number;
+        };
+        NextStepCard: components["schemas"]["RaceApproachingCard"] | components["schemas"]["BehindTargetCard"] | components["schemas"]["NoRunsLatelyCard"] | components["schemas"]["MonthEndingCard"];
+        NextStepsResponse: {
+            cards: components["schemas"]["NextStepCard"][];
+        };
+        NoRunsLatelyCard: {
+            /** @enum {string} */
+            kind: "NO_RUNS_LATELY";
+            /** Format: date */
+            lastRunDate: string;
+            /** Format: int64 */
+            daysSince: number;
+        };
+        RaceApproachingCard: {
+            /** @enum {string} */
+            kind: "RACE_APPROACHING";
+            /** Format: uuid */
+            raceId: string;
+            raceName: string;
+            /** Format: date */
+            raceDate: string;
+            /** Format: double */
+            distanceKm: number;
+            /**
+             * Format: int64
+             * @description 0 on race day
+             */
+            daysToGo: number;
         };
         DayResponse: {
             /** Format: date */
@@ -735,6 +809,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RunDetailResponse"];
+                };
+            };
+        };
+    };
+    nextSteps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NextStepsResponse"];
                 };
             };
         };

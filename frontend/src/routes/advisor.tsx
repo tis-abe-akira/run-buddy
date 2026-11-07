@@ -8,13 +8,21 @@ import { ErrorBand } from '../components/ErrorBand'
 import { MonthSwitcher } from '../components/MonthSwitcher'
 import { currentMonth, formatMonth, isMonth, shiftMonth, type Month } from '../lib/month'
 
-type AdvisorSearch = { month?: Month }
+/** `ask` pre-fills the message box (from a dashboard card); it is never sent without the runner. */
+type AdvisorSearch = { month?: Month; ask?: string }
+
+const MAX_ASK_LENGTH = 500
+
+function validateAdvisorSearch(search: Record<string, unknown>): AdvisorSearch {
+  const ask = typeof search.ask === 'string' ? search.ask.trim().slice(0, MAX_ASK_LENGTH) : ''
+  return { ...(isMonth(search.month) ? { month: search.month } : {}), ...(ask ? { ask } : {}) }
+}
 
 export const Route = createFileRoute('/advisor')({
-  validateSearch: (search: Record<string, unknown>): AdvisorSearch => (isMonth(search.month) ? { month: search.month } : {}),
+  validateSearch: validateAdvisorSearch,
   loader: ({ context }) => context.queryClient.ensureQueryData(advisorProvidersQuery()),
-  // A new month starts a new conversation.
-  remountDeps: ({ search }) => search.month,
+  // A new month, or a new request from a card, starts a new conversation.
+  remountDeps: ({ search }) => ({ month: search.month, ask: search.ask }),
   component: AdvisorPage,
   errorComponent: ({ error }) => <ErrorBand error={error} />,
 })
@@ -32,7 +40,7 @@ function defaultProvider(providers: AdvisorInfo[]): AdvisorInfo | undefined {
 }
 
 function AdvisorPage() {
-  const { month: requested } = Route.useSearch()
+  const { month: requested, ask } = Route.useSearch()
   const month = requested ?? shiftMonth(currentMonth(), 1)
   const navigate = Route.useNavigate()
   const providers = useQuery(advisorProvidersQuery()).data ?? []
@@ -110,6 +118,7 @@ function AdvisorPage() {
               onAdopt={adopt}
               adoption={adoption}
               onReset={reset}
+              initialDraft={ask}
             />
           )}
           {adoption?.state === 'saved' && (
