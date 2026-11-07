@@ -66,8 +66,11 @@ public class SpringAiTrainingAdvisor implements TrainingAdvisor {
             Put a training plan in proposedPlan only when the runner asks for one or agrees to one;
             otherwise set proposedPlan to null. A proposed plan must:
             - only use dates in %s, on the weekdays the runner asked for,
+            - when that month has already started, only use dates from today on: the days before
+              today are history (their runs are in the tools) and keep the plan they had,
             - use type EASY, TEMPO, INTERVAL, LONG or RACE,
-            - give distances in kilometers, and targetKm as the monthly distance goal,
+            - give distances in kilometers, and targetKm as the distance goal for the whole month,
+              including what has already been run,
             - build up gradually from what the runner actually ran recently.
             Describe the plan in the reply as well.
             """;

@@ -65,6 +65,7 @@
 - **AI 相談（ADR-0008）**: Spring AI の `ChatClient` を `advisor/springai` に閉じ込める。
   ツール呼び出し（`AdvisorTools`、1回ごとに短いトランザクション）、構造化出力、
   モデルの提案は信用しない入力として `AdvisorAnswer.toPlan` を通すこと、モデル呼び出しをトランザクションの中でしないこと。
+  月の途中の見直しでは、提案を保存済みの計画と `MonthlyPlan.revisedFrom` で合成し、今日より前の予定は残すこと（#31）。
   会話ごとにプロバイダとモデルを選べる仕組み（`AdvisorDirectory`）。
   AI が目標のレースを読むツール（`AdvisorTools.upcomingRaces`：残りの日数と週数、目標タイムと必要なペース）と、
   システムプロンプトでレースから逆算し、最後の 2〜3 週は量を落とす（テーパリング）よう指示していること。
