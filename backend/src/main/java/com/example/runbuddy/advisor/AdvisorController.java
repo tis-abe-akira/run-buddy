@@ -1,11 +1,14 @@
 package com.example.runbuddy.advisor;
 
 import com.example.runbuddy.plan.MonthlyPlan;
+import com.example.runbuddy.plan.MonthlyPlanRepository;
 import com.example.runbuddy.plan.WorkoutType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,9 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdvisorController {
 
     private final AdvisorDirectory directory;
+    private final MonthlyPlanRepository plans;
+    private final Clock clock;
 
-    public AdvisorController(AdvisorDirectory directory) {
+    public AdvisorController(AdvisorDirectory directory, MonthlyPlanRepository plans, Clock clock) {
         this.directory = directory;
+        this.plans = plans;
+        this.clock = clock;
     }
 
     /** The providers and models configured here. The first of each list is the default. */
@@ -34,6 +41,11 @@ public class AdvisorController {
     /**
      * Asks the chosen provider. Stateless: the client sends the whole conversation each time.
      * A proposed plan is only returned, never saved; adopting it goes through PUT /api/plans.
+     *
+     * <p>The proposal is returned already merged with the saved plan ({@link MonthlyPlan#revisedFrom}),
+     * so what the runner sees is exactly what adopting it saves, whichever provider answered: the days
+     * that have passed keep their plan (#31). The saved plan is read after the model has answered, so no
+     * transaction is open while it thinks.
      */
     @PostMapping("/consultations")
     public AdviceBody consult(@RequestBody ConsultationBody body) {
@@ -42,7 +54,13 @@ public class AdvisorController {
         }
         Consultation consultation = new Consultation(
                 body.month(), body.messages().stream().map(MessageBody::toTurn).toList());
-        return AdviceBody.from(directory.consult(body.provider(), body.model(), consultation));
+        Advice advice = directory.consult(body.provider(), body.model(), consultation);
+        return AdviceBody.from(advice.reply(), advice.plan().map(this::asRevision));
+    }
+
+    private MonthlyPlan asRevision(MonthlyPlan proposal) {
+        MonthlyPlan saved = plans.findByMonth(proposal.month()).orElseGet(() -> MonthlyPlan.empty(proposal.month()));
+        return saved.revisedFrom(LocalDate.now(clock), proposal);
     }
 
     @ExceptionHandler(AdvisorUnavailableException.class)
@@ -76,8 +94,8 @@ public class AdvisorController {
             String reply,
             @Schema(types = {"object", "null"}, implementation = ProposedPlanBody.class) ProposedPlanBody proposedPlan) {
 
-        static AdviceBody from(Advice advice) {
-            return new AdviceBody(advice.reply(), advice.plan().map(ProposedPlanBody::from).orElse(null));
+        static AdviceBody from(String reply, Optional<MonthlyPlan> plan) {
+            return new AdviceBody(reply, plan.map(ProposedPlanBody::from).orElse(null));
         }
     }
 

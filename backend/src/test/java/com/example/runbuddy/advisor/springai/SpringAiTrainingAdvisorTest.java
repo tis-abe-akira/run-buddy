@@ -80,7 +80,9 @@ class SpringAiTrainingAdvisorTest {
                 .contains("planning 2026-11")
                 .contains("Sun: 1, 8, 15, 22, 29")
                 .contains("upcoming races")
-                .contains("taper");
+                .contains("taper")
+                .contains("only use dates from today on")
+                .contains("the whole month");
     }
 
     @Test

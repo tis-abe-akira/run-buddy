@@ -69,6 +69,10 @@ changing the structure.
   provider's `optionsForModel` function, never in the shared code.
 - The model's proposed plan is untrusted input: it becomes a `MonthlyPlan` only through
   `AdvisorAnswer.toPlan`, and is never saved automatically.
+- A proposal is returned merged with the saved plan through `MonthlyPlan.revisedFrom(today, proposal)`
+  (#31): days before today keep their plan, today onwards comes from the proposal, and proposed past
+  days are dropped. The merge happens in `AdvisorController`, outside every provider, so the plan shown
+  is the plan adopted.
 - Never call a model inside a database transaction. Tools in `AdvisorTools` read through the
   repositories, one short transaction per call.
 - Tests must not call real providers except the `*LiveTest` classes, which are skipped unless the
