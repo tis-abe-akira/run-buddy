@@ -1,16 +1,17 @@
 ---
 type: concept
 title: 開発の始め方とテストの回し方
-description: run-buddy の開発環境セットアップ、アプリ起動・運用手順、テスト階層（単体・@WebMvcTest・Testcontainers DB・Vitest）の分類と実行方法、および OpenWiki タスク別ルーティングマップを解説します。
+description: run-buddy の開発環境セットアップ、アプリ起動・運用手順、テスト階層（単体・@WebMvcTest・Testcontainers DB・Vitest）の分類と実行方法、OpenWiki タスク別ルーティングマップ、および Claude Code からの Wiki 更新と網羅チェック（ADR-0015）を解説します。
 tags: [quickstart, setup, testing, navigation, openwiki]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
 sources:
+  - id: openwiki-source-f5a489e5822d87c0b8fc66ef
+    resource: repo://.mcp.json
   - id: openwiki-source-3421d35cc2d552c5979c7b87
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java
   - id: openwiki-source-4cdab6c2bc28fc312d8db527
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/PostgresTestConfiguration.java
+  - id: openwiki-source-ea0106e5d3cf9ff6c4005c5d
+    resource: repo://docs/adr/0015-generate-wiki-from-claude-code.md
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
   - id: openwiki-source-2fa9f56c0d55b0fd53974ce0
@@ -21,7 +22,12 @@ sources:
     resource: repo://frontend/vite.config.ts
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+  - id: openwiki-source-5f57e64e268215d7cec9aeb3
+    resource: repo://scripts/openwiki-coverage.sh
+generated: { by: "claude-code", at: "2026-11-07T04:26:43.646Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T04:26:43.646Z
 ---
 
 # 開発の始め方とテストの回し方
@@ -40,6 +46,10 @@ generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
     *   [`architecture/patterns.md`](architecture/patterns.md) を参照。Ports & Adapters、契約テスト（Contract Test）、不変ドメインモデル、Spring AI 統合、Garmin API 連携、OpenAPI 型連携（`openapi-typescript`）、およびコンポーネント設計を解説しています。
 *   **データベース設計・jOOQ・行レベルセキュリティ（RLS）の詳細を知りたい場合:**
     *   [`architecture/persistence-rls.md`](architecture/persistence-rls.md) を参照。jOOQ 選定理由、リクエストごとの RLS トランザクション制御フロー（`RlsTransactionManager`）、ポートにおける default メソッド禁止原則、jOOQ コード生成と Record/ドメイン変換ルールを解説しています。
+*   **ランの測定値・日別詳細ページ・ラップと地図の仕組みを知りたい場合:**
+    *   [`features/run-detail.md`](features/run-detail.md) を参照。値オブジェクト `RunMetrics`、`DayDetail`、FIT ファイルを初めて開いたときだけ取って `run_fit_file` に保存する設計（ADR-0012）、Leaflet と OpenStreetMap の地図とラップの強調（ADR-0013）を解説しています。
+*   **ダッシュボードの「いまやること」カードを直したい・増やしたい場合:**
+    *   [`features/next-steps.md`](features/next-steps.md) を参照。判定はドメイン（`SituationRules`）、API は種類と数値、文言は frontend という分担（ADR-0014）と、状況を1つ増やす手順を解説しています。
 *   **新機能を TDD で追加する実践ステップを学びたい場合:**
     *   [`tutorials/add-feature.md`](tutorials/add-feature.md) を参照。CSV エクスポート機能を題材とした TDD 手順（ドメイン層 → リポジトリ/コントローラ層 → UI 層）および DB スキーマ変更の手順を詳細にステップバイステップで説明しています。
 
@@ -201,12 +211,30 @@ flowchart TD
 
 ---
 
+## 5. この Wiki の更新のしかた
+
+この Wiki（`openwiki/`）は、Claude Code から OpenWiki の連携で更新します（[ADR-0015](../docs/adr/0015-generate-wiki-from-claude-code.md)、手順は [`docs/guides/openwiki.md`](../docs/guides/openwiki.md)）。以前の CI（Gemini）での生成（ADR-0011）を置き換えたものです。
+
+*   **書く方針は人間が [`openwiki/INSTRUCTIONS.md`](INSTRUCTIONS.md) に書きます。** それ以外の `openwiki/` のファイルは生成物なので手で直さず、INSTRUCTIONS.md かソースを直してから更新します。
+*   連携はリポジトリにコミットされています: `.mcp.json`（MCP サーバー `openwiki mcp --host claude`）と `.claude/skills/openwiki/`（手順のスキル）。`openwiki` コマンド（0.7.2 に固定）が PATH に必要です。
+*   機能をマージしたら、Claude Code に「OpenWiki を更新して（mode は update）」と頼みます。OpenWiki がページのキューと根拠（Claims）の検証・索引を受け持ち、Claude がページを調べて書きます。
+*   **抜けは機械で調べます。** `scripts/openwiki-coverage.sh` は、INSTRUCTIONS.md にバッククォートで書いたクラス名・メンバー名（`Class.member` はメンバー名の部分）と ADR 番号が、生成されたページのどこかに出てくるかを調べ、出てこないものを一覧にして終了コード 1 で失敗します。抜けがあれば、もう一度 update して書き足します。
+
+    ```bash
+    scripts/openwiki-coverage.sh
+    ```
+
+---
+
 ## 関連リファレンス
 
 *   [システム構成とモジュール依存関係](architecture/overview.md)
 *   [主要設計パターンと連携メカニズム](architecture/patterns.md)
 *   [永続化層の設計: jOOQ と行レベルセキュリティ (RLS)](architecture/persistence-rls.md)
 *   [チュートリアル: 実機能の追加手順 (TDD)](tutorials/add-feature.md)
+*   [ランの測定値・日別詳細・ラップと地図](features/run-detail.md)
+*   [ダッシュボードの「いまやること」](features/next-steps.md)
+*   [OpenWiki ガイド](../docs/guides/openwiki.md)
 *   [ルート README](../README.md)
 *   [データベースガイド](../docs/guides/database.md)
 *   [Tailscale 利用ガイド](../docs/guides/tailscale.md)

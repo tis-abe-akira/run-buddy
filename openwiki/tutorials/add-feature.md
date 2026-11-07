@@ -26,7 +26,10 @@ sources:
     resource: repo://frontend/src/api/client.ts
   - id: openwiki-source-9ad52ddc523140b03411a027
     resource: repo://frontend/src/components/ExportLink.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "claude-code", at: "2026-11-07T04:26:43.646Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T04:26:43.646Z
 ---
 
 # チュートリアル: 機能を1つ追加してみる
@@ -94,7 +97,8 @@ sequenceDiagram
 
 本セクションでは「やってみる」課題の手順として、データベース変更から UI 同期までのステップを解説します。
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     Step1["1. Flyway マイグレーション追加<br/>(V2__add_run_metrics.sql / V3__create_race.sql)"] --> Step2["2. ./scripts/generate-jooq.sh 実行<br/>& コンパイルエラー修復 (Red/Green)"]
     Step2 --> Step3["3. 契約テストへの振る舞い追加<br/>(RepositoryContract) (Red/Green)"]

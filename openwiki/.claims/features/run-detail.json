@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b527406f259fdfb649f65d8608efede73b86024c0507c88ca7f1ae202cc33b24",
+  "claims": [
+    {
+      "id": "claim_eab189b4839d4c8992ee53a8aad3941c",
+      "statement": "RunMetrics は任意の測定値（最大心拍・平均/最大ケイデンス・歩幅・上昇）をまとめる record で、各値が null か正の値であること、上昇が負でないこと、最大ケイデンスが平均ケイデンス以上であることを自分で検査する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunMetrics.java#L1-L42",
+          "version": "repo-lines-v1:sha256:ed3b8f2b9d4a34e7384844545d99733c05ac0189f618f44aead69cc8d4d09a7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MmQ4ODA2YjIyZjBlNmYwOGEyZTU0MWNiN2M2YzU1MzQ0NjYxZmZkNzE2NzdkMjc0ZWI4MDk4ZTM5YzY0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce080baeb72949dba2594ea8eb4ae7f3",
+      "statement": "Garmin の一覧 API からの変換は、ドメインが拒む測定値（心拍・ケイデンス・歩幅の 0、負の上昇、平均を下回る最大値）をその値だけ null にして捨て、ランは残す。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivity.java#L80-L105",
+          "version": "repo-lines-v1:sha256:b644ca36ebd7a304134fc47e2b278ff0e0576033ab9fc69ef06b6c97a7a2546d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3Y2Y1YTg0NDQzMmUxOGJkNTJlZWQxZjQ4MjNlN2FlOWZiMDNmZTI5NWYxMDIzYjY3Y2Y5YzRlYzAxZjlkMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MmE2MmEzODQ2YzFiMTM2MWIwMWY2ZGIwMzhjOTA3ZTE2NzgyNzQ0M2U0OWVhYzhlNTM3ZTIwM2QxYzE3MDUifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/garmin/GarminActivityTest.java#L54-L70",
+          "version": "repo-lines-v1:sha256:74666a22da47ebaa646991ab4f87e5fcc37af87dae57f9c50faf2f0972bd4b86:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxM2Q4YTYwNTExZTExZTc5YmVlZjIzMjExMWU4NmRjYmRkYzc1NmRkNWY1NThlYjdkODAyMGNmMmZjYjhkY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyY2MwZDQ0ZGRlMzkxMDE4YTQ1OWMwNmIwOTBlZWVjOGRmNTA0MTg4Mjk3MzIwMmQwYTc2NWZjOTM1NjRjYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzNGVmMjdiNjU1NWJlMzhkMzZiNDNhM2UyZWU3OWJlNTBkZDdiNGFmMWQ3MWNmNWQ1ZTJjZDRmMzRhNjkwNjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d66611e226924ddfb64ae94b45bf3df0",
+      "statement": "DayDetail はその日の予定とランをまとめる record で、すべての予定とランがその日のものであることを検査し、複数のランを開始時刻の順に並べる。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/day/DayDetail.java#L12-L38",
+          "version": "repo-lines-v1:sha256:9218491dc3216ee51f8601dc07429e53e705c34e22004c8f67ac410002107bc6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZWU1ZDZiZDFjNmM0MjRkNjkxNjMyMTQxNDg0ZmRhNmU1ZTMwNTkwNjIxNjU2NjBhZDJhYmMyNzNlMTk1ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ad55c43ad98d402e8943516e780082a8",
+      "statement": "RunDetailService はランの FIT ファイルが保存済みならそれを読み、未保存なら ActivityFileSource からダウンロードして読めたときだけ RunFileRepository に保存する。読めないファイルやソースの失敗では何も保存しない。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunDetailService.java#L32-L55",
+          "version": "repo-lines-v1:sha256:a63d161d6ddf11bc435f088b1ff29bba4862a6f0627c5d3a47b3f3e1473d34d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5Y2JiYzY1NDY5ZGIxY2EyODQyZWZkOTdkZjdlZTJjZTZjYzE1NzE0ODJkMDFhMThiNzkwYTEwYzdjNTEwZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3MDE0OTBhZjIyY2Q1MWRiZTRjNDNkY2JiMjNlNzk2ZTg5YWQyNjgzMzAxNDg5NmFhYThkMzJhNWEyMDc1M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjYzdjNWQxNDc5OWMzYmUyODI3YzhlYWNiYzhhNjMwZjYxZWVhNjdlYjE0NGFhZjYzNWUyNGU5M2IwYTkxYTkifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/RunDetailServiceTest.java#L49-L93",
+          "version": "repo-lines-v1:sha256:2bad6609ff0bfe2fba3852ebf1e494c9f421dcf0214f0bcef3a79c570d025522:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZjA5ZWIwYzU3NDRmYjk3MzMxYjk4ZmYzZmJmMDVhNjAyYmEzZjdmNjdlNWRhNWJlOTA5NTAzM2Y2MjU4MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMjBjMDU4NTMyY2Y3NTFlZWZjZGVhODFiNzE5ZWM1NjYxMzNjMzYyYTc1NDVhYTVhYzY0ZWI4ZDk4ZWU4M2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bcf2b8279d6d4629a866bdf8b943d669",
+      "statement": "RunDetailService は意図的に @Transactional を付けず、各リポジトリ呼び出しを短いトランザクションにして、その間のダウンロードをトランザクションの外で行う。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunDetailService.java#L8-L16",
+          "version": "repo-lines-v1:sha256:ce8e82753dd6e1a1dac5e4e0d990e2303f2d3965d307dd5ab9d07210618ef72d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWIyYzU1OTk0ZmEyY2M4MTlhYjllNWFiYjUwYmMyNTYwNTg3YWI0MWMzNmRmNWY2YzQzNDk1MzljMGRiMmI1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGIyMDBjZGI0MDgzYzQ0Nzg5OGJiYjgwNzQ5Yzk3Y2Q0MGRhNzhmNTAyMjJhM2U1MTc4YTM5OTNjNjFmN2NhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDc0MjUyZWEyNjdmZjI3ZjMwYTg1NjExYTU4MmQ2MWEyNTdjZGJjOThlZDBkYjhiZThkNjE2ZmJmYjQ3NzU3MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f50f19b27c1442f4a3de011b51404401",
+      "statement": "活動ファイルのポートは取り込み用の ActivitySource と分けた ActivityFileSource（fetchFitZip）と ActivityFileReader（read）で、GarminActivitySource と DummyActivitySource が ActivityFileSource を実装し、ダミーは常に空を返す。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/ActivityFileReader.java#L1-L8",
+          "version": "repo-lines-v1:sha256:a05d1f28184aa025636ce1d0f99725885a359066c88a13b061c279e6645a6205:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzcyZDg4MDZiMjJmMGU2ZjA4YTJlNTQxY2I3YzZjNTUzNDQ2NjFmZmQ3MTY3N2QyNzRlYjgwOThlMzljNjQ5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/ActivityFileSource.java#L1-L18",
+          "version": "repo-lines-v1:sha256:3fc24e83d11b9e7ed225ce967241c8aa3bffdf711e773d45e537dad07b3ea06d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MmQ4ODA2YjIyZjBlNmYwOGEyZTU0MWNiN2M2YzU1MzQ0NjYxZmZkNzE2NzdkMjc0ZWI4MDk4ZTM5YzY0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/dummy/DummyActivitySource.java#L28-L50",
+          "version": "repo-lines-v1:sha256:91b78150cf08175c69727c128ddde920cf93d212e2eada7d00fc9cd8431583f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwMTBjM2NmMzQ1ODQ5ZDQ3M2ZkMTMxYjg2MGJiZjJkZDFkYzBlNWZiZDEzYTZkNGVlNGIwYWRiYjczYTYzYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYzJiMzExYWJlODc1NzJlOGE3Y2MwZDk5NmE2NTg0NDA3NmU1MjMyZDIxYjdhODU0NzVmOWI0MDU1Yjc0OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2YWI4OTFhZmU0MzU2NGVmZDIzNWFmOGQ5OTFlNzVkNTVlMTk1YTBiYzJiYzg4YWYyZjMyMTBhNmYxM2JmZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0MGQyZGU4MzMyNDg5ZDQwYjcyNWY3OGVlMWZlNjE2MDJlMWRmZDY5ZDBlNmE3NmQwZGU5OWYwNjBjZTg0YzUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivitySource.java#L76-L107",
+          "version": "repo-lines-v1:sha256:c187f065f1017a5c808168fbf3359b2c135674335d1603bbb1f5d3e486a0f6ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5Y2JiYzY1NDY5ZGIxY2EyODQyZWZkOTdkZjdlZTJjZTZjYzE1NzE0ODJkMDFhMThiNzkwYTEwYzdjNTEwZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmMDA0YjBmNzNjZjRkYWZhZmEyODU3ODU0ZTJmYjhiNzY1Y2Y1MTY0ODg5ODk4NmExMTA1MWRhOWM2NjEwYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwNTc3YjA4MjdkOWEwZTQ0NTYyNDYzNWQwNTg3MDE5ZTkxNjEyODFhZmU3ZDQwNzFmN2IyYTA0MDc0OWExYzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6fab636d680443bbb7503a4356e96f5b",
+      "statement": "FitRunDetailReader は FIT SDK を activity/fit パッケージに閉じ込め、zip から .fit を取り出してラップと記録点をドメインの RunDetail に変換する。zip でない、.fit がない、壊れているファイルは UnreadableActivityFileException になる。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/fit/FitRunDetailReader.java#L28-L145",
+          "version": "repo-lines-v1:sha256:1ca82398cff12982826cfb8ca263906f8ad3672fa2db43f053dcb85e65989ccd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjYjdiYTc1NzA0Mzc0MTdiMzJkYzcyZDgxNzBmYjNmMjU2NGRhYzc3NTg5NmNkZWQ4Y2JkNzA4Mjg2YmY2OWQwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/fit/FitRunDetailReaderTest.java#L20-L98",
+          "version": "repo-lines-v1:sha256:8e30b33edeb37f36bdb57f88907aa8188df84468d1993d4a17ad07747a72fbc2:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZjA5ZWIwYzU3NDRmYjk3MzMxYjk4ZmYzZmJmMDVhNjAyYmEzZjdmNjdlNWRhNWJlOTA5NTAzM2Y2MjU4MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkYWRiZDIwZDdjZDFiMDBkNzIwOWIwNDZjZWNkNTMwYzM2ZWNkMmFjNjlmNWNkNWNiMzc3ODRlZmJmOWQ1ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_154e6b59c03447e4857c859f53a012cf",
+      "statement": "テスト用の FIT ファイルは SyntheticFit が FIT SDK のエンコーダで合成して zip にし、位置を 0°N 0°E の周りにして実在の場所を含めない。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/fit/SyntheticFit.java#L21-L40",
+          "version": "repo-lines-v1:sha256:1176fef1df7a71fbea93bc06bc2ccaae22d5cbad2d124572c187b88699ab3acd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5YTY4NTZjNjk0MzA1ZDViZDUxZDJjZDhmOGM3YzZjZTJmYTM1NWE4NDM0MTgzNWRhYmM1MmFjYTI0MTBkN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0MTVhOGYyZGExOGI2M2M0YzE0Zjg5NzZmYWEzZmI0MjUzYTYzOWJiY2IwNDdjODY4MDYxNTIzZTI3M2NhMWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ca9b0a87b06e404cbc625d77e5fe2950",
+      "statement": "RunDetail.route(maxPoints) は軌跡を均等に間引き、スタート・ゴールと各ラップの最初の点を必ず残す。RunDetail.lapAt(offset) はその時点までに始まった最後のラップの番号を返し、RunDetailController は 300 点を上限に route を作って各点にラップ番号（なければ null）を付ける。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunDetail.java#L15-L40",
+          "version": "repo-lines-v1:sha256:29b1c7f27bae4702691239e11062fe9b7460e3bec1098805bf650d0c170fd37b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyNzY1ZTNmOTliYTJjZTVhOTFkNjUxY2EyNjJlZDllMGU1MjgyN2RkNjE3MmVlOTc0ZmM3NTQ0Yzc5NTJhZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyNjA0NGVlYmQ2MDA2NzE1NmVhNDNiMTU1N2QzZTE4NzhlNDdlMTY2ODk3Mjk1Zjc5ZjE1MGU3M2VhMTVjZDcifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/RunDetailController.java#L36-L59",
+          "version": "repo-lines-v1:sha256:3711584b33e80f0300fc6e4193ba5731cb4fe14d51ce44a41bbf4e3dfdd54e98:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNzU5NzQxN2FjY2Q1M2MzYTgyZWFhZDg0MjJmZDU4NGYyMDQ4ODNlYTZhMjliN2FhNmUyMjM0NDU0OWY2MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyOTRmNmI5Yzc1MmVlMjE5NzZmM2UzNjUwMWM0OTEyNGUzNDFjNTE5OGVhNTc4ZWM4MDJkYzY4MWMxMjY4ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3MTY0MDZhYzRjYmFkYWMxMWUxNzZkOWYwOWVmNmM0NDE0M2E0NDllODgwZjMwNjVmY2JiN2IzMzUzZmM1YjgifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/RunDetailTest.java#L20-L90",
+          "version": "repo-lines-v1:sha256:0f9ad75b91c8a35d20fdb17e9430deb53b0d2abeb57f24fd1f6e4e03e0b3fdd2:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlZTMxODVjOTM1ODBjM2Y3YjkzY2FiNTJlYWQyZTBkZWFhMzJmZjFmYmMzMWVmNGEzOTdjNTM2NTIxYmYzODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_835001c0a7df47289c89170b16b24954",
+      "statement": "RunRoute は route と highlightLap の props だけを受け取り、route が空なら地図を作らず「位置情報なし」と表示するためタイルの要求を出さない。位置があれば Leaflet と OpenStreetMap のタイルでコースを描き、強調線は地図を作り直さずに重ねて、区間が画面外のときだけ地図を動かす。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/src/components/RunRoute.test.tsx#L12-L96",
+          "version": "repo-lines-v1:sha256:a37621ba8479fd013e9148a8f49a5dfda0c3a280a90ed08bc7976e0a44e8d3f1:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiNzY5Y2EwMmEyYjI1OGEwMmM5MGE3MmQyYjFhOThmYjdlZDI0OTY3YjE5MzE4NWU2ZDA2YTM4Y2Q2ODlhMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkNGRmZDc4M2FjYTQ3ZTMzYmJmNDcyNzg2NzE0MjRkODA5NzkwNjE2ODE0ZDUzNjZjNTVjNmUxMjZmYjdiMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/components/RunRoute.tsx#L1-L95",
+          "version": "repo-lines-v1:sha256:3fac254f06ed88ea66257d51ff4f38ff95d52e60cb111ec7fb5746c288376b41:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YzU4NWYyZTE0OWU5MDc3ODk3OTAxZjk0Yjg4YjUwY2JlZGRlZDVmMGZlYTljMzM1MjI3ZDIyNTg1NDc1OTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4f680ce674f049d4bd56247bda874386",
+      "statement": "lapSegment はラップの区間を前のラップの最後の点から切り出し、RunDetailPanel は選んだラップを唯一の状態として持って RunRoute と RunLaps に props で渡し、位置のないランではラップを選べない。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/src/components/RunDetailPanel.test.tsx#L27-L52",
+          "version": "repo-lines-v1:sha256:50e5b86c80e38d3e4b72f3f969a21ef8cdc07dfe81c0a98c7a13ca7764f88627:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3MzY4NTZjODdjNDFiMTA1YmMzMTkzMDJjMThkMjgzN2JmYmQzY2RlZWY1YTUxZjU0NDVkMDIxYmU2MDU4ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwM2EzNDgwMWQ0YzVhZGZhMmE1YjIwYjExOWYyZjEyYTNjMDhjZjA4MDJhZDVjZjhkYjk4YjU5NzJkZDFmZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/components/RunDetailPanel.tsx#L1-L24",
+          "version": "repo-lines-v1:sha256:9c71ecd97c4560afffcaa34a6a0c5fd8a4467f4fbf646d946b3e3996f6260678:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExM2Q3M2Q4YTU3MWQ5NDA0ZDRiZDE2ZGE4NjY4MTMxMzljMTk3NTJkMjM2MTk5NTAwYjQ4M2I1MTM5YTU4NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/lib/route.ts#L1-L17",
+          "version": "repo-lines-v1:sha256:faaee726bd63ebbe97f23f34d6f42f166858d3d39492f9f6d98b286d63165e64:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxMTkzM2JmNWYzNWFmYTc0MGViYjViNDNhZjg0Y2EyNWMxYjk3YmQ4MWI5NTg0NmI0MGQ1NzNkN2FmZGY5MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-11-07T04:26:43.646Z"
+  }
+}

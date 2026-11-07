@@ -8,12 +8,16 @@ sources:
     resource: repo://.env.example
   - id: openwiki-source-6d7f218b0a673499ef4d38b3
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/ActivitySource.java
+  - id: openwiki-source-522ed983551d30c98adfecee
+    resource: repo://backend/src/main/java/com/example/runbuddy/activity/ActivitySourceExceptionHandler.java
   - id: openwiki-source-13a301e2935982f434b4744f
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/ActivitySourceUnavailableException.java
   - id: openwiki-source-04f91f645b2c954e86419383
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivitySource.java
   - id: openwiki-source-ca8c70e554db372f457e7751
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/RunController.java
+  - id: openwiki-source-8aaac718bb179b46baa4c3b3
+    resource: repo://backend/src/main/java/com/example/runbuddy/advisor/AdvisorController.java
   - id: openwiki-source-004e0c390b9cc1bf5a91da4d
     resource: repo://backend/src/main/java/com/example/runbuddy/advisor/AdvisorDirectory.java
   - id: openwiki-source-ba6e9efdc5bf10d2bd58d1d9
@@ -30,12 +34,16 @@ sources:
     resource: repo://backend/src/main/java/com/example/runbuddy/shared/Distance.java
   - id: openwiki-source-97ae9adf7f31e5151e176dc2
     resource: repo://backend/src/main/resources/application.properties
+  - id: openwiki-source-8cb2f9a1ee5bf8964f324200
+    resource: repo://backend/src/test/java/com/example/runbuddy/advisor/AdvisorToolsTest.java
   - id: openwiki-source-9e8bdc09a212163be283e31d
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseSafetyTest.java
   - id: openwiki-source-56378bd582ba948a13b7eacf
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java
   - id: openwiki-source-e7f33e301be67a0fc23e55ac
     resource: repo://backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanRepositoryContract.java
+  - id: openwiki-source-d12a6a4f4b7b82d6ac5007ca
+    resource: repo://backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanTest.java
   - id: openwiki-source-e201e686a785f09b6d899f0b
     resource: repo://compose.yaml
   - id: openwiki-source-16318dd2bf817d85f0b4eb8b
@@ -52,7 +60,10 @@ sources:
     resource: repo://frontend/package.json
   - id: openwiki-source-b240a0614dbaf1a8d51dcd80
     resource: repo://frontend/src/routes/plans.%24month.tsx
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "claude-code", at: "2026-11-07T04:26:43.646Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T04:26:43.646Z
 ---
 
 # その他のアーキテクチャ上の工夫
@@ -107,6 +118,7 @@ sequenceDiagram
 - `backend/src/test/java/com/example/runbuddy/plan/InMemoryMonthlyPlanRepositoryTest.java`
 - `backend/src/test/java/com/example/runbuddy/advisor/fake/FakeTrainingAdvisorTest.java`
 - `backend/src/test/java/com/example/runbuddy/activity/garmin/GarminActivitySourceTest.java`
+- `backend/src/test/java/com/example/runbuddy/activity/RunControllerTest.java`、`RunDetailControllerTest.java`（`reason` 付きの ProblemDetail）
 
 ---
 
@@ -169,6 +181,29 @@ LLM とのやり取りでは、長時間に及ぶ API 呼び出し中に DB ト�
 2. **トランザクション外のモデル呼び出しと短トランザクションツール実行**: LLM への呼び出し（`ChatClient.prompt()`）は DB トランザクションの外で実行する。LLM がデータ参照のために `AdvisorTools` の `@Tool` メソッド（例: `monthSummary`）を呼び出した際、ツールメソッド内でリポジトリを個別の短トランザクションで呼び出し、RLS (行レベルセキュリティ) を安全に適用する。
 3. **非信頼出力のドメイン検証**: LLM から返却された JSON レスポンスは `AdvisorAnswer.toPlan(YearMonth)` でドメインモデル `MonthlyPlan` に変換し、不変条件違反があれば不採用として安全に例外処理する。
 4. **動的ルーティング**: `AdvisorDirectory` が利用可能なプロバイダとモデルを保持し、リクエストに応じて適切な `TrainingAdvisor` 実装に処理を振り分ける。
+5. **目標のレースから逆算する**: ツール `AdvisorTools.upcomingRaces` は、今日以降のレースを日付順に、距離・目標（完走、または目標タイムとそれに必要なペース）・残りの日数と週数つきで返す。週数は `daysLeft / 7` の切り捨てで、モデルに週を数えさせない。
+   ```java
+   // backend/src/main/java/com/example/runbuddy/advisor/AdvisorTools.java
+   public List<RaceView> upcomingRaces() {
+       LocalDate today = LocalDate.now(clock);
+       return races.findAll().stream()
+               .filter(race -> race.isUpcoming(today))
+               .map(race -> {
+                   long daysLeft = race.daysFrom(today);
+                   return new RaceView(race.name(), race.date(), weekday(race.date()),
+                           race.distance().toKilometers(), goal(race), daysLeft, daysLeft / 7);
+               })
+               .toList();
+   }
+   ```
+   `SpringAiTrainingAdvisor` のシステムプロンプトは、レースが近ければツールが返す残り週数を使って逆算し、最後の 2〜3 週はテーパリング（距離を落とし、短いレースペース走と休養）を入れ、目標タイムがあればそのペースをレースペース走・テンポ走の基準にするよう指示している。
+6. **月の途中の見直しは過去を残す（#31）**: モデルの提案は `AdvisorController` がそのまま返さず、保存済みの計画と `MonthlyPlan.revisedFrom(today, proposal)` で合成してから返す。今日より前の予定は保存済みのまま残し、今日以降だけを提案で置き換える（目標距離は提案のもの）。月が終わっていれば保存済みの計画をそのまま返し、別の月の提案は `IllegalArgumentException`。どのプロバイダが答えても「画面に見えるもの＝採用すると保存されるもの」になり、保存済みの計画はモデルの応答の**後**に読むのでモデルが考えている間にトランザクションは開いていない。
+   ```java
+   // backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java
+   List<PlannedWorkout> kept = workouts.stream().filter(w -> w.date().isBefore(today)).toList();
+   List<PlannedWorkout> ahead = proposal.workouts().stream().filter(w -> !w.date().isBefore(today)).toList();
+   return new MonthlyPlan(month, proposal.targetDistance(), Stream.concat(kept.stream(), ahead.stream()).toList());
+   ```
 
 ```mermaid
 sequenceDiagram
@@ -179,7 +214,7 @@ sequenceDiagram
     participant Tools as AdvisorTools
     participant Repo as MonthlyPlanRepository
 
-    UI->>Ctrl: POST /api/advisor/consult
+    UI->>Ctrl: POST /api/advisor/consultations
     Ctrl->>Dir: consult(provider, model, consultation)
     Dir->>Adv: consult(consultation, model)
     Note over Adv: LLM 呼び出しは DB トランザクション外
@@ -191,7 +226,9 @@ sequenceDiagram
     Tools-->>Adv: MonthSummary (plain record)
     Adv->>Adv: AdvisorAnswer.toPlan() validation
     Adv-->>Ctrl: Advice (reply text & proposedPlan)
-    Ctrl-->>UI: Advice Response
+    Ctrl->>Repo: findByMonth(month)（モデルの応答の後）
+    Ctrl->>Ctrl: saved.revisedFrom(today, proposal)
+    Ctrl-->>UI: Advice Response（過去の予定を残した計画）
 ```
 図 2: LLM 呼び出し（非トランザクション）と Tool 実行（短トランザクション + RLS）の協調フロー
 
@@ -201,6 +238,8 @@ sequenceDiagram
   - `backend/src/main/java/com/example/runbuddy/advisor/AdvisorTools.java`
   - `backend/src/main/java/com/example/runbuddy/advisor/springai/AdvisorAnswer.java`
   - `backend/src/main/java/com/example/runbuddy/advisor/AdvisorDirectory.java`
+  - `backend/src/main/java/com/example/runbuddy/advisor/AdvisorController.java`（`asRevision` で `MonthlyPlan.revisedFrom` を呼ぶ）
+  - `backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`
   - `docs/adr/0008-ai-integration.md`
 
 ### 守っているテスト
@@ -208,6 +247,8 @@ sequenceDiagram
 - `backend/src/test/java/com/example/runbuddy/advisor/AdvisorToolsTest.java`
 - `backend/src/test/java/com/example/runbuddy/advisor/AdvisorToolsDatabaseTest.java`
 - `backend/src/test/java/com/example/runbuddy/advisor/AdvisorDirectoryTest.java`
+- `AdvisorToolsTest` の `upcomingRacesTellTheGoalTheTimeLeftAndThePaceNeeded`・`racesAlreadyRunAreNotUpcoming`（終わったレースは出さない）
+- `AdvisorControllerTest.aMidMonthRevisionKeepsThePastAsPlannedAndOnlyChangesTodayOnwards` と `MonthlyPlanTest`（`revisedFrom` の境界: 月が終わった後・始まる前、別の月の提案）
 
 ---
 
@@ -217,12 +258,15 @@ sequenceDiagram
 Garmin Connect Personal API の特殊な認証仕様（テキスト応答の JWT トークン交換、24 時間有効期間）、現地時刻扱い、ページング、およびレート制限や認証エラーをそのまま UI に露出すると、密結合とバグの原因になります（[ADR-0009: Garmin 連携](../../docs/adr/0009-garmin-personal-api.md)）。
 
 ### 工夫
-Garmin の知識を `activity/garmin` パッケージ（`GarminActivitySource`）内に隠蔽。トークン有効期限の 23 時間キャッシュや `401` 再試行、現地時刻ベースでのアクティビティ取得・変換を行います。エラー発生時はドメイン例外 `ActivitySourceUnavailableException`（`Reason`: `CREDENTIALS_REJECTED`, `RATE_LIMITED`, `UNAVAILABLE`）へ変換し、`RunController` の `@ExceptionHandler` で RFC 9457 `ProblemDetail`（`reason` プロパティ付き）に整形してフロントエンドへ返却します。
+Garmin の知識を `activity/garmin` パッケージ（`GarminActivitySource`）内に隠蔽。トークン有効期限の 23 時間キャッシュや `401` 再試行、現地時刻ベースでのアクティビティ取得・変換を行います。エラー発生時はドメイン例外 `ActivitySourceUnavailableException`（`Reason`: `CREDENTIALS_REJECTED`, `RATE_LIMITED`, `UNAVAILABLE`）へ変換し、`@RestControllerAdvice` の `ActivitySourceExceptionHandler` が RFC 9457 `ProblemDetail`（`reason` プロパティ付き、`RATE_LIMITED` は 429、それ以外は 502）に整形してフロントエンドへ返却します。ハンドラをコントローラから切り出してあるので、月の取り込み（`RunController`）、最新の取り込み（`LatestImportController`）、ランの詳細（`RunDetailController`）のどれも同じ形で失敗を返します。読めない FIT ファイルは同じハンドラが `reason: UNREADABLE_FILE` の 502 にします。
+
+`GarminActivitySource` は `ActivitySource` に加えて活動ファイルのポート `ActivityFileSource` も実装し、FIT ファイルのダウンロードも同じエラー変換を通ります（詳細は [ランの測定値・日別詳細・ラップと地図](../features/run-detail.md)）。
 
 ```mermaid
 sequenceDiagram
     participant UI as Frontend
     participant Ctrl as RunController
+    participant Adv as ActivitySourceExceptionHandler
     participant Svc as RunImportService
     participant Src as GarminActivitySource
     participant API as Garmin Connect API
@@ -234,7 +278,8 @@ sequenceDiagram
     API-->>Src: HTTP 429 / 401 / 500
     Src-->>Svc: throw ActivitySourceUnavailableException(reason)
     Svc-->>Ctrl: Exception Propagate
-    Ctrl-->>UI: ProblemDetail (HTTP 429/502, property: reason)
+    Ctrl-->>Adv: @ExceptionHandler
+    Adv-->>UI: ProblemDetail (HTTP 429/502, property: reason)
 ```
 図 3: Garmin Connect API エラー発生時の例外変換と ProblemDetail 返却フロー
 
@@ -242,6 +287,7 @@ sequenceDiagram
 - **Garmin アダプタ & 例外ハンドラ**:
   - `backend/src/main/java/com/example/runbuddy/activity/garmin/GarminActivitySource.java`
   - `backend/src/main/java/com/example/runbuddy/activity/ActivitySourceUnavailableException.java`
+  - `backend/src/main/java/com/example/runbuddy/activity/ActivitySourceExceptionHandler.java`
   - `backend/src/main/java/com/example/runbuddy/activity/RunController.java`
   - `docs/adr/0009-garmin-personal-api.md`
 
@@ -317,5 +363,7 @@ Docker Compose、Spring Boot、ローカル開発環境で異なる環境変数�
 
 ## 関連ドキュメント
 - [アーキテクチャ概要](overview.md)
+- [ランの測定値・日別詳細・ラップと地図](../features/run-detail.md)（`RunMetrics`、ADR-0012 の FIT ファイル、ADR-0013 の地図）
+- [ダッシュボードの「いまやること」](../features/next-steps.md)（ADR-0014）
 - [永続化と RLS](persistence-rls.md)
 - [新機能追加チュートリアル](../tutorials/add-feature.md)

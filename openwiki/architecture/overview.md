@@ -6,10 +6,18 @@ tags: [architecture, monorepo, backend, spring-boot, frontend, vite, spa-config,
 sources:
   - id: openwiki-source-cc9ac771b9086a58897b0e1c
     resource: repo://backend/pom.xml
+  - id: openwiki-source-cf6dca92d34d4cf1b1fce2ec
+    resource: repo://backend/src/main/java/com/example/runbuddy/activity/ActivityFileReader.java
+  - id: openwiki-source-e1843a495d3850f6a982f155
+    resource: repo://backend/src/main/java/com/example/runbuddy/activity/fit/FitRunDetailReader.java
   - id: openwiki-source-3f0e96c3aca5e3cd21848274
     resource: repo://backend/src/main/java/com/example/runbuddy/activity/RunResult.java
   - id: openwiki-source-0585f202c5c2fa2ae22e8332
     resource: repo://backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java
+  - id: openwiki-source-47bdccdb74eb821bfe5120bc
+    resource: repo://backend/src/main/java/com/example/runbuddy/dashboard/SituationRules.java
+  - id: openwiki-source-80d04ab91f7fc505afa71794
+    resource: repo://backend/src/main/java/com/example/runbuddy/dashboard/TrainingSnapshot.java
   - id: openwiki-source-a2825a1ee16b80aa76ea01ed
     resource: repo://backend/src/main/java/com/example/runbuddy/day/DayController.java
   - id: openwiki-source-7f5aac3bed1693077b918720
@@ -38,7 +46,10 @@ sources:
     resource: repo://docs/adr/0010-run-at-home-over-tailscale.md
   - id: openwiki-source-1047363cf615000e4c9bb694
     resource: repo://frontend/package.json
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "claude-code", at: "2026-11-07T04:26:43.646Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T04:26:43.646Z
 ---
 
 run-buddy は、ランニングの月間計画（Plan）作成、走行実績（Activity）の自動同期、目標レース（Race）管理、日別詳細（Day）およびダッシュボード表示、ならびに AI によるトレーニング相談（Advisor）を提供する個人向け Web アプリケーションです。
@@ -101,8 +112,8 @@ flowchart TD
 | パッケージ名 | 責務と主要コンポーネント |
 |---|---|
 | `plan` | 月間計画およびセッション（`MonthlyPlan`, `PlannedWorkout`, `WorkoutType`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`)、永続化ポート (`MonthlyPlanRepository.java`)、REST API (`PlanController.java`) |
-| `activity` | 走行実績（`RunResult`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`)、取得ポート (`ActivitySource.java`)、Garmin 連携 (`garmin/GarminActivitySource.java`)、リポジトリポート (`RunResultRepository.java`)、REST API (`RunController.java`, `ImportController.java`) |
-| `dashboard` | 計画対実績の達成状況や月間進捗データ（`DailyProgress`, `PlanAchievement`, `DashboardSummary`）を集計・提供するリードモデルおよび REST API (`DashboardController.java`) |
+| `activity` | 走行実績（`RunResult`、測定値の値オブジェクト `RunMetrics`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`)、取得ポート (`ActivitySource.java`)、活動ファイルのポート (`ActivityFileSource.java`, `ActivityFileReader.java`) とラップ・軌跡のモデル (`RunDetail`, `Lap`, `TrackPoint`)、Garmin 連携 (`garmin/GarminActivitySource.java`)、FIT SDK を閉じ込めたアダプタ (`fit/FitRunDetailReader.java`)、リポジトリポート (`RunResultRepository.java`, `RunFileRepository.java`)、REST API (`RunController.java`, `RunDetailController.java`, `LatestImportController.java`)。詳細は [ランの測定値・日別詳細・ラップと地図](../features/run-detail.md) |
+| `dashboard` | 計画対実績の達成状況や月間進捗データ（`DailyProgress`, `PlanAchievement`）を集計・提供するリードモデルおよび REST API (`DashboardController.java`)。加えて「いまやること」の判定（`SituationRules`, `TrainingSnapshot`, sealed interface の `Situation`）と `GET /api/next-steps` (`NextStepsController.java`)。詳細は [ダッシュボードの「いまやること」](../features/next-steps.md) |
 | `day` | 指定日の計画セッションと走行実績を統合した日別詳細データ（`DayDetail.java`）を提供する REST API (`DayController.java`) |
 | `race` | 目標レース（`Race.java`）のドメインモデル（カウントダウン日数の算定や目標ペース計算 `targetPace`）、永続化ポート (`RaceRepository.java`)、REST API (`RaceController.java`) |
 | `advisor` | AI 相談機能のドメイン抽象（`TrainingAdvisor.java` [`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`]、`Consultation`, `Advice`）、Tool 定義 (`AdvisorTools.java`)、Spring AI 実装 (`springai/SpringAiTrainingAdvisor.java`)、モック実装 (`fake/FakeTrainingAdvisor.java`)、REST API (`AdvisorController.java`) |
@@ -117,7 +128,8 @@ flowchart TD
 
 1. **純粋な Java によるドメイン表現**: `MonthlyPlan`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`）、`RunResult`（`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`）、`Race`（`backend/src/main/java/com/example/runbuddy/race/Race.java`）、`Distance` などのドメインクラスは Java 標準ライブラリ (`java.time`, `java.util`) のみで記述され、Spring アノテーションや SQL/OR マッパーの依存を含みません。
 2. **依存性逆転の原則 (DIP)**: `MonthlyPlanRepository`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`）、`RunResultRepository`、`RaceRepository`（`backend/src/main/java/com/example/runbuddy/race/RaceRepository.java`）、`TrainingAdvisor`（`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`）、`ActivitySource` などのポートはドメインパッケージ側に定義されます。技術依存の実装（jOOQ や Spring AI、Garmin RestClient）は `persistence` や各アダプターパッケージが引き受けます。
-3. **依存の向き**: アダプター層（`persistence/jooq`, `advisor/springai`, `activity/garmin`）や Web/コントローラー層はドメインモデルに依存しますが、ドメインモデルからアダプターや外部フレームワークへの依存は存在しません。
+3. **依存の向き**: アダプター層（`persistence/jooq`, `advisor/springai`, `activity/garmin`, `activity/fit`）や Web/コントローラー層はドメインモデルに依存しますが、ドメインモデルからアダプターや外部フレームワークへの依存は存在しません。
+   たとえば Garmin の FIT SDK（`backend/pom.xml` の `com.garmin:fit`）は `activity/fit` パッケージの `FitRunDetailReader` だけが import し、ドメイン側はポート `ActivityFileReader` と結果の `RunDetail` しか知りません（ADR-0012、[docs/adr/0012-fit-files-for-laps-and-tracks.md](../../docs/adr/0012-fit-files-for-laps-and-tracks.md)）。同様に `dashboard` の `SituationRules` は Spring にも時計にも依存しない純粋な関数で、「今日」は `TrainingSnapshot` の値として渡されます（ADR-0014）。
 4. **高速なテスト**: コア・ドメインのロジックおよびリポジトリインターフェースは、`InMemoryMonthlyPlanRepository` や `InMemoryRaceRepository`、`FakeTrainingAdvisor` などのインメモリ／フェイク実装を用いることで、データベースや外部 API に依存せず即座に単体テストを実行できます（詳細は [アーキテクチャパターン](./patterns.md) を参照）。
 
 ```mermaid
@@ -127,6 +139,7 @@ flowchart TD
         PlanRepoPort["MonthlyPlanRepository\n(Port Interface)"]
         RaceRepoPort["RaceRepository\n(Port Interface)"]
         AdvisorPort["TrainingAdvisor\n(Port Interface)"]
+        FileReaderPort["ActivityFileReader\n(Port Interface)"]
     end
 
     subgraph PersistenceJooq ["persistence/jooq"]
@@ -138,19 +151,26 @@ flowchart TD
         SpringAiAdvisor["SpringAiTrainingAdvisor"]
     end
 
+    subgraph ActivityFit ["activity/fit"]
+        FitReader["FitRunDetailReader"]
+    end
+
     subgraph Frameworks ["External Frameworks & Libraries"]
         SpringBoot["Spring Boot / Spring WebMVC"]
         jOOQ["jOOQ Library"]
         SpringAI["Spring AI"]
+        FitSdk["Garmin FIT SDK"]
     end
 
     JooqPlanRepo -->|"implements"| PlanRepoPort
     JooqRaceRepo -->|"implements"| RaceRepoPort
     SpringAiAdvisor -->|"implements"| AdvisorPort
+    FitReader -->|"implements"| FileReaderPort
 
     JooqPlanRepo --> jOOQ
     JooqRaceRepo --> jOOQ
     SpringAiAdvisor --> SpringAI
+    FitReader --> FitSdk
 
     DomainCore -.->|"No Import Dependencies"| Frameworks
 ```
@@ -230,5 +250,7 @@ flowchart TD
 
 * [アーキテクチャパターンと設計原則](./patterns.md) - リポジトリパターン、インメモリ／フェイク実装、テスト戦略の詳細
 * [データ永続化と Row Level Security](./persistence-rls.md) - PostgreSQL RLS と jOOQ によるデータ隔離メカニズム
+* [ランの測定値・日別詳細・ラップと地図](../features/run-detail.md) - FIT ファイル（ADR-0012）と地図（ADR-0013）
+* [ダッシュボードの「いまやること」](../features/next-steps.md) - 状況の判定と表示の分担（ADR-0014）
 * [クイックスタートガイド](../quickstart.md) - ローカル開発環境の構築手順および実行方法
 * [機能追加ガイド](../tutorials/add-feature.md) - ドメイン・API・フロントエンドの拡張手順
