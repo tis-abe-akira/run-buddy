@@ -274,4 +274,4 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 - [ADR 一覧](docs/adr/README.md)
 - [データベースガイド](docs/guides/database.md)（中身の見方、RLS、スキーマの変え方）
 - [スマホや別の端末から使う（Tailscale）](docs/guides/tailscale.md)
-- [Wiki の自動生成（OpenWiki）](docs/guides/openwiki.md)（アーキテクチャの解説とチュートリアル。公開先: https://tis-abe-akira.github.io/run-buddy/ ）
+- [Wiki の生成（OpenWiki を Claude Code から）](docs/guides/openwiki.md)（アーキテクチャの解説とチュートリアル。公開先: https://tis-abe-akira.github.io/run-buddy/ ）

@@ -1,8 +1,10 @@
 # OpenWiki への指示（run-buddy）
 
 このファイルは人間が書く「編集方針」です。OpenWiki はこれを読んで Wiki を書きます。
-このファイル以外の `openwiki/` の中身は CI が生成するので、手で直さないでください
+このファイル以外の `openwiki/` の中身は OpenWiki が生成するので（Claude Code から実行。ADR-0015）、手で直さないでください
 （直したいときは、このファイルかソースを直します）。
+ここにバッククォートで書いたクラス名・メンバー名（例: `MonthlyPlan`、`AdvisorTools.upcomingRaces`）と ADR 番号は、`scripts/openwiki-coverage.sh` が
+Wiki に載っているかを調べます。載せたいものはこの形で書いてください。
 
 ## 読者と目的
 
