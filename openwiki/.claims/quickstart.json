@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:38f16fbf1ef49a4bff1335f9e9e32e491957fe106aee00ab97db21f3df84ca5e",
+  "pageVersion": "sha256:a75c2585073203eaddbeb33d9c5095fb5810a00cd5d67e4a1d084c58c0260c33",
   "claims": [
     {
       "id": "claim_313cb1cbcc9a47f5a7bc4e9a0b8cc690",
@@ -87,10 +87,34 @@
           "version": "repo-lines-v1:sha256:379ffbfeb89de43131755350cb51f91f2d6f55844e949f51f65f1f8e7cb129ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzNmRmN2E1YTNhYWYxODBjZmZkMWQ2NWM2NDZlZjZhZWEzNTJjYzI3Nzc0Njg2MTk5Y2Q4ZmIzZTg5OWM3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTdiZDYyYjY4MWRiOTQ0YjBiMTgwMTA2YWViMWFjNmZhOTQzZjdlOWU3YjcxZTkxYjhmNmEyOGJjMTczMDJhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODU4MGI3NjUxOGRhZTk3OWZhZWJkMDIzNjdhMjkyOTJhNTBkOTc2MDkyMjUxYTM4YTZjZTMwODgwYmE0MjgyNSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_5eec736f6703407097048d0f89928068",
+      "statement": "Wiki は Claude Code から OpenWiki の連携で更新し、連携は .mcp.json（openwiki mcp --host claude）と .claude/skills/openwiki/ としてリポジトリにコミットされている。openwiki コマンドは 0.7.2 に固定する。",
+      "evidence": [
+        {
+          "resource": "repo://.mcp.json#L1-L12",
+          "version": "repo-lines-v1:sha256:1217fe8aff83c5e31c83d562c6e21d66cc6745e870d49c737cf8a32df7c39ef3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docs/adr/0015-generate-wiki-from-claude-code.md#L25-L31",
+          "version": "repo-lines-v1:sha256:47e1f5c5cddc91a83d51437fdfc35b04c27e7b5a7e7832a44f8776acf282e177:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQzMzNiYTUxMTAxYWVmYzE3NjRjN2IyMTk5OTM3NzQ5ZWZiMzRlZjEwOTI0ODQxMjIxMjIzOGE3OTg0MmFmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODE2Mjc1MGE0NGFhNmIwNDc0OGJmOThlMWQyYjQyMTgwMmMzZDU5YWFiZjFiNzU0ZGNiYzc2OWJlYTQ5MjA2NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmIwNzg4ZDQ2OGI4YTE5MTAyMzJiMWY3YmQ2NjlkNDliYjBhZGQ0OTJjNzBiMjdlNTBlOTgzYTU3ZjNhNTU4OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWFjNDdlMDQ5ZGE0NGExNmE0MTI2ODg5Mjg0YTg0YjA0OGUwODFjZmZlMTZkOTkyZjMyYmIwZDY4Y2RkYzBjZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5242eba066094d9791254194b9ec868a",
+      "statement": "scripts/openwiki-coverage.sh は openwiki/INSTRUCTIONS.md にバッククォートで書かれたクラス名・メンバー名（Class.member はメンバー名の部分）と ADR 番号が生成ページのどこかに出てくるかを調べ、出てこないものを一覧にして終了コード 1 で失敗する。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/openwiki-coverage.sh#L1-L38",
+          "version": "repo-lines-v1:sha256:52757772fdae29ad64a3f207a655c56bbbe07175d59e83a194b58c469a476955:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjg2OGMyYzQ0ZjA1MzYxOWNlZjFjYzM4M2UxZDUzMDc0M2I1NzRjYTE5MmFjZTkxNjhhOWNjZjQ2YTg2ZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-11-02T05:35:33.013Z"
+    "at": "2026-11-07T04:26:43.646Z"
   }
 }

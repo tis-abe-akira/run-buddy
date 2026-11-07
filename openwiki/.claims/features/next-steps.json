@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:7e12625a706651141585eefedb53bbc1fa6012f8a308e4ed372ecc30ad856e90",
+  "claims": [
+    {
+      "id": "claim_629ea23e6db84e099a84e9a80e5e9706",
+      "statement": "SituationRules.detect は TrainingSnapshot から状況を決定的に判定し、ORDER（RaceApproaching、BehindTarget、NoRunsLately、MonthEnding）の順に並べて返す。しきい値は TAPER_DAYS=21、BEHIND_SHARE_OF_TARGET=0.10、NO_RUN_DAYS=7、MONTH_END_DAYS=7 の定数である。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/SituationRules.java#L18-L52",
+          "version": "repo-lines-v1:sha256:93979a10101aa9e6fc4428635f961e6406b52c80e2fa27ea730fd462e14c695d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNmExMjMxZDM2MTBlMDRjNTQ4ZTBmMDEwMWE0ZDg1YmI5ODBjMDNlOTUxNmE5ZTFmMzJkZmZmZjI3ZWY4OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5MDQxNzZmMjhkYmRkNGMzZDllNjEyNzkwMzMwYzRkOGE5YzA3ZTY1NGVmMjkxMjNjZjRkNTliY2IyMWM5OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNWZhOGRjNGZiZDI2ZTMyMThhZDdlODZmMjRmNmRjODQxZDg3MmFiMGQyYjkxODViMmExMjkxYjUzYTU1OTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64055ac7cbf442e3b3c0ee51d6280b0b",
+      "statement": "今日から 21 日以内にレースがあるあいだは、SituationRules は BehindTarget（目標からの遅れ）を判定しない。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/SituationRules.java#L41-L63",
+          "version": "repo-lines-v1:sha256:cf32de02ed90564ac92195f3693cff1517e0a2698c33c9503ff5b3da2ec79fb8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZTQzODIyOWQwMDM1YjllMDQyODg4NWQ0NTM5ZWY4NjM4MjBjY2ViZmY1ZTQyYWRhNjJiNDU5YjllYTQ5ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NTkyODZiZjBkNDJjYTlkNDM2MGI5YWVkMGM4ZTY5YmIxZDcwYzkwNzA4OGU1NDczMzc4MjZmM2IxNGU4NDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzYzdkYzk5ZjNlNTMyMDJmNTRjYjEyMzRkYjMzZTZkNmZhN2IzY2I5MDRhMGUwNmE2YTc3NzljNDY0YWI2ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NzIwMTk1YTYwNzEwNmFjZDVhY2VhYTU5ZmMxMWNkMDQ3ODdjMDIzOGUyNTU0MDNjYzNjOTQ0ZjEzZDFjM2QifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/dashboard/SituationRulesTest.java#L58-L65",
+          "version": "repo-lines-v1:sha256:098152569eac1b01addb889a6c4fe3901048745d412412e2cffdb24d26e6364e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDAyOTY2ZTg2MmI0MWM4OGEwMWZhMmEyMjRhZDNjM2M2ZGE0ODZhMjAzYzhiNjgyYTM1ZGRjNTU5NjE5NzE1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmJlOTIyYWNiYzUxMTU2OGM2MzgzY2FkOWNkYWI4MTVmNjg1YTUxM2FlMWE5NmMxMjMxODMzODdiYzA1Yjg1MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWUyYjUyNzRjYThkZGI0MjNhZDk4NjcxNTg4ZDVlNmNhOGM4NGVjYzFiODQ0NzBlMWQ3YTYzMzUyYjE2NjliZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_787b2b35dea84bdeb8515a6b83f3b826",
+      "statement": "遅れは今日を除いた経過日数で目標を按分して求め、不足が目標の 1 割未満なら判定しないため、月の初日には誰も遅れていない。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/SituationRules.java#L65-L81",
+          "version": "repo-lines-v1:sha256:f1144cca92a69472bfb84a8b2d71039ee9c8b02f4fb1ea46ccaea3249152917d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5NmUwZjgzZWMyZmQ0NWZiZjkzNTI5MGUwOTljMzgwNzU1ZWMwMDBhNzg3YTI0NDIwOTI0MzYxZWNiMmY3OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwM2NhNTExN2Q5ZTU3NDM1N2EwYjJjYjNkYjgzYzZiZTE3NDI2NjA1Y2VjOGEwMGEzM2RmYzVjZjk5M2VkNmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiYjA4YjM5NDZmYjQ0YWY2OGYxODMwYzVmOTNiYzM2OTRkZDZiOTBmMTgxZmFmY2JmYjg3NjQ4MGYzNzM1ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1NjY4MTcwODUzMmQ5OGZmOWZiMGUyOWJiMjgyNmRiZTcwNzdlOGY5NGY4ZjM2MDQ1Mzc5ZDY4YzQyNzY0ODcifQ"
+        },
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/dashboard/SituationRulesTest.java#L26-L56",
+          "version": "repo-lines-v1:sha256:fc419445d00bd864624ada5833e51e4b417c41eca59012034c87c075a57e31f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMjhiNjcxNjNhNTE5NDZmYTc5ZmVmZmMzM2JmNjVlYTY4YjMwYTZhNzUwOTViY2RhMjRlZWMwZmRiMTk5YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ZmQ3MmJkZjlkNDMxMmNjNTJlMjdjOTFkM2MyN2NlZDVjNTQzOTI0OTgwNjlhNDBjZTM5MzA0MGY4MzQwNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1NTQ4ZGNkMzZjMmJlMjI3YjAyMjg5MTNmOWMzNjA2ZDgyZTg4MTA0Y2ZlYmVmM2VjMjAxMzA0ZGM2ZDRlOTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc2d3d4a9521491aa9d55f537fd9cd66",
+      "statement": "TrainingSnapshot は「今日」を値として持ち、thisMonth が today の月でなければ IllegalArgumentException を投げる。時計を読んで値を集めるのは TrainingSnapshots で、自分ではトランザクションを開かずリポジトリの呼び出しごとの短いトランザクションに任せる。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/TrainingSnapshot.java#L8-L31",
+          "version": "repo-lines-v1:sha256:174b2202028e5c63403a7ac7945cbb0abce308f328c8afa743a5ccd60a911e95:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZjJmODBjZjg3NjIyYTliODFhY2U3MzkwN2IxNTM4MzBjN2FmODkwY2FmYzlkMGUwOGJiMWY2Y2IwMmNkMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmODY2YWUzOWQ5NzgwY2IyODJhMTU2NDUyYzdhNWYxNGMwMWE1M2UxZjBhNDM3NGI2Nzg0ZmM3NDQ2ZTY3NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/TrainingSnapshots.java#L13-L43",
+          "version": "repo-lines-v1:sha256:5315979b69cce10fbaf68b140e8ba006a2f4e63622d01b787c78d1f28a607ad6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiZDQ2YjJhNzdiNjM0MTM0Y2ZhYWM3MzI5NDZmMzhlOTJkN2FlNDg3NzczYzIyZmE2OGUxNGFjMTIwNDE3NjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb84b4c8ba0f41db9d39cb84151bddf2",
+      "statement": "Situation は RaceApproaching・BehindTarget・NoRunsLately・MonthEnding の 4 つの record だけを許す sealed interface で、各 record が自分の不変条件を検査する。NextStepsController は default なしの switch でそれを kind 付きのカード record に変換し、カードは文言を持たず種類と数値だけを返す。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/NextStepsController.java#L16-L97",
+          "version": "repo-lines-v1:sha256:b34986bcd6ded5acf90e8068f591687e570bffe8cf15402a9ea952192beeb962:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5Y2JiNzMxYTU2ZDk2NGZhN2IyNDkyZjkxZDJkOGZlN2U5MzE5MGQ2M2QyMGU4ZDI2ODVkYWY3YjljODZhOGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/Situation.java#L9-L73",
+          "version": "repo-lines-v1:sha256:0d424836966b9db65438f65776e8193dc3003c8b4125be447cccdc5ebe4af232:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMGQ0NGY3ZWI0YzFhZTUyYWIzNWFhNDY3OGU5YjA4ZGM4MTlhODc1OTA1ZmJkNzk0ZGZjOTQzZTU1ZTIzMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_256a64f6d2c241a6b72034c5dc491d76",
+      "statement": "カードの文言とボタンは frontend の describeNextStep が kind ごとに作り、AI 相談へのボタンは ask を検索パラメータに載せて /advisor を開くだけで、送信も保存もしない。/advisor の validateAdvisorSearch は ask を最大 500 文字に切り詰める。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/src/components/NextSteps.test.tsx#L21-L30",
+          "version": "repo-lines-v1:sha256:e96cc94da414123cfe6208921706adad1771b5eb587b577e6e2c2be166c2dc5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZDRmMDQyNmZmYWM4ZGJkZWQwMDI2MzJlM2Y1NGIxYzVjNmJmOWM0NmQyNzU0MmYxOWRhMDgzYjc3YTk5YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhZDZiNGE2OGY0OWMyM2MyYzA1MjE2ODMxM2RlYjY5ZDIzZWY0YjczOGZlZWE0ZmI1ZDY2NGFkOWE5NzU1YjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5NzkyOTA3NjY1M2NjYjdkNmM5Mzc1NmQ5MWY2N2ZlMzZkOWJiMzgzYzVmZTI3Y2U1MTIzM2MwM2NlOWY1NmUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/lib/nextSteps.ts#L1-L77",
+          "version": "repo-lines-v1:sha256:b23cf8fc9a243bb42832fea9aff84ee40b99cdd6a95ef3d97bcbf46aedd1302d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZmNlODI1ZDU3ZTVhNzI0ODhkMTRmMmMxNDA5NGM1NjVlNmY3ZTk2ZmJmMTlmNmYyN2EyODEyZTMzZDdmMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/routes/advisor.tsx#L11-L27",
+          "version": "repo-lines-v1:sha256:082cf30eda666047f75316dc95fa0e61f9c65a089b7570d4f9f6febf7884d36c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZGRmNDIxMWUyMDI2NDliNGZhY2QwNGEzNmNjMjYzYzVkODI0YWIzNzdjNzc2NDhhMTNhZjUwYTc5ZDFlZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjNWYwZTc5Nzk3ZGRiYjVmNTVhMDgyMzM0YzEwZmFjMjE0NTM3ZTg0MmM5OTZmNjcxZDIyYWVmMWNlNDkxMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkOTQ1YTk0YzI4NDc2Yzc1NDJmNTRkNjYzYjg5Y2I3OTIyNWNjMzRlOWQyODc2OTQyZGI2NGU2N2MzNDlkZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4NmM0YmQ4YjBkYjM5MjY0MGVlY2ZmMDM1MGYwOTZhM2Q3MjJjYjcxMDJjOWNkZGQ5OTI2OTFjZmU5ZDJhMmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c62da0de40e2425ebe44ca6ab01fdcd6",
+      "statement": "ダッシュボードは next-steps のクエリを今月を見ているときだけ有効にし、取り込みや計画・レースの保存後に ['next-steps'] のキャッシュを無効化する。",
+      "evidence": [
+        {
+          "resource": "repo://frontend/src/api/queries.ts#L28-L90",
+          "version": "repo-lines-v1:sha256:350c85db8be6d524f5b5bfa1007375e975879614b14ee200c8d9e7bbe71f3577:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjOTg3ZjE2MWE1MWU5NjVmMTFlYjQ0YjU4MzJiN2MzODUzZDE0YTAzODI1NTg3ZGM1MmJlN2VmMGFjOWZjY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzZGVhMDEwZjk5ZDVlNWMzNzE4ZDViNjM1OGFhZmFmYTVlMWI3OGI1YmFlM2ZjOTJhNDViOGJlOGQ3NDY3NTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkNGFhZmY1N2RjOGIxYTJkYWFhMDc4MTViNmRjNGVhNzUyN2QyY2Q5NGQ5OTM2ZmQyNjJmYmYzMmU1ZjI0ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmYTgwNjQxZTM2N2Q0MWFhNTE5YmRhYjcwYTVkOWVlMGNiYTNkNGZlNGM0M2IzMmJlYWVmMjZkYTJlMTE1NWUifQ"
+        },
+        {
+          "resource": "repo://frontend/src/routes/dashboard.tsx#L38-L42",
+          "version": "repo-lines-v1:sha256:53e8abfd8e9c09d83400cfe624e240c82084739e2dfd8660becc36cf32e45b87:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmM0NDMzN2Q4NmIyM2ZkOTI2ZThiNGQwNGMyYjIwYmI3ODEwYWQ2Y2RkMmYxYTBkOWQ1ZTRiYzRjYzdkNDllYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWU3MTM2YmZkMjk4MWQ2NjI1ZGMwYzU1MzlmOWY2YWVlMTUwNGYxYTE2NDM2M2Q5ZmE1NTFjMDAwMWExMTlmNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDhjNmMzNjNmM2U5NjRiOTkyMzlhNDBlZDhmYWJlYWIwOTU5ODgyMzgzZjVmZTk5ZDczOWM0MmU3ZjYyNDc4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2YxMjJkYzdkMmVkNTAzNmUwYWFiZjNkNjI5MTNmOTNmNzQ0ZDdiNzZkYWE2NzliNTkwZjlkZGU4ZDE2MDE5MCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-11-07T04:26:43.646Z"
+  }
+}

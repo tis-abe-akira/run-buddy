@@ -20,6 +20,8 @@ sources:
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java
   - id: openwiki-source-9688fcb5c7ef413da261a60a
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRaceRepository.java
+  - id: openwiki-source-f4fecff613affe28b9fbac5f
+    resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunFileRepository.java
   - id: openwiki-source-8e08aef97e9473a0c95ea8ad
     resource: repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java
   - id: openwiki-source-11ab5f46d252f715c246fb4c
@@ -28,6 +30,8 @@ sources:
     resource: repo://backend/src/main/resources/db/migration/V1__create_plans_and_runs.sql
   - id: openwiki-source-288972b15b5cb1bc42c1df7d
     resource: repo://backend/src/main/resources/db/migration/V3__create_race.sql
+  - id: openwiki-source-56cb858a7c419c369bd0f439
+    resource: repo://backend/src/main/resources/db/migration/V4__create_run_fit_file.sql
   - id: openwiki-source-e746f97e4be346c2634864cb
     resource: repo://backend/src/test/java/com/example/runbuddy/architecture/TransactionalPortRulesTest.java
   - id: openwiki-source-56378bd582ba948a13b7eacf
@@ -36,7 +40,10 @@ sources:
     resource: repo://docs/adr/0007-persistence-library.md
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "claude-code", at: "2026-11-07T04:26:43.646Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T04:26:43.646Z
 ---
 
 # 永続化: jOOQ と行レベルセキュリティ
@@ -163,7 +170,7 @@ $$;
 
 ### 2. DEFAULT 値と RLS ポリシー (`own_rows`)
 
-全テーブル（`monthly_plan`, `planned_workout`, `run_result`, `race`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
+全テーブル（`monthly_plan`, `planned_workout`, `run_result`, `race`, `run_fit_file`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
 
 ```sql
 create table monthly_plan (
@@ -183,6 +190,19 @@ create policy own_rows on monthly_plan
 - **自動補完 (`DEFAULT`)**: アプリの `INSERT` クエリで `user_id` を指定しなくても、`app_current_user_id()` により自動的にセッションのユーザー ID が挿入されます。
 - **行レベルアクセス制御 (`USING` / `WITH CHECK`)**: `SELECT`, `UPDATE`, `DELETE`, `INSERT` 実行時、PostgreSQL が `user_id = (select app_current_user_id())` 条件を自動適用します。スカラサブクエリ `(select app_current_user_id())` にすることで、ステートメント（クエリ）ごとに 1 回だけ関数が評価されるよう最適化されています。
 - **`FORCE ROW LEVEL SECURITY`**: テーブルの所有者ロールであっても RLS の強制評価対象とします。
+
+新しい表もこの規則を繰り返します。ランの FIT ファイルの原本を保存する `run_fit_file`（ADR-0012、`backend/src/main/resources/db/migration/V4__create_run_fit_file.sql`）は、既存のマイグレーションを直さずに V4 として足され、同じデフォルト・ポリシー・`runbuddy_app` への権限を持ちます。主キーは `(user_id, activity_id)` で、`run_result` への外部キー（`on delete cascade`）によって、そのユーザーのランがあるときにしか保存できません。ラップや軌跡の表は作らず、表示のたびに原本から読みます（[ランの測定値・日別詳細・ラップと地図](../features/run-detail.md)）。
+
+```sql
+create table run_fit_file (
+    user_id     text        not null default app_current_user_id(),
+    activity_id text        not null,
+    fit_zip     bytea       not null,
+    fetched_at  timestamptz not null default now(),
+    primary key (user_id, activity_id),
+    foreign key (user_id, activity_id) references run_result (user_id, activity_id) on delete cascade
+);
+```
 
 ### 3. DB ロールと所有権の分離
 
@@ -352,9 +372,22 @@ private static Race toRace(RaceRecord row) {
 }
 ```
 
+### 4. `JooqRunFileRepository`: バイト列をそのまま出し入れする
+
+[`JooqRunFileRepository`](../../backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunFileRepository.java) は、ドメインに変換する Record を持たない最小のアダプタです。保存は `onConflict(...).doNothing()` なので、同じランの原本を2回保存しても最初のものが残ります。`user_id` はここでも一度も書きません。
+
+```java
+dsl.insertInto(RUN_FIT_FILE)
+        .set(RUN_FIT_FILE.ACTIVITY_ID, activityId)
+        .set(RUN_FIT_FILE.FIT_ZIP, fitZip)
+        .onConflict(RUN_FIT_FILE.USER_ID, RUN_FIT_FILE.ACTIVITY_ID)
+        .doNothing()
+        .execute();
+```
+
 ---
 
 ## 7. テストと安全性の維持
 
-- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RaceRepositoryContract`）を満たします。
-- **マルチテナント隔離テスト (`RowLevelSecurityContract`)**: [`RowLevelSecurityContract`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java) により、ユーザー切り替え時のデータ非開示（`anotherUserSeesNothing`）、ID 衝突の回避（`sameMonthAndActivityIdDoNotCollideAcrossUsers`）、他ユーザーデータの更新・削除防止（`anotherUserCanNeitherOverwriteNorDeleteARace`）およびトランザクション外アクセスの即時失敗を自動検証しています。
+- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RunFileRepositoryContract`, `RaceRepositoryContract`）を満たします。
+- **マルチテナント隔離テスト (`RowLevelSecurityContract`)**: [`RowLevelSecurityContract`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java) により、ユーザー切り替え時のデータ非開示（`anotherUserSeesNothing`）、ID 衝突の回避（`sameMonthAndActivityIdDoNotCollideAcrossUsers`）、他ユーザーデータの更新・削除防止（`anotherUserCanNeitherOverwriteNorDeleteARace`）、他ユーザーの FIT ファイルが見えないこと（`anotherUserSeesNoActivityFile`）およびトランザクション外アクセスの即時失敗を自動検証しています。

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f8a4f7ea9f780201a7270b92dbae6b76e904e614dfe24635aceb61e67388196a",
+  "pageVersion": "sha256:7c2e76a8e2606de6f1be094193f477ca6f96526a37dba4d7068c6295ec2c2301",
   "claims": [
     {
       "id": "claim_8028c37f138e4593af340b51a32dbd83",
       "statement": "run-buddy のモノレポ構成において、バックエンドは backend/、フロントエンドは frontend/ に配置され、それぞれ標準のビルドツール（Maven および npm）で独立してビルド・テストできる。",
       "evidence": [
         {
-          "resource": "repo://backend/pom.xml#L1-L110",
-          "version": "repo-lines-v1:sha256:4ea7aea6056abc4a5b504525b50b6d59f58ca2c17e4457cfc24c602b25b66731:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZWI2NDFkY2NmMTA2MGNmODI4MzE3NzhhYjA0YjI3MGI5N2IyNDc4MGQwODk1ZDViMDBkNGViMjE3ZmM4YTFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYmY1YWQxNjVkNTE3OWY4YWEyMjZjZWUzM2QyNmQyYWIzMWE5YmNhM2Q3ZTQ1YTkxYjFhZmViMzA4NWFjNTlhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZjRmZWViOWEyZWM2NWYxNzkxZGEzYjk2ZWVlMDA2M2ZjM2Q3NjE2YzQ2YTBmZDIwOGEwMTNjYWEyZWVjOTQxIn0"
+          "resource": "repo://backend/pom.xml#L1-L116",
+          "version": "repo-lines-v1:sha256:1a6aea0c487f217e83dde148111ceba61626df8107b010f934cbfc48e94e06fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZWI2NDFkY2NmMTA2MGNmODI4MzE3NzhhYjA0YjI3MGI5N2IyNDc4MGQwODk1ZDViMDBkNGViMjE3ZmM4YTFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYmY1YWQxNjVkNTE3OWY4YWEyMjZjZWUzM2QyNmQyYWIzMWE5YmNhM2Q3ZTQ1YTkxYjFhZmViMzA4NWFjNTlhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZjRmZWViOWEyZWM2NWYxNzkxZGEzYjk2ZWVlMDA2M2ZjM2Q3NjE2YzQ2YTBmZDIwOGEwMTNjYWEyZWVjOTQxIn0"
         },
         {
           "resource": "repo://docs/adr/0002-monorepo-frontend-backend.md#L13-L21",
@@ -55,8 +55,8 @@
           "version": "repo-lines-v1:sha256:ccc147bd58d32ef7dee0cdfc7bc972853861a0eb1c283253a8507a76aca889bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmNTdjNjI0OGFhZDRkZTA1YzE4NjdmMGFmZDNhMzc2YmVkZmZlMTZiZjg2NWRiZmRhZmU3MjVkZTAzYzY0MDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java#L1-L38",
-          "version": "repo-lines-v1:sha256:57356b8dcb851ee083fa8893c72451f91665e068894318315fed9b9c4c169f49:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4Y2QwYWIyODNiNGU2NmE0ZmJhZTllZDRhYzMzODkzNjliZWQ4ZWM4ZWMyN2QwYWNkZjY1YTlhNjc2NzVhM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java#L1-L60",
+          "version": "repo-lines-v1:sha256:d3fac68b6ac39f14be5f76bacd133063f67e8d72786e31124d9bced8f08ff672:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4Y2QwYWIyODNiNGU2NmE0ZmJhZTllZDRhYzMzODkzNjliZWQ4ZWM4ZWMyN2QwYWNkZjY1YTlhNjc2NzVhM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java#L1-L11",
@@ -77,7 +77,7 @@
       "statement": "Maven の -Papp プロファイルは frontend/ の npm ビルドを実行し、成果物を backend の classpath:/static/ にコピーすることで、単一 JAR での UI・API 統合配信を実現する。",
       "evidence": [
         {
-          "resource": "repo://backend/pom.xml#L208-L272",
+          "resource": "repo://backend/pom.xml#L214-L278",
           "version": "repo-lines-v1:sha256:42a30e4dce5f351fe89746cd1d894213d7062cd041374dd23d008e797d262b4b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMjQ5MzFmMmYxODBhNjQ1ZjcxNTc0OTMxNGE5MTFiMzIzOGM4NmJkYzE3ZmJmZWE2ODA2M2E3ZmYwZDlkMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNjBlZWE1Yjg2ODI5YjJmYjM2Y2Q3MWEwMWEwZjQ5YTAwYWM1ZDVhMjdmYTk4N2Y3ZjAzNTVjMzg4NDIxNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1ODk5ZDJkYWYwYzRlY2U3OTIwNjE3YTU5ZTQyZDQzYTVjNzc1NjJjMGRlMWNhMzliNDUxMjQwZTg0Njk0ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkZDkxZDg4ZmRmZjA0NTA1YjZkNjA1Y2FhMzRkYTcyYzJiMmMyYTBjODhiYjFjMThhM2I2ZWM0NGJlOTQxMTMifQ"
         },
         {
@@ -135,10 +135,42 @@
           "version": "repo-lines-v1:sha256:5239dc3211141661d6b8511fa5857f15bd22ec2e481e01de179d94b76e904f7e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1NzFhODJiNjExYmQ4Y2Y3MzI5ZTI5MmFkNzA5Zjk2YWNlNjM3ZjVjNzNmYjA2NDUwYWQwM2VhMGY4MmU4YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY0MWRiMGI4NzJlNjdkN2I5MmUyMDcxYjdiOGVkN2Y1MTA4MzliOWNjYWQzMWVlOTc4OWYwOWI4ZmM2ZjNhMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjMzgzYTBmMjhmNDk0OTA2YWFlMTk5Njc0OTkyZDc1MGFmYWE0YTIzOTZiYTIxYzVmZTQwNDBhYTY4MWRkYzgifQ"
         }
       ]
+    },
+    {
+      "id": "claim_642d679d2d2a442f8aaef25c7ac797a7",
+      "statement": "Garmin の FIT SDK（com.garmin:fit）は activity/fit パッケージの FitRunDetailReader だけが使い、ドメイン側はポート ActivityFileReader とその結果の RunDetail だけに依存する。",
+      "evidence": [
+        {
+          "resource": "repo://backend/pom.xml#L78-L83",
+          "version": "repo-lines-v1:sha256:8a011a2a006a09554e1cda7cf51128043b52e994be914ba1f5e51bf22d9cb120:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQyMjEyNDIzNmI1ZDU0ZWUyNGI0ODY4NGQ3ZTEwNTU0YTIxYzQ3YWRkZDFhNzI1Y2Y4YjcyZTg4OWQ0NDhkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2Q4YmFlNDlmMzVhYjMyOGFhOTM0YzEwNDBkNDM2NTQ0MWQzOWZjYTFiZGFmYWVhMzRkNGYxOGY4NzI1MzU3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjJiZTRkZTcyNDUyMjE1YTIzYjE5ODQzYWVkZDJiYjNiNjY2MzJkNzg1MThmNzI0YTA2MGQ4MzZjYWY5YjA2ZCJ9"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/ActivityFileReader.java#L1-L8",
+          "version": "repo-lines-v1:sha256:a05d1f28184aa025636ce1d0f99725885a359066c88a13b061c279e6645a6205:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzcyZDg4MDZiMjJmMGU2ZjA4YTJlNTQxY2I3YzZjNTUzNDQ2NjFmZmQ3MTY3N2QyNzRlYjgwOThlMzljNjQ5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/activity/fit/FitRunDetailReader.java#L1-L42",
+          "version": "repo-lines-v1:sha256:be0de886ebc46e185d8f0227fa376a11e4370db57bcc660deb74e4a8758b5f69:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmOWU1ODMyMWE1YzFjNzFlYjcwMzdjZGVjYjQwMGVmYWJiN2JhYTIzZjY0ZTJmNWQxMDAzMjk1ZGZlYWE5Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NWRiYjk2NTY4ZmMxNTUxZTZhY2QyNjIxZWJjODE0M2QwNWNiMDhjNzdkMDg5N2VkOTAwODA0NWFmODExMmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNzljMTA0NjE1MjllYTQyN2I1YTA2MjVkOWZjNDEyMzA2YzgxMDJhZDRhMTBhOTNmMTAyOWQ1YmYzNzk3MjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9cba9b5ae8a4e608d3819570a67c1bf",
+      "statement": "dashboard パッケージの SituationRules は Spring や時計に依存しない純粋なルールで、判定に使う「今日」は TrainingSnapshot の値として受け取る。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/SituationRules.java#L1-L42",
+          "version": "repo-lines-v1:sha256:bbee2e126e14ceb65d2280aca7a54c4056554e2390b22c70e93747459b59db1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2MDE4OTg4MDliYTE2MzUxOWMxMDcwZTY4YjI1YTI3NTM3MjYyZjUwZWZmYmRiNDU1NjExMmRjNTNlY2JkNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNmE1ZmJkNzUwYTBjMjdlNWIyODlhOTRiYjljMGRlMjI0MTk4M2M2NjkwMmRhNTUwYmIyMzBlYzYwMzQ2NDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhZDBiYTg0ODZiMTQ5MjMwYjRhMzAwZjhjOGQxMTc5ODdiOTJiZDdlNmNiZWI2NjQ1NjJkMDRkZmQyNWFjMWEifQ"
+        },
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/dashboard/TrainingSnapshot.java#L1-L31",
+          "version": "repo-lines-v1:sha256:a2f5c6adb63fbc6a858863e7da48dab15c9e9e7003dae09ab258a5b42566d8cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2MDE4OTg4MDliYTE2MzUxOWMxMDcwZTY4YjI1YTI3NTM3MjYyZjUwZWZmYmRiNDU1NjExMmRjNTNlY2JkNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-11-02T05:35:33.013Z"
+    "at": "2026-11-07T04:26:43.646Z"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:397adcff75420abc9394609fbacaffc049bdc0c700f555cc1575ab8e4fbd15bc",
+  "pageVersion": "sha256:df18a580915b4ab6f7193b74bddf2ad25ec057f218857370c8bf69a34bb10930",
   "claims": [
     {
       "id": "claim_c3d4546cff5841bcbbb41628a4786eeb",
@@ -107,7 +107,7 @@
       "statement": "JooqRunResultRepository handles bulk updates of run results using jOOQ onConflict and excluded expressions to perform idempotent upserts without duplicate activity entries.",
       "evidence": [
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java#L70-L81",
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunResultRepository.java#L74-L85",
           "version": "repo-lines-v1:sha256:95e0d6164039ed43e20a3dfbdf58d12afd5992dfc2d4bc9a7631b4757e65ad1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YzIxYjMzZGJmMDQ5ZjQ4Yzk5YjdhYWIxMWEyMzUzMDJiZWYzZDk1MGFkNTM4MGI5ZTRkZWYwMDZmZDcxMzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlYmRjZGIwYjFiNjc0YjBjMzc3NjVhNzIyNDg4YTIxNmIyMTU2YzA5ODAzOGI4Mzg4MjUyMTA1MTZiMzY0YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1Y2ZhYTRmOWU2MGQ3ZGVkMGE1MTk4MTE1YjIzOGE3YzQxNzI0ZWU3YTVlNjdkMjViMzRiNWQ5Y2YwM2UwZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlZTRjYzU0MzI1YWExMzBmZDBlZjY1Njc5ZDk5ZTcxYWRjYWZmZjdkNWE1NTY1YmFhOGJiOGY1MTJkNGM2OTYifQ"
         }
       ]
@@ -142,27 +142,47 @@
     },
     {
       "id": "claim_1435ef6dbdef45728b2f6f19d5917fce",
-      "statement": "RowLevelSecurityContract defines integration tests across MonthlyPlanRepository, RunResultRepository, and RaceRepository to verify multi-tenant isolation, preventing cross-user data access, modifications, or deletions.",
+      "statement": "RowLevelSecurityContract defines integration tests across MonthlyPlanRepository, RunResultRepository, RaceRepository, and RunFileRepository to verify multi-tenant isolation, preventing cross-user data access, modifications, or deletions.",
       "evidence": [
         {
-          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java#L22-L95",
-          "version": "repo-lines-v1:sha256:d66e1bd75d4e4e3424fb5c9d55ea975bd147bdbab7defb67d59c12a27ab08b12:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmODYxNzdiZDdkMTk3NTU4OTI5OTc3YjQ5NjVmZThhZGM3YzBmZTM3ZDBlM2FhZjZkZTNlNmVhN2JiNmM3Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZGI5YzcyZTY2ZWYzMjQ3YWQwNTk1Y2IzZDg0MWNlMmEzZTIyZmRlOTc1NmE3YmEwZThiZjM4YTFkODJlZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyOWRjNzZmNjExMGIzYzU2MDNhNmMzYzNkMjVhNmEwMzYwNDdkOGNlMjgwOGM3ZTM2NTc2NGViMDMxNDBmNWQifQ"
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java#L22-L112",
+          "version": "repo-lines-v1:sha256:23a45d01ce52ab92792650ab4ceac733d24622a35db5a4ba957f31778d79222e:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ZGJhMTFjYjlhZDQ0OTVkYTQwYTRjY2IxNWUwMzA5OTg0ZTU3NzlkODU4ZTEyMTkwY2I1ZmE1YjQ5M2YzNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1ZjVmZWQwY2EyOTI0MjlkMzA3MzdmZWE0ZTViM2IyMjE3ZTc1YzFjOWY0ZmRlNmRlMjgyYThmNGQxNGM3MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyOWRjNzZmNjExMGIzYzU2MDNhNmMzYzNkMjVhNmEwMzYwNDdkOGNlMjgwOGM3ZTM2NTc2NGViMDMxNDBmNWQifQ"
         }
       ]
     },
     {
       "id": "claim_172f24e0525f47e7bd66373c35a90ac4",
-      "statement": "JooqPersistenceConfig conditionally instantiates JooqMonthlyPlanRepository, JooqRunResultRepository, and JooqRaceRepository Spring beans when runbuddy.persistence is set to jooq.",
+      "statement": "JooqPersistenceConfig conditionally instantiates JooqMonthlyPlanRepository, JooqRunResultRepository, JooqRunFileRepository, and JooqRaceRepository Spring beans when runbuddy.persistence is set to jooq.",
       "evidence": [
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java#L8-L26",
-          "version": "repo-lines-v1:sha256:fd95ba2287bfc7b4a061d99690d64866d82b7034cb616efd37122e3562137649:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YjkyNWM5NDJmMDJkMzI5ZTljYWQwOTQyYzNiNzg3ZDkwNDA2YjgzZDNlOWU2MWU2ZGIyNTExNWNhNzRmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZGM2YzUxZWRjNDFiZDY4OTMxNTQyYTVjNTA0YWIwMGRiMmRmMzUzYTAyZDM5ZmEzZjBjMGZlMmQzNWFkMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java#L8-L31",
+          "version": "repo-lines-v1:sha256:7abb2a66e6c3a9511fce622e5bb2606c4b35e0f2d00f9e884acae331cb6f293d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YjkyNWM5NDJmMDJkMzI5ZTljYWQwOTQyYzNiNzg3ZDkwNDA2YjgzZDNlOWU2MWU2ZGIyNTExNWNhNzRmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZGM2YzUxZWRjNDFiZDY4OTMxNTQyYTVjNTA0YWIwMGRiMmRmMzUzYTAyZDM5ZmEzZjBjMGZlMmQzNWFkMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_de98635fe0ff40c0895bfa59e3f5bbf0",
+      "statement": "run_fit_file 表は他の表と同じく user_id を app_current_user_id() のデフォルトで埋め、own_rows ポリシーと FORCE ROW LEVEL SECURITY を持ち、runbuddy_app に権限を与える。主キーは (user_id, activity_id) で run_result への外部キー（on delete cascade）を持つ。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/resources/db/migration/V4__create_run_fit_file.sql#L1-L19",
+          "version": "repo-lines-v1:sha256:6e22fc4e8932c10b5880530060ca5d11d408c21c28776b0e52de5c6825ce6199:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MDgxMmI4NTgzZGZmYjA3MzZmYzZiMmI4Yjc0M2QyZTlmOWVmZmZlODYwODI3YzNlNTQwMGE1N2UzNTExMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3MzJhYmNmMzI2NGE3MTY4ZGVlN2JjYWUwNGZmNzUxNTA4YWViMWQxZjIzMGJmMjNmYzkwNjY2Njk3MDMyZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ddbaf09c1584bf1bfe544e26e158aa9",
+      "statement": "JooqRunFileRepository は user_id を書かずに FIT ファイルを保存し、同じランの保存が衝突したときは onConflict(...).doNothing() で最初のものを残す。",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqRunFileRepository.java#L10-L37",
+          "version": "repo-lines-v1:sha256:7515a828c676b62062f5929667d1109d028492476363ed312a4a3d8d1e4fc799:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkYWM5ZmFiYzA1YzNhNGQ0NTNhNDk0MDc3YTk2ODdhMWFiNDA1MTcwNWI5NDI1OWUxMjE5M2Q4OTdkZGQ2Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NjE1NDM1ZWVlNjExNWI5MTk5ZGYzNmIyYzNlNjc5M2UzMTY0MWVlZThjYmJjZjM3ZWNiNTI4OTQ5NzhiMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-11-02T05:35:33.013Z"
+    "at": "2026-11-07T04:26:43.646Z"
   }
 }
