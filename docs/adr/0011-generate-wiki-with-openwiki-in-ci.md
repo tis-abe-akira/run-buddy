@@ -1,6 +1,6 @@
 # ADR-0011: OpenWiki で Wiki を CI から自動生成し、GitHub Pages に公開する
 
-- ステータス: Accepted
+- ステータス: Superseded by [ADR-0015](0015-generate-wiki-from-claude-code.md)（生成は Claude Code から。Pages への公開は残す）
 - 日付: 2026-10-31
 
 ## コンテキスト

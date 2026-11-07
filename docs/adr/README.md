@@ -14,8 +14,11 @@
 | [0008](0008-ai-integration.md) | AI相談機能の実装方式（Gemini / Claude / OpenAI / Bedrock を選択可能に）| Accepted（Spring AI） |
 | [0009](0009-garmin-personal-api.md) | Garmin Connect Personal API でランの実績を取り込む | Accepted |
 | [0010](0010-run-at-home-over-tailscale.md) | クラウドに公開せず、手元のマシンで動かして Tailscale でつなぐ | Accepted |
-| [0011](0011-generate-wiki-with-openwiki-in-ci.md) | OpenWiki で Wiki を CI から自動生成し、GitHub Pages に公開する | Accepted |
+| [0011](0011-generate-wiki-with-openwiki-in-ci.md) | OpenWiki で Wiki を CI から自動生成し、GitHub Pages に公開する | Superseded by 0015 |
 | [0012](0012-fit-files-for-laps-and-tracks.md) | ラップと GPS 軌跡は FIT ファイルから取り、原本を DB に保存して、開いたときに読む | Accepted |
+| [0013](0013-route-map-with-leaflet-and-osm.md) | ランコースの地図は Leaflet と OpenStreetMap のタイルで描く | Accepted |
+| [0014](0014-next-steps-situations-in-code-presentation-by-ai.md) | ダッシュボードの「いまやること」は、状況の判定をコードで、見せ方を AI でする | Accepted |
+| [0015](0015-generate-wiki-from-claude-code.md) | Wiki の生成を CI（Gemini）から Claude Code（Claude）に移す | Accepted |
 
 ## テンプレート
 
