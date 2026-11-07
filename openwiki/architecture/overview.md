@@ -3,6 +3,9 @@ type: concept
 title: アーキテクチャ概要
 description: run-buddy の Monorepo 全体構造（Spring Boot 4 / Java 25 と Vite + React + TanStack Router）、バックエンドの 10 個のパッケージ構成と依存の向き、SpaConfig による単一オリジン統合配信、および Tailscale による個人アクセス運用モデルを解説する。
 tags: [architecture, monorepo, backend, spring-boot, frontend, vite, spa-config, tailscale, race, day]
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T03:05:41.778Z
 sources:
   - id: openwiki-source-cc9ac771b9086a58897b0e1c
     resource: repo://backend/pom.xml
@@ -38,7 +41,7 @@ sources:
     resource: repo://docs/adr/0010-run-at-home-over-tailscale.md
   - id: openwiki-source-1047363cf615000e4c9bb694
     resource: repo://frontend/package.json
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-07T03:05:41.778Z" }
 ---
 
 run-buddy は、ランニングの月間計画（Plan）作成、走行実績（Activity）の自動同期、目標レース（Race）管理、日別詳細（Day）およびダッシュボード表示、ならびに AI によるトレーニング相談（Advisor）を提供する個人向け Web アプリケーションです。
@@ -49,7 +52,7 @@ run-buddy は、ランニングの月間計画（Plan）作成、走行実績（
 
 ## モノレポ全体像と技術スタック
 
-本プロジェクトは、Web UI と REST API を 1 つのリポジトリで管理するシンプル構造のモノレポ構成を採用しています（[ADR-0002: モノレポ構成](../../docs/adr/0002-monorepo-frontend-backend.md)）。複雑なモノレポ管理ツール（Nx や Turborepo など）は導入せず、エコシステムごとの標準ビルドツール（Maven および npm）でディレクトリを分割し、独立してビルド・テストできるようにしています。
+本プロジェクトは、Web UI と REST API を 1 つのリポジトリで管理するシンプル構造のモノレポ構成を採用しています（[ADR-0002](../../docs/adr/0002-monorepo-frontend-backend.md)）。アクセス制御やコード共有の粒度を最適に保ちつつ、複雑なモノレポ管理ツール（Nx や Turborepo など）は導入せず、エコシステムごとの標準ビルドツール（Maven および npm）でディレクトリを分割し、独立してビルド・テストできるようにしています。
 
 ```
 run-buddy/
@@ -104,7 +107,7 @@ flowchart TD
 | `activity` | 走行実績（`RunResult`）のドメインモデル (`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`)、取得ポート (`ActivitySource.java`)、Garmin 連携 (`garmin/GarminActivitySource.java`)、リポジトリポート (`RunResultRepository.java`)、REST API (`RunController.java`, `ImportController.java`) |
 | `dashboard` | 計画対実績の達成状況や月間進捗データ（`DailyProgress`, `PlanAchievement`, `DashboardSummary`）を集計・提供するリードモデルおよび REST API (`DashboardController.java`) |
 | `day` | 指定日の計画セッションと走行実績を統合した日別詳細データ（`DayDetail.java`）を提供する REST API (`DayController.java`) |
-| `race` | 目標レース（`Race.java`）のドメインモデル（カウントダウン日数の算定や目標ペース計算 `targetPace`）、永続化ポート (`RaceRepository.java`)、REST API (`RaceController.java`) |
+| `race` | 目標レース（`Race.java`）のドメインモデル（目標タイムから目標キロペース `targetPace` やカウントダウン日数を計算 `daysFrom`）、永続化ポート (`RaceRepository.java`)、REST API (`RaceController.java`) |
 | `advisor` | AI 相談機能のドメイン抽象（`TrainingAdvisor.java` [`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`]、`Consultation`, `Advice`）、Tool 定義 (`AdvisorTools.java`)、Spring AI 実装 (`springai/SpringAiTrainingAdvisor.java`)、モック実装 (`fake/FakeTrainingAdvisor.java`)、REST API (`AdvisorController.java`) |
 | `export` | データエクスポートドメイン（`DailyLog.java`, `DailyLogCsv.java`, `Csv.java`）および CSV ダウンロード REST API (`ExportController.java`) |
 | `shared` | 共通ドメイン概念（`Distance.java`）およびシステム共通コンテキスト（`CurrentUser.java`, `ClockConfig.java`） |
@@ -113,48 +116,58 @@ flowchart TD
 
 ### ドメイン非依存ルール (Domain Independence) と依存の向き
 
-コア・ドメインパッケージ（`plan`, `activity`, `race`, `day`, `advisor`, `export`, `shared`）に含まれるドメインモデルおよびリポジトリ／外部ソースのインターフェース（ポート）は、外部フレームワーク（Spring Framework, jOOQ, Spring AI など）に対するコンパイル時依存を一切持ちません。
+コア・ドメインパッケージ（`plan`, `activity`, `race`, `day`, `advisor`, `export`, `shared`）に含まれるドメインモデルおよびリポジトリ／ソースポートは、外部フレームワーク（Spring Framework, jOOQ, Spring AI など）に対するコンパイル時依存を一切持ちません。
 
-1. **純粋な Java によるドメイン表現**: `MonthlyPlan`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`）、`RunResult`（`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`）、`Race`（`backend/src/main/java/com/example/runbuddy/race/Race.java`）、`Distance` などのドメインクラスは Java 標準ライブラリ (`java.time`, `java.util`) のみで記述され、Spring アノテーションや SQL/OR マッパーの依存を含みません。
+1. **純粋な Java によるドメイン表現**: `MonthlyPlan`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java`）、`RunResult`（`backend/src/main/java/com/example/runbuddy/activity/RunResult.java`）、`Race`（`backend/src/main/java/com/example/runbuddy/race/Race.java`）、`DayDetail`（`backend/src/main/java/com/example/runbuddy/day/DayDetail.java`）、`Distance` などのドメインクラスは Java 標準ライブラリ (`java.time`, `java.util`) のみで記述され、Spring アノテーションや SQL/OR マッパーの依存を含みません。
 2. **依存性逆転の原則 (DIP)**: `MonthlyPlanRepository`（`backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java`）、`RunResultRepository`、`RaceRepository`（`backend/src/main/java/com/example/runbuddy/race/RaceRepository.java`）、`TrainingAdvisor`（`backend/src/main/java/com/example/runbuddy/advisor/TrainingAdvisor.java`）、`ActivitySource` などのポートはドメインパッケージ側に定義されます。技術依存の実装（jOOQ や Spring AI、Garmin RestClient）は `persistence` や各アダプターパッケージが引き受けます。
 3. **依存の向き**: アダプター層（`persistence/jooq`, `advisor/springai`, `activity/garmin`）や Web/コントローラー層はドメインモデルに依存しますが、ドメインモデルからアダプターや外部フレームワークへの依存は存在しません。
-4. **高速なテスト**: コア・ドメインのロジックおよびリポジトリインターフェースは、`InMemoryMonthlyPlanRepository` や `InMemoryRaceRepository`、`FakeTrainingAdvisor` などのインメモリ／フェイク実装を用いることで、データベースや外部 API に依存せず即座に単体テストを実行できます（詳細は [アーキテクチャパターン](./patterns.md) を参照）。
+4. **高速なテスト**: コア・ドメインのロジックおよびリポジトリインターフェースは、インメモリ／フェイク実装を用いることで、データベースや外部 API に依存せず即座に単体テストを実行できます（詳細は [アーキテクチャパターン](./patterns.md) を参照）。
 
 ```mermaid
 flowchart TD
-    subgraph DomainCore ["Domain Core (Pure Java - plan, activity, race, day, advisor, export, shared)"]
-        DomainModels["MonthlyPlan / RunResult / Race / DayDetail / Distance\n(Pure Java Domain Entities)"]
-        PlanRepoPort["MonthlyPlanRepository\n(Port Interface)"]
-        RaceRepoPort["RaceRepository\n(Port Interface)"]
-        AdvisorPort["TrainingAdvisor\n(Port Interface)"]
+    subgraph WebLayer ["Web Layer"]
+        WebPkg["web\n(SpaConfig, REST Controllers, OpenApiConfig)"]
     end
 
-    subgraph PersistenceJooq ["persistence/jooq"]
-        JooqPlanRepo["JooqMonthlyPlanRepository"]
-        JooqRaceRepo["JooqRaceRepository"]
+    subgraph FeatureControllers ["Controllers / Application Layer"]
+        Controllers["plan / activity / dashboard / day / race / advisor / export\n(Controllers & Application Logic)"]
     end
 
-    subgraph AdvisorSpringAi ["advisor/springai"]
-        SpringAiAdvisor["SpringAiTrainingAdvisor"]
+    subgraph DomainCore ["Domain Core (Pure Java)"]
+        PlanDomain["plan (MonthlyPlan, PlannedWorkout)"]
+        ActivityDomain["activity (RunResult, ActivitySource)"]
+        RaceDomain["race (Race, TargetPace)"]
+        DayDomain["day (DayDetail)"]
+        AdvisorDomain["advisor (TrainingAdvisor, Consultation)"]
+        ExportDomain["export (DailyLog, Csv)"]
+        SharedDomain["shared (Distance, CurrentUser)"]
     end
 
-    subgraph Frameworks ["External Frameworks & Libraries"]
+    subgraph Adapters ["Adapters & Persistence Layer"]
+        PersistencePkg["persistence (jOOQ RLS Repositories, DatabaseConfig)"]
+        GarminAdapter["activity/garmin (GarminClient)"]
+        SpringAiAdapter["advisor/springai (SpringAiTrainingAdvisor)"]
+    end
+
+    subgraph Frameworks ["External Frameworks (Compile-time Isolated)"]
         SpringBoot["Spring Boot / Spring WebMVC"]
-        jOOQ["jOOQ Library"]
+        jOOQ["jOOQ"]
         SpringAI["Spring AI"]
     end
 
-    JooqPlanRepo -->|"implements"| PlanRepoPort
-    JooqRaceRepo -->|"implements"| RaceRepoPort
-    SpringAiAdvisor -->|"implements"| AdvisorPort
+    WebPkg --> Controllers
+    Controllers --> DomainCore
+    PersistencePkg -.->|"Implements Repository Ports"| DomainCore
+    GarminAdapter -.->|"Implements ActivitySource Port"| ActivityDomain
+    SpringAiAdapter -.->|"Implements TrainingAdvisor Port"| AdvisorDomain
 
-    JooqPlanRepo --> jOOQ
-    JooqRaceRepo --> jOOQ
-    SpringAiAdvisor --> SpringAI
+    PersistencePkg --> jOOQ
+    SpringAiAdapter --> SpringAI
+    WebPkg --> SpringBoot
 
-    DomainCore -.->|"No Import Dependencies"| Frameworks
+    DomainCore -.->|"No Compile Dependency"| Frameworks
 ```
-*ドメインコアのフレームワーク非依存性とアダプターによる依存性逆転*
+*バックエンドの 10 パッケージ構成、ドメインコアのフレームワーク非依存性、およびポート＆アダプターによる依存の向き*
 
 ---
 
@@ -185,7 +198,7 @@ flowchart TD
 
 run-buddy は個人利用を想定しており、アプリ自体にはユーザーログイン機能（認証機能）を実装していません（すべての操作は設定ファイル `backend/src/main/resources/application.properties` 上のデフォルトユーザー `runbuddy.default-user-id` として処理されます）。
 
-不特定多数へのインターネット公開によるデータ漏洩や API キーの不正利用を防ぎつつ、外出先やスマートフォンから安全にアクセスするため、Tailscale を活用したプライベートネットワーク運用を採用しています（[ADR-0010: Tailscale 運用](../../docs/adr/0010-run-at-home-over-tailscale.md)）。
+不特定多数へのインターネット公開によるデータ漏洩や API キーの不正利用を防ぎつつ、外出先やスマートフォンから安全にアクセスするため、Tailscale を活用したプライベートネットワーク運用を採用しています（[ADR-0010](../../docs/adr/0010-run-at-home-over-tailscale.md)）。
 
 ```mermaid
 flowchart TD

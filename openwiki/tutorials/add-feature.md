@@ -26,6 +26,9 @@ sources:
     resource: repo://frontend/src/api/client.ts
   - id: openwiki-source-9ad52ddc523140b03411a027
     resource: repo://frontend/src/components/ExportLink.tsx
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T03:05:41.778Z
 generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
 ---
 

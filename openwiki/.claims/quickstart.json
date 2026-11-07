@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:38f16fbf1ef49a4bff1335f9e9e32e491957fe106aee00ab97db21f3df84ca5e",
+  "pageVersion": "sha256:b7a83c8b7cec27fdb27bf0d87d27a0311fa146938575c9b438249430eec46b45",
   "claims": [
     {
       "id": "claim_313cb1cbcc9a47f5a7bc4e9a0b8cc690",
@@ -87,10 +87,30 @@
           "version": "repo-lines-v1:sha256:379ffbfeb89de43131755350cb51f91f2d6f55844e949f51f65f1f8e7cb129ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzNmRmN2E1YTNhYWYxODBjZmZkMWQ2NWM2NDZlZjZhZWEzNTJjYzI3Nzc0Njg2MTk5Y2Q4ZmIzZTg5OWM3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTdiZDYyYjY4MWRiOTQ0YjBiMTgwMTA2YWViMWFjNmZhOTQzZjdlOWU3YjcxZTkxYjhmNmEyOGJjMTczMDJhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODU4MGI3NjUxOGRhZTk3OWZhZWJkMDIzNjdhMjkyOTJhNTBkOTc2MDkyMjUxYTM4YTZjZTMwODgwYmE0MjgyNSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_11c979da036241afb734d9cc4b0609eb",
+      "statement": "Domain unit tests like MonthlyPlanTest run pure Java domain logic without Spring or database dependencies to verify invariants fast.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanTest.java#L13-L25",
+          "version": "repo-lines-v1:sha256:86e6f4903e503a7c66aa43b6e7d6b900382c142ad2ae6cc55d3cd83c371159a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMDU1ZWIwM2M3OTFlYmFjMTljOGRhOGU0ODM5ZGNjZGJlZmM1YjY2MTExMzQzYTI0YjkzYzJiNzViZTEyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5YzQ3ZmIwZmRkMjIxMmI5NzgxYzNkZTg0NTlmNDAwYjE0NmFmMmRlYWQ0MzJkNDMzYTI1OTdlZGYxNGEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiYjE5MzgxYWYzNTI3ZjExZDgwZWI3OWUxYzQ0ODI2YTg0OTllMmJmZjkyOGVkZWRjZDJmMWMzZTViYjZjMWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61a98861a9ed40d98498903e16987ffd",
+      "statement": "Controller slice tests like RunControllerTest use @WebMvcTest and MockMvc to verify REST API routing, serialization, and ProblemDetail exception handling without spinning up full persistence layers.",
+      "evidence": [
+        {
+          "resource": "repo://backend/src/test/java/com/example/runbuddy/activity/RunControllerTest.java#L24-L33",
+          "version": "repo-lines-v1:sha256:312a23a12b267c970cc5217d4c66fac7fd107fc57c35e7f7549085316772a171:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzNzJiMzcwMTcwM2EzZGNjYThhOTgzMGQwOWQwMDY0Njc4YWQ0YjVmMDMwYmRlZDk3MmU4MjZlNDI1NWNlOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmNDEwNzVlYmQzODNiNjMzZTA3YmMwMjNmMmNlMTZlY2ZiNzQ5ZjRlNGMzMmQyYjRiZjhhMGIzZTE3NzNhNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmMWRlYWZlN2IzNzdjZTQ4Mzg1M2Y0MThjMzIwNGU0MmM4NmJmMTlmZmQyZDQ0YTRhNmU1ODVlNTI4MDM4MDAifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-11-02T05:35:33.013Z"
+    "at": "2026-11-07T03:05:41.778Z"
   }
 }

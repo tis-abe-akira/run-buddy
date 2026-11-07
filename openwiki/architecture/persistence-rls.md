@@ -3,6 +3,9 @@ type: "設計ドキュメント"
 title: "永続化: jOOQ と行レベルセキュリティ"
 description: "なぜ jOOQ を採用したか、RlsTransactionManager と PostgreSQL RLS によるマルチテナント保護、port での default メソッド禁止と ArchUnit 検査、jOOQ コード生成と Record 変換パターンを解説します。"
 tags: ["persistence", "jooq", "postgresql", "rls", "archunit"]
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-11-07T03:05:41.778Z
 sources:
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
@@ -36,7 +39,7 @@ sources:
     resource: repo://docs/adr/0007-persistence-library.md
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-07T03:05:41.778Z" }
 ---
 
 # 永続化: jOOQ と行レベルセキュリティ
@@ -111,22 +114,22 @@ public class RlsTransactionManager extends JdbcTransactionManager {
 
 ### リクエスト処理シーケンス図
 
-以下に、リクエスト受信から Controller → リポジトリポート → jOOQ アダプタ → RlsTransactionManager による `set_config` 実行 → PostgreSQL RLS ポリシー (`own_rows`) 適用 → ドメイン record への変換・返却までの流れを示します。
+以下に、リクエスト受信から Controller → リポジトリポート → `@Transactional` プロキシ / RlsTransactionManager による `set_config` 実行 → jOOQ アダプタ → PostgreSQL RLS ポリシー (`own_rows`) 適用 → ドメイン record への変換・返却までの流れを示します。
 
 ```mermaid
 sequenceDiagram
     participant C as Controller (PlanController)
     participant P as Repository Port (MonthlyPlanRepository)
-    participant A as jOOQ Adapter (JooqMonthlyPlanRepository)
     participant TM as RlsTransactionManager
+    participant A as jOOQ Adapter (JooqMonthlyPlanRepository)
     participant DB as PostgreSQL (RLS enabled)
 
     C->>P: findByMonth(2026-11)
-    Note over P,A: @Transactional (readOnly = true)
-    P->>A: findByMonth(YearMonth)
-    A->>TM: prepareTransactionalConnection()
+    Note over P,TM: Intercepted by Spring @Transactional proxy
+    P->>TM: prepareTransactionalConnection()
     TM->>DB: select set_config('app.user_id', 'user_123', true)
     DB-->>TM: session variable set
+    P->>A: findByMonth(YearMonth)
     A->>DB: jOOQ DSL SQL Query Execution
     Note over DB: RLS policy own_rows enforced<br/>user_id = app_current_user_id()
     DB-->>A: PostgreSQL Record / MULTISET Result
@@ -163,7 +166,7 @@ $$;
 
 ### 2. DEFAULT 値と RLS ポリシー (`own_rows`)
 
-全テーブル（`monthly_plan`, `planned_workout`, `run_result`, `race`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
+全テーブル（`monthly_plan`, `planned_workout`, `run_result`, `race`, `run_file`）で、`user_id` カラムのデフォルト値と RLS ポリシー `own_rows` が設定されています。
 
 ```sql
 create table monthly_plan (
@@ -227,7 +230,7 @@ static final ArchRule PORTS_OF_TRANSACTIONAL_ADAPTERS_HAVE_NO_DEFAULT_METHODS = 
 
 ArchUnit ルール自体が偽陰性（誤って違反を見落とす状態）に陥っていないことを証明するため、CI で [`scripts/archunit-mutation-check.sh`](../../backend/scripts/archunit-mutation-check.sh) を実行します。
 
-- 一時的な git worktree 内で `MonthlyPlanRepository` や `RunResultRepository` に故意に `default` メソッド（ミュータント）を挿入します。
+- 一時的な git worktree 内で `MonthlyPlanRepository` や `RunResultRepository`、動的ポート `MutantPort` に故意に `default` メソッド（ミュータント）を挿入します。
 - `TransactionalPortRulesTest` を実行し、すべてのミュータントが正しく検知されテストが失敗すること（"killed"）を確認します。
 - 併せて、許可された `static` メソッドが誤検知されないこともチェックします。
 
@@ -274,7 +277,7 @@ echo "jOOQ classes regenerated."
 
 ## 6. jOOQ Record とドメイン Record のマッピング実例
 
-jOOQ アダプタでは、生成された jOOQ Record や DSL 結果を不変ドメイン Record にマッピングします。`runbuddy.persistence=jooq` が指定された場合、[`JooqPersistenceConfig`](../../backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java) が Spring Bean として各リポジトリアダプタを登録します。
+jOOQ アダプタでは、生成された jOOQ Record や DSL 結果を不変ドメイン Record にマッピングします。`runbuddy.persistence=jooq` が指定された場合、[`JooqPersistenceConfig`](../../backend/src/main/java/com/example/runbuddy/persistence/jooq/JooqPersistenceConfig.java) が Spring Bean として `JooqMonthlyPlanRepository`, `JooqRunResultRepository`, `JooqRunFileRepository`, `JooqRaceRepository` を登録します。
 
 ### 1. `JooqMonthlyPlanRepository`: `MULTISET` による単一クエリ復元
 
@@ -356,5 +359,6 @@ private static Race toRace(RaceRecord row) {
 
 ## 7. テストと安全性の維持
 
-- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RaceRepositoryContract`）を満たします。
-- **マルチテナント隔離テスト (`RowLevelSecurityContract`)**: [`RowLevelSecurityContract`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java) により、ユーザー切り替え時のデータ非開示（`anotherUserSeesNothing`）、ID 衝突の回避（`sameMonthAndActivityIdDoNotCollideAcrossUsers`）、他ユーザーデータの更新・削除防止（`anotherUserCanNeitherOverwriteNorDeleteARace`）およびトランザクション外アクセスの即時失敗を自動検証しています。
+- **リポジトリ契約テスト**: すべてのアダプタ（jOOQ / InMemory）は共通の契約テストインターフェース（`MonthlyPlanRepositoryContract`, `RunResultRepositoryContract`, `RaceRepositoryContract`, `RunFileRepositoryContract`）を満たします。
+- **マルチテナント隔離テスト (`RowLevelSecurityContract`)**: [`RowLevelSecurityContract`](../../backend/src/test/java/com/example/runbuddy/persistence/RowLevelSecurityContract.java) により、`MonthlyPlanRepository`, `RunResultRepository`, `RaceRepository`, `RunFileRepository` 全体にわたりユーザー切り替え時のデータ非開示（`anotherUserSeesNothing`）、ID 衝突の回避（`sameMonthAndActivityIdDoNotCollideAcrossUsers`）、他ユーザーデータの閲覧・更新・削除防止（`anotherUserSeesNoRaces`, `anotherUserCanNeitherOverwriteNorDeleteARace`, `anotherUserSeesNoActivityFile`）およびトランザクション外アクセスの即時失敗を自動検証しています。
+- **データベース安全性テスト (`DatabaseSafetyTest`)**: [`DatabaseSafetyTest`](../../backend/src/test/java/com/example/runbuddy/persistence/DatabaseSafetyTest.java) により、トランザクション外での書き込みや読み込みが発生した場合に `app.user_id is not set` 例外が明示的にスローされることを検証します。

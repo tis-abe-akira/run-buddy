@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f8a4f7ea9f780201a7270b92dbae6b76e904e614dfe24635aceb61e67388196a",
+  "pageVersion": "sha256:0e80ff219b49c5bd166e75ae9152efa10d416086df4163ce45aca0b386529cbd",
   "claims": [
     {
       "id": "claim_8028c37f138e4593af340b51a32dbd83",
       "statement": "run-buddy のモノレポ構成において、バックエンドは backend/、フロントエンドは frontend/ に配置され、それぞれ標準のビルドツール（Maven および npm）で独立してビルド・テストできる。",
       "evidence": [
         {
-          "resource": "repo://backend/pom.xml#L1-L110",
-          "version": "repo-lines-v1:sha256:4ea7aea6056abc4a5b504525b50b6d59f58ca2c17e4457cfc24c602b25b66731:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZWI2NDFkY2NmMTA2MGNmODI4MzE3NzhhYjA0YjI3MGI5N2IyNDc4MGQwODk1ZDViMDBkNGViMjE3ZmM4YTFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYmY1YWQxNjVkNTE3OWY4YWEyMjZjZWUzM2QyNmQyYWIzMWE5YmNhM2Q3ZTQ1YTkxYjFhZmViMzA4NWFjNTlhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZjRmZWViOWEyZWM2NWYxNzkxZGEzYjk2ZWVlMDA2M2ZjM2Q3NjE2YzQ2YTBmZDIwOGEwMTNjYWEyZWVjOTQxIn0"
+          "resource": "repo://backend/pom.xml#L1-L280",
+          "version": "repo-lines-v1:sha256:426095534df41efc96eb908fe0041bb92c1c3583a8d85bc404df73c1109a15b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZWI2NDFkY2NmMTA2MGNmODI4MzE3NzhhYjA0YjI3MGI5N2IyNDc4MGQwODk1ZDViMDBkNGViMjE3ZmM4YTFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyNmUzMmEzMGYzZjIwYmJjODJmNWM1M2Q0ODA4ODNkYTg5NDlkMGFiYWE5ZWRkMDVhZDMyY2Q3YWM0ZTI3OWU3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         },
         {
           "resource": "repo://docs/adr/0002-monorepo-frontend-backend.md#L13-L21",
@@ -55,8 +55,8 @@
           "version": "repo-lines-v1:sha256:ccc147bd58d32ef7dee0cdfc7bc972853861a0eb1c283253a8507a76aca889bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmNTdjNjI0OGFhZDRkZTA1YzE4NjdmMGFmZDNhMzc2YmVkZmZlMTZiZjg2NWRiZmRhZmU3MjVkZTAzYzY0MDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java#L1-L38",
-          "version": "repo-lines-v1:sha256:57356b8dcb851ee083fa8893c72451f91665e068894318315fed9b9c4c169f49:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4Y2QwYWIyODNiNGU2NmE0ZmJhZTllZDRhYzMzODkzNjliZWQ4ZWM4ZWMyN2QwYWNkZjY1YTlhNjc2NzVhM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlan.java#L1-L60",
+          "version": "repo-lines-v1:sha256:d3fac68b6ac39f14be5f76bacd133063f67e8d72786e31124d9bced8f08ff672:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4Y2QwYWIyODNiNGU2NmE0ZmJhZTllZDRhYzMzODkzNjliZWQ4ZWM4ZWMyN2QwYWNkZjY1YTlhNjc2NzVhM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://backend/src/main/java/com/example/runbuddy/plan/MonthlyPlanRepository.java#L1-L11",
@@ -77,7 +77,7 @@
       "statement": "Maven の -Papp プロファイルは frontend/ の npm ビルドを実行し、成果物を backend の classpath:/static/ にコピーすることで、単一 JAR での UI・API 統合配信を実現する。",
       "evidence": [
         {
-          "resource": "repo://backend/pom.xml#L208-L272",
+          "resource": "repo://backend/pom.xml#L214-L278",
           "version": "repo-lines-v1:sha256:42a30e4dce5f351fe89746cd1d894213d7062cd041374dd23d008e797d262b4b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMjQ5MzFmMmYxODBhNjQ1ZjcxNTc0OTMxNGE5MTFiMzIzOGM4NmJkYzE3ZmJmZWE2ODA2M2E3ZmYwZDlkMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNjBlZWE1Yjg2ODI5YjJmYjM2Y2Q3MWEwMWEwZjQ5YTAwYWM1ZDVhMjdmYTk4N2Y3ZjAzNTVjMzg4NDIxNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1ODk5ZDJkYWYwYzRlY2U3OTIwNjE3YTU5ZTQyZDQzYTVjNzc1NjJjMGRlMWNhMzliNDUxMjQwZTg0Njk0ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkZDkxZDg4ZmRmZjA0NTA1YjZkNjA1Y2FhMzRkYTcyYzJiMmMyYTBjODhiYjFjMThhM2I2ZWM0NGJlOTQxMTMifQ"
         },
         {
@@ -139,6 +139,6 @@
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-11-02T05:35:33.013Z"
+    "at": "2026-11-07T03:05:41.778Z"
   }
 }

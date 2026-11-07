@@ -5,12 +5,16 @@ description: run-buddy の開発環境セットアップ、アプリ起動・運
 tags: [quickstart, setup, testing, navigation, openwiki]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-11-02T05:35:33.013Z
+    at: 2026-11-07T03:05:41.778Z
 sources:
+  - id: openwiki-source-77a3741e3247913f26124696
+    resource: repo://backend/src/test/java/com/example/runbuddy/activity/RunControllerTest.java
   - id: openwiki-source-3421d35cc2d552c5979c7b87
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java
   - id: openwiki-source-4cdab6c2bc28fc312d8db527
     resource: repo://backend/src/test/java/com/example/runbuddy/persistence/PostgresTestConfiguration.java
+  - id: openwiki-source-d12a6a4f4b7b82d6ac5007ca
+    resource: repo://backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanTest.java
   - id: openwiki-source-e7c60c027059da2563751cde
     resource: repo://docs/guides/database.md
   - id: openwiki-source-2fa9f56c0d55b0fd53974ce0
@@ -21,7 +25,7 @@ sources:
     resource: repo://frontend/vite.config.ts
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.7.2", at: "2026-11-02T05:35:33.013Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-11-07T03:05:41.778Z" }
 ---
 
 # 開発の始め方とテストの回し方
@@ -119,7 +123,7 @@ cp .env.example .env
 
 ## 3. 日常運用とトラブルシューティング
 
-詳細な DB 操作や対話モード手順は [`../docs/guides/database.md`](../docs/guides/database.md) を参照してください。
+詳細な DB 操作や対話モード手順は [`../docs/guides/database.md`](../docs/guides/database.md)、CI での OpenWiki 自動生成手順は [`../docs/guides/openwiki.md`](../docs/guides/openwiki.md) を参照してください。
 
 *   **ポート 5432 の競合が発生する場合:** `.env` 内で `RUNBUDDY_DB_PORT=5433` 等に変更し、`docker compose down && docker compose up -d --wait` を実行。
 *   **データベースの完全リセット:**
@@ -174,13 +178,58 @@ flowchart TD
 
 | テスト階層 | 対象・特徴 | 用途（いつ使うか） | 主な実装例 / 基底クラス | 実行コマンド |
 |---|---|---|---|---|
-| **1. ドメイン単体テスト** | 純粋な Java 25 ロジックの検証。Spring や DB に依存せずミリ秒単位で超高速実行 | ドメインモデルのビジネスルール、集約の不変条件、計算ロジックを TDD で実装・検証する際 | `MonthlyPlanTest`, `RunResultTest`, `PlanAchievementTest` | `./mvnw test` |
+| **1. ドメイン単体テスト** | 純粋な Java 25 ロジックの検証。Spring や DB に依存せずミリ秒単位で超高速実行 | ドメインモデルのビジネスルール、集約の不変条件、計算ロジックを TDD で実装・検証する際 | `MonthlyPlanTest`, `RunResultTest`, `LapTest` | `./mvnw test` |
 | **2. Controller / Web層テスト** | `@WebMvcTest` を使用。HTTP 契約、JSON シリアライズ/デシリアライズ、`ProblemDetail`（`reason` 等）の例外ハンドリング構造を検証 | REST コントローラのルーティング、リクエスト/レスポンス変換、エラーレスポンス形式の検証 | `RunControllerTest`, `AdvisorControllerTest`, `ExportControllerTest` | `./mvnw test` |
 | **3. DB 統合テスト** | `DatabaseTest` を継承。Testcontainers で本物の PostgreSQL 17（`postgres:17-alpine`）を起動。`runbuddy_app` ロールで接続し RLS 動作およびスキーマ安全性を検証 | Repository / jOOQ クエリの実動作、RLS セキュリティポリシー、DB スキーマ変更の検証 | `DatabaseTest`, `JooqPersistenceTest`, `DatabaseSafetyTest`, `RowLevelSecurityContract` | `./mvnw test` (要 Docker) |
 | **4. 実 API 導通テスト (Live Integration Tests)** | 外部 API（Gemini / Garmin）との実導通テスト。`@EnabledIfEnvironmentVariable` により普段の `./mvnw test` では自動スキップ | 外部サービスとのトークン交換や API スキーマ互換性を手動で導通確認する際 | `GeminiLiveTest`, `GarminLiveTest` | `GEMINI_API_KEY=... ./mvnw test -Dtest=GeminiLiveTest` |
 
-#### DB テストのアイソレーション・メカニズム (`DatabaseTest`)
-`DatabaseTest` を継承するテストクラスでは、`@BeforeEach` のタイミングで `currentUser.switchToNewUser()` が呼び出され、テストメソッドごとにランダムな新しいユーザー ID コンテキストが設定されます。これにより、PostgreSQL の行レベルセキュリティ（RLS）によってデータが完全に分離されるため、テスト間でのテーブルクリーンアップを行わずに高い並行性と独立性が保証されます。
+#### コードで見る各テスト階層の実装例
+
+*   **ドメイン単体テスト (`backend/src/test/java/com/example/runbuddy/plan/MonthlyPlanTest.java`)**
+    Spring や DB を起動せず、純粋な Java オブジェクトとして不変条件（日付順の並び替えや距離の合計計算）を検証します。
+    ```java
+    class MonthlyPlanTest {
+        @Test
+        void workoutsAreKeptInDateOrder() {
+            MonthlyPlan plan = new MonthlyPlan(NOVEMBER, Distance.ofKilometers(150), List.of(
+                    workout(LocalDate.of(2026, 11, 20), 10),
+                    workout(LocalDate.of(2026, 11, 2), 5)));
+            assertThat(plan.workouts()).extracting(PlannedWorkout::date)
+                    .containsExactly(LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 20));
+        }
+    }
+    ```
+
+*   **Controller / Web層テスト (`backend/src/test/java/com/example/runbuddy/activity/RunControllerTest.java`)**
+    `@WebMvcTest` で対象のコントローラ層のみをスライス起動し、`MockMvc` で HTTP レスポンスや JSON シリアライズ、エラー時の `ProblemDetail` レスポンスを検証します。
+    ```java
+    @WebMvcTest({RunController.class, LatestImportController.class, ActivitySourceController.class})
+    @Import({RunImportService.class, InMemoryRunResultRepository.class, RunControllerTest.FailingSource.class})
+    class RunControllerTest {
+        @Autowired
+        private MockMvc mockMvc;
+    }
+    ```
+
+*   **DB テストのアイソレーション・メカニズム (`backend/src/test/java/com/example/runbuddy/persistence/DatabaseTest.java` & `PostgresTestConfiguration.java`)**
+    `PostgresTestConfiguration` が Testcontainers で `postgres:17-alpine` を起動し、`runbuddy_app` ロールで接続します。`DatabaseTest` を継承するテストクラスでは、`@BeforeEach` で `currentUser.switchToNewUser()` が実行され、テストメソッドごとに新しいランダムなユーザー ID が発行されます。PostgreSQL の行レベルセキュリティ（RLS）によってデータが分離されるため、テスト間でのテーブルクリーンアップを行わずに高い並行性と独立性が保証されます。
+    ```java
+    @SpringBootTest
+    @AutoConfigureMockMvc
+    @Import(PostgresTestConfiguration.class)
+    public abstract class DatabaseTest {
+        @Autowired
+        protected TestCurrentUser currentUser;
+
+        @BeforeEach
+        void actAsNewUser() {
+            currentUser.switchToNewUser();
+        }
+    }
+    ```
+
+*   **実 API 導通テスト (`backend/src/test/java/com/example/runbuddy/advisor/springai/GeminiLiveTest.java`)**
+    `@EnabledIfEnvironmentVariable(named = "GEMINI_API_KEY", matches = ".+")` 注釈により、指定された環境変数が設定されている場合のみ実行されます。
 
 ### 4.2 フロントエンドテストと API 型生成
 
@@ -210,3 +259,4 @@ flowchart TD
 *   [ルート README](../README.md)
 *   [データベースガイド](../docs/guides/database.md)
 *   [Tailscale 利用ガイド](../docs/guides/tailscale.md)
+*   [OpenWiki 自動生成ガイド](../docs/guides/openwiki.md)
