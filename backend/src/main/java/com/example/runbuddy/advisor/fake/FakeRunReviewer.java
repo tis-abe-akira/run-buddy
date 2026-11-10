@@ -25,12 +25,16 @@ public class FakeRunReviewer implements RunReviewer {
     @Override
     public Written review(RunReviewRequest request) {
         var run = request.run();
-        String km = String.format(Locale.ROOT, "%.1f km", run.distance().toKilometers());
-        String headline = km + " を " + pace(run.pace()) + " で走りました";
         String runItself = "ペース " + pace(run.pace())
                 + run.heartRate().map(hr -> "、平均心拍 " + hr + " bpm").orElse("、心拍の記録なし")
                 + (request.laps().isEmpty() ? "。ラップは読み込まれていません。" : "。ラップ " + request.laps().size() + " 本。");
-        return new Written(headline, runItself, comparison(request.similar()));
+        return new Written(headline(request), runItself, comparison(request.similar()));
+    }
+
+    @Override
+    public String headline(RunReviewRequest request) {
+        var run = request.run();
+        return String.format(Locale.ROOT, "%.1f km", run.distance().toKilometers()) + " を " + pace(run.pace()) + " で走りました";
     }
 
     private static String comparison(SimilarRuns similar) {

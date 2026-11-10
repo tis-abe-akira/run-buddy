@@ -18,6 +18,14 @@ public interface RunReviewer {
      */
     Written review(RunReviewRequest request);
 
+    /**
+     * Only the headline: one sentence for the run, written when it is imported (#36). The request has no
+     * laps then (the activity file is not downloaded on import).
+     *
+     * @throws com.example.runbuddy.advisor.AdvisorUnavailableException when the provider fails or refuses
+     */
+    String headline(RunReviewRequest request);
+
     /** The model's text, before {@link RunReview} checks and trims it. */
     record Written(String headline, String runItself, String comparison) {
     }

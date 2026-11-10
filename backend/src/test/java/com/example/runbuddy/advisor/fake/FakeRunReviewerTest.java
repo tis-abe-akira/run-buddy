@@ -28,6 +28,13 @@ class FakeRunReviewerTest {
     }
 
     @Test
+    void writesAOneLinerFromTheNumbers() {
+        String headline = new FakeRunReviewer().headline(new RunReviewRequest(RUN, List.of(), SimilarRuns.forRun(RUN, List.of())));
+
+        assertThat(headline).contains("10.0 km", "6:00/km");
+    }
+
+    @Test
     void saysSoWhenThereIsNothingToCompareWith() {
         RunReviewer.Written written = new FakeRunReviewer().review(new RunReviewRequest(RUN, List.of(), SimilarRuns.forRun(RUN, List.of())));
 

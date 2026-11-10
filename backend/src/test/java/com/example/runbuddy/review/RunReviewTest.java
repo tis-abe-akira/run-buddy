@@ -32,6 +32,28 @@ class RunReviewTest {
     }
 
     @Test
+    void aBriefReviewIsOnlyTheHeadline() {
+        RunReview brief = RunReview.brief("r1", " 10 km を安定して走れました ", "gemini", "flash", AT);
+
+        assertThat(brief.isBrief()).isTrue();
+        assertThat(brief.headline()).isEqualTo("10 km を安定して走れました");
+        assertThat(brief.runItself()).isNull();
+        assertThat(brief.comparison()).isNull();
+        assertThat(new RunReview("r1", "h", "a", "c", "gemini", "flash", AT).isBrief()).isFalse();
+    }
+
+    /** Half a detailed review is neither brief nor detailed. */
+    @Test
+    void aReviewHasBothDetailedPartsOrNeither() {
+        assertThatThrownBy(() -> new RunReview("r1", "h", "a", null, "gemini", "flash", AT))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new RunReview("r1", "h", null, "c", "gemini", "flash", AT))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> RunReview.brief("r1", " ", "gemini", "flash", AT))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("headline");
+    }
+
+    @Test
     void aModelThatRunsOnIsCutShort() {
         String longText = "あ".repeat(RunReview.MAX_SECTION_LENGTH + 50);
 

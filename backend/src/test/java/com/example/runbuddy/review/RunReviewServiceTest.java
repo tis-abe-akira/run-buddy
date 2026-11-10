@@ -87,6 +87,11 @@ class RunReviewServiceTest {
             public Written review(RunReviewRequest request) {
                 throw new AdvisorUnavailableException("gemini could not answer", null);
             }
+
+            @Override
+            public String headline(RunReviewRequest request) {
+                throw new AdvisorUnavailableException("gemini could not answer", null);
+            }
         };
 
         assertThatThrownBy(() -> service(failing).review("r1")).isInstanceOf(AdvisorUnavailableException.class);
@@ -116,6 +121,11 @@ class RunReviewServiceTest {
                 }
                 return new Written("late", "late", "late");
             }
+
+            @Override
+            public String headline(RunReviewRequest request) {
+                throw new UnsupportedOperationException();
+            }
         };
 
         assertThatThrownBy(() -> service(Duration.ofMillis(100), slow).review("r1"))
@@ -123,6 +133,72 @@ class RunReviewServiceTest {
                         e -> assertThat(e.reason()).isEqualTo(AdvisorUnavailableException.Reason.TIMED_OUT))
                 .hasMessageContaining("did not answer");
         Thread.sleep(700);
+        assertThat(reviews.find("r1")).isEmpty();
+    }
+
+    /** The one-liner on import (#36): compared like the detailed review, but never with laps. */
+    @Test
+    void aBriefReviewIsSavedWithoutReadingTheActivityFile() {
+        runs.saveAll(List.of(run("nov-2", LocalDateTime.of(2026, 11, 2, 6, 0)), run("oct-30", LocalDateTime.of(2026, 10, 30, 6, 0))));
+        files.save("nov-2", new byte[] {1});
+
+        var brief = service(gemini).reviewBriefly("nov-2");
+
+        assertThat(requests.getFirst().laps()).isEmpty();
+        assertThat(requests.getFirst().similar().runs()).extracting(RunResult::activityId).containsExactly("oct-30");
+        assertThat(brief).hasValue(RunReview.brief("nov-2", "一言 nov-2", "gemini", "flash", NOW));
+        assertThat(reviews.find("nov-2")).isEqualTo(brief);
+    }
+
+    /** A review asked for already is worth more than a one-liner. */
+    @Test
+    void aBriefReviewNeverReplacesAReview() {
+        runs.saveAll(List.of(run("r1", LocalDateTime.of(2026, 11, 1, 6, 0))));
+        RunReview detailed = service(gemini).review("r1");
+        requests.clear();
+
+        assertThat(service(gemini).reviewBriefly("r1")).isEmpty();
+        assertThat(requests).isEmpty();
+        assertThat(reviews.find("r1")).hasValue(detailed);
+    }
+
+    @Test
+    void theDetailedReviewReplacesTheBriefOne() {
+        runs.saveAll(List.of(run("r1", LocalDateTime.of(2026, 11, 1, 6, 0))));
+        service(gemini).reviewBriefly("r1");
+
+        RunReview detailed = service(gemini).review("r1");
+
+        assertThat(reviews.find("r1")).hasValue(detailed);
+        assertThat(detailed.isBrief()).isFalse();
+    }
+
+    @Test
+    void aFailedBriefReviewSavesNothing() {
+        runs.saveAll(List.of(run("r1", LocalDateTime.of(2026, 11, 1, 6, 0))));
+        RunReviewer failing = new RunReviewer() {
+            @Override
+            public String id() {
+                return "gemini";
+            }
+
+            @Override
+            public String model() {
+                return "flash";
+            }
+
+            @Override
+            public Written review(RunReviewRequest request) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String headline(RunReviewRequest request) {
+                throw new AdvisorUnavailableException("gemini could not answer", null);
+            }
+        };
+
+        assertThatThrownBy(() -> service(failing).reviewBriefly("r1")).isInstanceOf(AdvisorUnavailableException.class);
         assertThat(reviews.find("r1")).isEmpty();
     }
 
@@ -178,6 +254,12 @@ class RunReviewServiceTest {
             public Written review(RunReviewRequest request) {
                 requests.add(request);
                 return new Written("headline " + request.run().activityId(), "itself", "compared with " + request.similar().runs().size());
+            }
+
+            @Override
+            public String headline(RunReviewRequest request) {
+                requests.add(request);
+                return "一言 " + request.run().activityId();
             }
         };
     }

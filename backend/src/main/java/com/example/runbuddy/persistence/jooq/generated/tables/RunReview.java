@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -76,12 +77,12 @@ public class RunReview extends TableImpl<RunReviewRecord> {
     /**
      * The column <code>public.run_review.run_itself</code>.
      */
-    public final TableField<RunReviewRecord, String> RUN_ITSELF = createField(DSL.name("run_itself"), SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<RunReviewRecord, String> RUN_ITSELF = createField(DSL.name("run_itself"), SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>public.run_review.comparison</code>.
      */
-    public final TableField<RunReviewRecord, String> COMPARISON = createField(DSL.name("comparison"), SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<RunReviewRecord, String> COMPARISON = createField(DSL.name("comparison"), SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>public.run_review.reviewer</code>.
@@ -185,6 +186,13 @@ public class RunReview extends TableImpl<RunReviewRecord> {
             _runResult = new RunResultPath(this, Keys.RUN_REVIEW__RUN_REVIEW_USER_ID_ACTIVITY_ID_FKEY, null);
 
         return _runResult;
+    }
+
+    @Override
+    public List<Check<RunReviewRecord>> getChecks() {
+        return Arrays.asList(
+            Internal.createCheck(this, DSL.name("run_review_brief_or_detailed"), "(((run_itself IS NULL) = (comparison IS NULL)))", true)
+        );
     }
 
     @Override

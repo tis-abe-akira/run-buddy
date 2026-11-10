@@ -11,9 +11,10 @@ public interface RunResultRepository {
     /**
      * Stores the runs, replacing any with the same activity id.
      *
-     * @return how many of the runs were not stored before
+     * @return the runs that were not stored before, in the order given (the last one when an activity id
+     *         appears twice)
      */
-    int saveAll(Collection<RunResult> runs);
+    List<RunResult> saveAll(Collection<RunResult> runs);
 
     /** Runs started in the month, oldest first. */
     List<RunResult> findByMonth(YearMonth month);

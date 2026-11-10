@@ -31,13 +31,13 @@ public class JooqRunResultRepository implements RunResultRepository {
     }
 
     @Override
-    public int saveAll(Collection<RunResult> runs) {
+    public List<RunResult> saveAll(Collection<RunResult> runs) {
         // The last run wins when the same activity appears twice (PostgreSQL rejects an upsert
         // that touches one row twice).
         Map<String, RunResult> byId = new LinkedHashMap<>();
         runs.forEach(run -> byId.put(run.activityId(), run));
         if (byId.isEmpty()) {
-            return 0;
+            return List.of();
         }
 
         Set<String> existing = dsl.select(RUN_RESULT.ACTIVITY_ID)
@@ -84,7 +84,7 @@ public class JooqRunResultRepository implements RunResultRepository {
                 .set(RUN_RESULT.ELEVATION_GAIN_METERS, excluded(RUN_RESULT.ELEVATION_GAIN_METERS))
                 .execute();
 
-        return byId.size() - existing.size();
+        return byId.values().stream().filter(run -> !existing.contains(run.activityId())).toList();
     }
 
     @Override

@@ -66,6 +66,11 @@ class RunReviewControllerTest {
                     }
                     return new Written("安定した10km", "前半から一定", "比べるランはありません");
                 }
+
+                @Override
+                public String headline(RunReviewRequest request) {
+                    return "安定した10km";
+                }
             };
         }
 
@@ -89,6 +94,9 @@ class RunReviewControllerTest {
     @Autowired
     private AtomicReference<RuntimeException> failure;
 
+    @Autowired
+    private RunReviewService service;
+
     @BeforeEach
     void storeARun() {
         runs.saveAll(List.of(new RunResult("garmin-1", LocalDateTime.of(2026, 11, 2, 6, 0), Distance.ofKilometers(10),
@@ -109,6 +117,7 @@ class RunReviewControllerTest {
                 .andExpect(jsonPath("$.headline").value("安定した10km"))
                 .andExpect(jsonPath("$.runItself").value("前半から一定"))
                 .andExpect(jsonPath("$.comparison").value("比べるランはありません"))
+                .andExpect(jsonPath("$.brief").value(false))
                 .andExpect(jsonPath("$.reviewer").value("gemini"))
                 .andExpect(jsonPath("$.model").value("flash"))
                 .andExpect(jsonPath("$.reviewedAt").value("2026-11-02T09:00:00Z"));
@@ -116,6 +125,23 @@ class RunReviewControllerTest {
         mockMvc.perform(get("/api/runs/garmin-1/review"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.review.headline").value("安定した10km"));
+    }
+
+    /** The one-liner written on import (#36) has only the headline; asking for the review replaces it. */
+    @Test
+    void aBriefReviewIsShownAsBriefUntilTheDetailedOneIsAskedFor() throws Exception {
+        service.reviewBriefly("garmin-1");
+
+        mockMvc.perform(get("/api/runs/garmin-1/review"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.review.headline").value("安定した10km"))
+                .andExpect(jsonPath("$.review.brief").value(true))
+                .andExpect(jsonPath("$.review.runItself").value(nullValue()))
+                .andExpect(jsonPath("$.review.comparison").value(nullValue()));
+
+        mockMvc.perform(post("/api/runs/garmin-1/review"))
+                .andExpect(jsonPath("$.brief").value(false))
+                .andExpect(jsonPath("$.runItself").value("前半から一定"));
     }
 
     @Test

@@ -24,7 +24,8 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 /**
  * Reviews one run with a Spring AI chat model (#35, ADR-0016): the app writes out the run, its laps and
  * the similar runs it chose, and the model answers with structured output. No tools: the model is given
- * everything it may use, which keeps it to one request and keeps positions out (ADR-0012).
+ * everything it may use, which keeps it to one request and keeps positions out (ADR-0012). The one-liner
+ * written on import (#36) is a separate, shorter request from the same description.
  */
 public class SpringAiRunReviewer implements RunReviewer {
 
@@ -42,6 +43,15 @@ public class SpringAiRunReviewer implements RunReviewer {
             - comparison: the run against the similar recent runs given: faster or slower, heart rate higher
               or lower for the pace, and the rest days before it. If there are no similar runs, say so in one
               sentence instead of guessing.
+            """;
+
+    private static final String HEADLINE_PROMPT = """
+            You are a running coach writing a one-line comment on a run the runner has just imported.
+            Write in Japanese, plain text without Markdown.
+            Use only the numbers given; do not invent measurements.
+
+            Answer with headline: one sentence of at most 40 characters that sums up the run. When similar
+            recent runs are given, say how this one compared (faster, slower, easier on the heart).
             """;
 
     private static final DateTimeFormatter START = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -73,14 +83,30 @@ public class SpringAiRunReviewer implements RunReviewer {
 
     @Override
     public Written review(RunReviewRequest request) {
-        Answer answer;
+        Answer answer = ask(SYSTEM_PROMPT, request, Answer.class);
+        if (answer == null || blank(answer.headline()) || blank(answer.runItself()) || blank(answer.comparison())) {
+            throw new AdvisorUnavailableException(id + " returned an incomplete review", null);
+        }
+        return new Written(answer.headline(), answer.runItself(), answer.comparison());
+    }
+
+    @Override
+    public String headline(RunReviewRequest request) {
+        HeadlineAnswer answer = ask(HEADLINE_PROMPT, request, HeadlineAnswer.class);
+        if (answer == null || blank(answer.headline())) {
+            throw new AdvisorUnavailableException(id + " returned an incomplete review", null);
+        }
+        return answer.headline();
+    }
+
+    private <T> T ask(String system, RunReviewRequest request, Class<T> answerType) {
         try {
-            answer = chatClient.prompt()
-                    .system(SYSTEM_PROMPT)
+            return chatClient.prompt()
+                    .system(system)
                     .user(describe(request))
                     .options(optionsForModel.apply(model))
                     .call()
-                    .entity(Answer.class);
+                    .entity(answerType);
         } catch (RuntimeException e) {
             if (Stream.iterate((Throwable) e, Objects::nonNull, Throwable::getCause).limit(10).anyMatch(isRateLimit)) {
                 log.warn("{} ({}) rate limit or quota exceeded while reviewing a run", id, model);
@@ -90,14 +116,14 @@ public class SpringAiRunReviewer implements RunReviewer {
             log.warn("{} ({}) could not review the run", id, model, e);
             throw new AdvisorUnavailableException(id + " could not review the run: " + e.getMessage(), e);
         }
-        if (answer == null || blank(answer.headline()) || blank(answer.runItself()) || blank(answer.comparison())) {
-            throw new AdvisorUnavailableException(id + " returned an incomplete review", null);
-        }
-        return new Written(answer.headline(), answer.runItself(), answer.comparison());
     }
 
     /** The model's structured output. */
     record Answer(String headline, String runItself, String comparison) {
+    }
+
+    /** The one-liner's structured output. */
+    record HeadlineAnswer(String headline) {
     }
 
     /** The run, its laps and the comparison, as plain lines. Package-private for the test. */
