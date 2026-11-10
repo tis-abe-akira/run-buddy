@@ -88,6 +88,9 @@ Wiki に載っているかを調べます。載せたいものはこの形で書
 - **ダッシュボードの「いまやること」（ADR-0014）**: 状況の判定はドメイン（`SituationRules`、`TrainingSnapshot`、sealed interface の `Situation`）、
   API はカードの種類と数値だけ（`GET /api/next-steps`、`kind` で区別するユニオン型）、文言は frontend（`lib/nextSteps.ts`）。
   レースが近いあいだは目標からの遅れを出さないこと。カードは画面を開くだけで保存しないこと（AI 相談は `?ask=` で入力欄に入れるだけ）。
+- **ランの AI 評価（ADR-0016）**: 比べる対象はアプリが選ぶ（`SimilarRuns`：前 28 日・距離 ±25%・最大 5 本）、
+  AI への入力 `RunReviewRequest` は軌跡の型を持たない（座標を送れない）、`RunReviewer` のポートと `SpringAiRunReviewer`、
+  保存（`RunReviewRepository`、`run_review`）、`RunReviewService` がモデルをトランザクションの外で呼ぶこと。
 - **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
   ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。

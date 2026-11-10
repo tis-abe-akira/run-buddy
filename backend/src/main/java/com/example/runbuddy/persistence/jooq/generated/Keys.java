@@ -9,11 +9,13 @@ import com.example.runbuddy.persistence.jooq.generated.tables.PlannedWorkout;
 import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunFitFile;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
+import com.example.runbuddy.persistence.jooq.generated.tables.RunReview;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.MonthlyPlanRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.PlannedWorkoutRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RaceRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RunFitFileRecord;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RunResultRecord;
+import com.example.runbuddy.persistence.jooq.generated.tables.records.RunReviewRecord;
 
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
@@ -39,6 +41,7 @@ public class Keys {
     public static final UniqueKey<RaceRecord> RACE_PKEY = Internal.createUniqueKey(Race.RACE, DSL.name("race_pkey"), new TableField[] { Race.RACE.USER_ID, Race.RACE.ID }, true);
     public static final UniqueKey<RunFitFileRecord> RUN_FIT_FILE_PKEY = Internal.createUniqueKey(RunFitFile.RUN_FIT_FILE, DSL.name("run_fit_file_pkey"), new TableField[] { RunFitFile.RUN_FIT_FILE.USER_ID, RunFitFile.RUN_FIT_FILE.ACTIVITY_ID }, true);
     public static final UniqueKey<RunResultRecord> RUN_RESULT_PKEY = Internal.createUniqueKey(RunResult.RUN_RESULT, DSL.name("run_result_pkey"), new TableField[] { RunResult.RUN_RESULT.USER_ID, RunResult.RUN_RESULT.ACTIVITY_ID }, true);
+    public static final UniqueKey<RunReviewRecord> RUN_REVIEW_PKEY = Internal.createUniqueKey(RunReview.RUN_REVIEW, DSL.name("run_review_pkey"), new TableField[] { RunReview.RUN_REVIEW.USER_ID, RunReview.RUN_REVIEW.ACTIVITY_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -46,4 +49,5 @@ public class Keys {
 
     public static final ForeignKey<PlannedWorkoutRecord, MonthlyPlanRecord> PLANNED_WORKOUT__PLANNED_WORKOUT_USER_ID_MONTH_FKEY = Internal.createForeignKey(PlannedWorkout.PLANNED_WORKOUT, DSL.name("planned_workout_user_id_month_fkey"), new TableField[] { PlannedWorkout.PLANNED_WORKOUT.USER_ID, PlannedWorkout.PLANNED_WORKOUT.MONTH }, Keys.MONTHLY_PLAN_PKEY, new TableField[] { MonthlyPlan.MONTHLY_PLAN.USER_ID, MonthlyPlan.MONTHLY_PLAN.MONTH }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
     public static final ForeignKey<RunFitFileRecord, RunResultRecord> RUN_FIT_FILE__RUN_FIT_FILE_USER_ID_ACTIVITY_ID_FKEY = Internal.createForeignKey(RunFitFile.RUN_FIT_FILE, DSL.name("run_fit_file_user_id_activity_id_fkey"), new TableField[] { RunFitFile.RUN_FIT_FILE.USER_ID, RunFitFile.RUN_FIT_FILE.ACTIVITY_ID }, Keys.RUN_RESULT_PKEY, new TableField[] { RunResult.RUN_RESULT.USER_ID, RunResult.RUN_RESULT.ACTIVITY_ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<RunReviewRecord, RunResultRecord> RUN_REVIEW__RUN_REVIEW_USER_ID_ACTIVITY_ID_FKEY = Internal.createForeignKey(RunReview.RUN_REVIEW, DSL.name("run_review_user_id_activity_id_fkey"), new TableField[] { RunReview.RUN_REVIEW.USER_ID, RunReview.RUN_REVIEW.ACTIVITY_ID }, Keys.RUN_RESULT_PKEY, new TableField[] { RunResult.RUN_RESULT.USER_ID, RunResult.RUN_RESULT.ACTIVITY_ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
 }

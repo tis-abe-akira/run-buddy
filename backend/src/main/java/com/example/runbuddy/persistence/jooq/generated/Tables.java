@@ -9,6 +9,7 @@ import com.example.runbuddy.persistence.jooq.generated.tables.PlannedWorkout;
 import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunFitFile;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
+import com.example.runbuddy.persistence.jooq.generated.tables.RunReview;
 
 
 /**
@@ -41,4 +42,9 @@ public class Tables {
      * The table <code>public.run_result</code>.
      */
     public static final RunResult RUN_RESULT = RunResult.RUN_RESULT;
+
+    /**
+     * The table <code>public.run_review</code>.
+     */
+    public static final RunReview RUN_REVIEW = RunReview.RUN_REVIEW;
 }

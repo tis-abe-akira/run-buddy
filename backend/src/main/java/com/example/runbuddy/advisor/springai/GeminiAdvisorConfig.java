@@ -42,4 +42,22 @@ public class GeminiAdvisorConfig {
                 tools,
                 clock);
     }
+
+    /** Reviews runs with the first model of the list (#35). */
+    @Bean
+    SpringAiRunReviewer geminiRunReviewer(
+            @Value("${runbuddy.ai.gemini.api-key}") String apiKey,
+            @Value("${runbuddy.ai.gemini.models}") String modelList) {
+        String model = Arrays.stream(modelList.split(",")).map(String::strip).filter(m -> !m.isEmpty()).findFirst().orElseThrow();
+        GoogleGenAiChatModel chatModel = GoogleGenAiChatModel.builder()
+                .genAiClient(Client.builder().apiKey(apiKey).build())
+                .options(GoogleGenAiChatOptions.builder().model(model).build())
+                .build();
+        return new SpringAiRunReviewer(
+                "gemini",
+                model,
+                chatModel,
+                name -> GoogleGenAiChatOptions.builder().model(name),
+                e -> e instanceof ApiException api && api.code() == 429);
+    }
 }

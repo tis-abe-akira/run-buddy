@@ -9,6 +9,7 @@ import com.example.runbuddy.persistence.jooq.generated.tables.PlannedWorkout;
 import com.example.runbuddy.persistence.jooq.generated.tables.Race;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunFitFile;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunResult;
+import com.example.runbuddy.persistence.jooq.generated.tables.RunReview;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +59,11 @@ public class Public extends SchemaImpl {
     public final RunResult RUN_RESULT = RunResult.RUN_RESULT;
 
     /**
+     * The table <code>public.run_review</code>.
+     */
+    public final RunReview RUN_REVIEW = RunReview.RUN_REVIEW;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -77,7 +83,8 @@ public class Public extends SchemaImpl {
             PlannedWorkout.PLANNED_WORKOUT,
             Race.RACE,
             RunFitFile.RUN_FIT_FILE,
-            RunResult.RUN_RESULT
+            RunResult.RUN_RESULT,
+            RunReview.RUN_REVIEW
         );
     }
 }

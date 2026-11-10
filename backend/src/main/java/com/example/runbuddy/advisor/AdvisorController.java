@@ -9,9 +9,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,19 +58,6 @@ public class AdvisorController {
     private MonthlyPlan asRevision(MonthlyPlan proposal) {
         MonthlyPlan saved = plans.findByMonth(proposal.month()).orElseGet(() -> MonthlyPlan.empty(proposal.month()));
         return saved.revisedFrom(LocalDate.now(clock), proposal);
-    }
-
-    @ExceptionHandler(AdvisorUnavailableException.class)
-    ProblemDetail handleUnavailable(AdvisorUnavailableException e) {
-        if (e.reason() == AdvisorUnavailableException.Reason.RATE_LIMITED) {
-            ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
-                    e.getMessage() + ". Wait a minute and send it again, or choose another model.");
-            problem.setTitle("Rate limited");
-            return problem;
-        }
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
-        problem.setTitle("The advisor could not answer");
-        return problem;
     }
 
     public record ConsultationBody(String provider, String model, YearMonth month, List<MessageBody> messages) {

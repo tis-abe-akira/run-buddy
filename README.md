@@ -251,6 +251,8 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 | `GET /api/activity-source` | 今の取り込み元（`dummy` / `garmin`） |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |
 | `GET /api/runs/{activityId}/detail` | ランのラップ、軌跡の点の数、地図用に間引いたコース（`route`、約 300 点。各点にラップ番号 `lap`）。初めて開いたときだけ Garmin から FIT ファイルをダウンロードして DB に保存し、以後は保存した原本を読む（ADR-0012、地図は ADR-0013）。ダミーのランは `available: false`。FIT を読めなければ 502（`reason: UNREADABLE_FILE`） |
+| `GET /api/runs/{activityId}/review` | ランの AI 評価（保存済み）。まだなら `review: null`（ADR-0016） |
+| `POST /api/runs/{activityId}/review` | ランを AI に評価してもらい、保存する（作り直しも同じ）。比べる対象（前 28 日・距離 ±25%・最大 5 本）はアプリが選ぶ。AI の失敗は 502、利用上限は 429 |
 | `GET /api/days/{YYYY-MM-DD}` | その日の予定とラン（走った順）。ランには最大心拍・ケイデンス・歩幅・上昇も入る（記録がなければ null）。画面の日別詳細ページ `/days/{YYYY-MM-DD}` が使う |
 | `GET` / `POST /api/races`、`PUT` / `DELETE /api/races/{id}` | 目標のレース（大会名・日付・距離・目標タイム）。一覧は日付順で、今日からの残り日数 `daysUntil` と、目標タイムに必要なペースが入る。AI 相談もこれを読んでプランを考える |
 | `GET /api/export/{YYYY-MM}.csv` | その月のプランと実績を日別の CSV でダウンロードする（1日1行＋合計行。UTF-8 BOM 付きなので Excel でもそのまま開ける）。ダッシュボードの「CSV でエクスポート」ボタンから使う |

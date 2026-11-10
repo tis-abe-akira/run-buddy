@@ -19,6 +19,19 @@ export const dayQuery = (date: IsoDate) =>
 export const runDetailQuery = (activityId: string) =>
   queryOptions({ queryKey: ['run-detail', activityId], queryFn: () => api.runDetail(activityId), retry: false, staleTime: Infinity })
 
+/** A run's saved AI review (#35); null until it is reviewed. */
+export const runReviewQuery = (activityId: string) =>
+  queryOptions({ queryKey: ['run-review', activityId], queryFn: () => api.runReview(activityId), staleTime: Infinity })
+
+/** Asks the AI to review a run now; the new review replaces the saved one in the cache. */
+export function useReviewRun(activityId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.reviewRun(activityId),
+    onSuccess: (review) => queryClient.setQueryData(runReviewQuery(activityId).queryKey, { review }),
+  })
+}
+
 export const planQuery = (month: Month) =>
   queryOptions({ queryKey: ['plan', month], queryFn: () => api.plan(month) })
 

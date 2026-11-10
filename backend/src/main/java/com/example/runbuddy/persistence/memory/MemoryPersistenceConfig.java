@@ -8,6 +8,8 @@ import com.example.runbuddy.plan.InMemoryMonthlyPlanRepository;
 import com.example.runbuddy.plan.MonthlyPlanRepository;
 import com.example.runbuddy.race.InMemoryRaceRepository;
 import com.example.runbuddy.race.RaceRepository;
+import com.example.runbuddy.review.InMemoryRunReviewRepository;
+import com.example.runbuddy.review.RunReviewRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,11 @@ public class MemoryPersistenceConfig {
     @Bean
     RunFileRepository runFileRepository() {
         return new InMemoryRunFileRepository();
+    }
+
+    @Bean
+    RunReviewRepository runReviewRepository() {
+        return new InMemoryRunReviewRepository();
     }
 
     @Bean

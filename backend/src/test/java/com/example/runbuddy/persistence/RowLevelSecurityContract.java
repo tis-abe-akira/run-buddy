@@ -3,6 +3,8 @@ package com.example.runbuddy.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.runbuddy.activity.RunFileRepository;
+import com.example.runbuddy.review.RunReview;
+import com.example.runbuddy.review.RunReviewRepository;
 import com.example.runbuddy.activity.RunResult;
 import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.plan.MonthlyPlan;
@@ -33,6 +35,8 @@ public interface RowLevelSecurityContract {
     RaceRepository races();
 
     RunFileRepository files();
+
+    RunReviewRepository reviews();
 
     @Test
     default void anotherUserSeesNothing() {
@@ -108,6 +112,20 @@ public interface RowLevelSecurityContract {
 
         currentUser().switchTo(alice);
         assertThat(files().find("a")).hasValueSatisfying(zip -> assertThat(zip).containsExactly(1, 2, 3));
+    }
+
+    @Test
+    default void anotherUserSeesNoRunReview() {
+        String alice = currentUser().switchToNewUser();
+        runs().saveAll(List.of(run("a")));
+        RunReview review = new RunReview("a", "よく走れました", "A", "C", "gemini", "flash", java.time.Instant.parse("2026-11-02T07:00:00Z"));
+        reviews().save(review);
+
+        currentUser().switchToNewUser();
+        assertThat(reviews().find("a")).isEmpty();
+
+        currentUser().switchTo(alice);
+        assertThat(reviews().find("a")).hasValue(review);
     }
 
     private static Race race(String name) {

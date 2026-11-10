@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/{activityId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["saved"];
+        put?: never;
+        post: operations["review"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/runs/latest/import": {
         parameters: {
             query?: never;
@@ -302,6 +318,15 @@ export interface components {
             /** Format: int32 */
             added: number;
         };
+        ReviewBody: {
+            headline: string;
+            runItself: string;
+            comparison: string;
+            reviewer: string;
+            model: string;
+            /** Format: date-time */
+            reviewedAt: string;
+        };
         LatestImportResult: {
             /** Format: date */
             from: string;
@@ -382,6 +407,9 @@ export interface components {
              * @description meters
              */
             elevationGainMeters: number | null;
+        };
+        SavedReviewBody: {
+            review: components["schemas"]["ReviewBody"] | null;
         };
         LapResponse: {
             /** Format: int32 */
@@ -657,6 +685,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ImportResult"];
+                };
+            };
+        };
+    };
+    saved: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                activityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SavedReviewBody"];
+                };
+            };
+        };
+    };
+    review: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                activityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReviewBody"];
                 };
             };
         };
