@@ -20,7 +20,8 @@ type Props = {
 
 /**
  * A run's AI review (#35, ADR-0016): a headline, the run itself and how it compares with similar recent
- * runs. Reviews are written only when asked, and kept.
+ * runs. Reviews are written only when asked, and kept. A brief review (#36) is the one-liner written on
+ * import, when that is switched on: only the headline, with the detailed review offered.
  */
 export function RunReviewPanel({ state, reviewing, reviewError, onReview }: Props) {
   return (
@@ -67,14 +68,18 @@ function Body({ state, reviewing, reviewError, onReview }: Props) {
           <h4 className="title-md" style={{ margin: 0 }}>
             {review.headline}
           </h4>
-          <p className="body-sm" style={{ margin: 0 }}>
-            {review.runItself}
-          </p>
-          <p className="body-sm" style={{ margin: 0 }}>
-            {review.comparison}
-          </p>
+          {!review.brief && (
+            <>
+              <p className="body-sm" style={{ margin: 0 }}>
+                {review.runItself}
+              </p>
+              <p className="body-sm" style={{ margin: 0 }}>
+                {review.comparison}
+              </p>
+            </>
+          )}
           <span className="caption muted numeric">
-            {review.reviewer} · {review.model} · {formatDate(review.reviewedAt)} の評価
+            {review.reviewer} · {review.model} · {formatDate(review.reviewedAt)} の{review.brief ? '取り込み時の一言' : '評価'}
           </span>
         </div>
       )}
@@ -85,12 +90,17 @@ function Body({ state, reviewing, reviewError, onReview }: Props) {
       )}
       <div className="row">
         <button type="button" className="button button-secondary" disabled={reviewing} onClick={onReview}>
-          {review === null ? 'AI に評価してもらう' : '評価し直す'}
+          {buttonLabel(review)}
         </button>
         {reviewing && <Elapsed />}
       </div>
     </>
   )
+}
+
+function buttonLabel(review: RunReview | null) {
+  if (review === null) return 'AI に評価してもらう'
+  return review.brief ? '詳しく評価してもらう' : '評価し直す'
 }
 
 /**

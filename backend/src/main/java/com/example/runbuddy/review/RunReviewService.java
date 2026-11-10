@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Service;
  *
  * <p>Not transactional: each repository call is its own short transaction, and the model is called
  * between them, never inside one (backend/CLAUDE.md). The activity file is used only when it is already
- * stored; a review never downloads it (ADR-0012).
+ * stored; a review never downloads it (ADR-0012). A brief review (#36), written on import, never reads it.
  */
 @Service
 public class RunReviewService {
@@ -84,7 +85,7 @@ public class RunReviewService {
         RunReviewer reviewer = chooseReviewer();
         RunReviewRequest request = new RunReviewRequest(run, storedLaps(activityId), SimilarRuns.forRun(run, recentRuns(run)));
 
-        RunReviewer.Written written = withinTimeout(reviewer, request);
+        RunReviewer.Written written = withinTimeout(reviewer, request, () -> reviewer.review(request));
 
         RunReview review = new RunReview(activityId, written.headline(), written.runItself(), written.comparison(),
                 reviewer.id(), reviewer.model(), Instant.now(clock));
@@ -94,9 +95,38 @@ public class RunReviewService {
         return review;
     }
 
+    /**
+     * Writes the one-line review of a newly imported run (#36), unless the run already has a review: a
+     * detailed one asked for in the meantime is never replaced by a brief one. Uses no laps, so it never
+     * reads or downloads the activity file.
+     *
+     * @return the saved brief review, or empty when the run had a review already
+     * @throws NoSuchElementException when there is no such run
+     * @throws AdvisorUnavailableException when no AI is configured or it fails; nothing is saved then
+     */
+    public Optional<RunReview> reviewBriefly(String activityId) {
+        RunResult run = requireRun(activityId);
+        if (reviews.find(activityId).isPresent()) {
+            return Optional.empty();
+        }
+        RunReviewer reviewer = chooseReviewer();
+        RunReviewRequest request = new RunReviewRequest(run, List.of(), SimilarRuns.forRun(run, recentRuns(run)));
+
+        String headline = withinTimeout(reviewer, request, () -> reviewer.headline(request));
+
+        if (reviews.find(activityId).isPresent()) {
+            log.info("Run {} was reviewed while its one-liner was being written; keeping that review", activityId);
+            return Optional.empty();
+        }
+        RunReview review = RunReview.brief(activityId, headline, reviewer.id(), reviewer.model(), Instant.now(clock));
+        reviews.save(review);
+        log.info("Run {} given a one-liner by {} ({})", activityId, reviewer.id(), reviewer.model());
+        return Optional.of(review);
+    }
+
     /** Waits for the model at most {@code timeout}; the answer is saved only by the caller, so a late one is dropped. */
-    private RunReviewer.Written withinTimeout(RunReviewer reviewer, RunReviewRequest request) {
-        Future<RunReviewer.Written> call = MODEL_CALLS.submit(() -> reviewer.review(request));
+    private <T> T withinTimeout(RunReviewer reviewer, RunReviewRequest request, Callable<T> modelCall) {
+        Future<T> call = MODEL_CALLS.submit(modelCall);
         try {
             return call.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

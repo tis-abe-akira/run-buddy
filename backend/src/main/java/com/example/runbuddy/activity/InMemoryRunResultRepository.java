@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,14 +16,16 @@ public class InMemoryRunResultRepository implements RunResultRepository {
     private final Map<String, RunResult> runsById = new ConcurrentHashMap<>();
 
     @Override
-    public int saveAll(Collection<RunResult> runs) {
-        int added = 0;
+    public List<RunResult> saveAll(Collection<RunResult> runs) {
+        Map<String, RunResult> added = new LinkedHashMap<>();
         for (RunResult run : runs) {
-            if (runsById.put(run.activityId(), run) == null) {
-                added++;
+            boolean stored = runsById.containsKey(run.activityId()) && !added.containsKey(run.activityId());
+            runsById.put(run.activityId(), run);
+            if (!stored) {
+                added.put(run.activityId(), run);
             }
         }
-        return added;
+        return List.copyOf(added.values());
     }
 
     @Override

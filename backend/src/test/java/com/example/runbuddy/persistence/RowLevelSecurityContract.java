@@ -62,9 +62,7 @@ public interface RowLevelSecurityContract {
 
         currentUser().switchToNewUser();
         plans().save(plan(200));
-        int added = runs().saveAll(List.of(run("a")));
-
-        assertThat(added).isEqualTo(1);
+        assertThat(runs().saveAll(List.of(run("a")))).hasSize(1);
         currentUser().switchTo(alice);
         assertThat(plans().findByMonth(NOVEMBER)).contains(plan(100));
     }

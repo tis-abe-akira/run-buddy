@@ -49,6 +49,22 @@ public interface RunReviewRepositoryContract {
         assertThat(reviews().find("garmin-1")).hasValue(again);
     }
 
+    /** The one-liner written on import (#36) is kept, and the detailed review replaces it. */
+    @Test
+    default void aBriefReviewIsKeptAndTheDetailedOneReplacesIt() {
+        storeRun("garmin-1");
+        RunReview brief = RunReview.brief("garmin-1", "安定して走れました", "gemini", "flash",
+                Instant.parse("2026-11-02T07:00:00.123456Z"));
+        reviews().save(brief);
+
+        assertThat(reviews().find("garmin-1")).hasValue(brief);
+
+        RunReview detailed = review("garmin-1", "詳しく評価した");
+        reviews().save(detailed);
+
+        assertThat(reviews().find("garmin-1")).hasValue(detailed);
+    }
+
     private void storeRun(String id) {
         runs().saveAll(List.of(new RunResult(id, LocalDateTime.of(2026, 11, 2, 6, 0), Distance.ofKilometers(8),
                 Duration.ofMinutes(45), 150)));

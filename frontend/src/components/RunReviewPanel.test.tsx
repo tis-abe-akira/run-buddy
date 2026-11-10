@@ -5,6 +5,7 @@ import { RunReviewPanel } from './RunReviewPanel'
 
 const review: RunReview = {
   headline: '安定した10km',
+  brief: false,
   runItself: '前半から一定のペースで走れています。',
   comparison: '先週の似たランより心拍が5低い。',
   reviewer: 'gemini',
@@ -33,6 +34,19 @@ describe('RunReviewPanel', () => {
     expect(screen.getByText('先週の似たランより心拍が5低い。')).toBeInTheDocument()
     expect(screen.getByText(/gemini-2\.5-flash/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '評価し直す' }))
+    expect(onReview).toHaveBeenCalledOnce()
+  })
+
+  it('shows the one-liner written on import and offers the detailed review (#36)', async () => {
+    const user = userEvent.setup()
+    const onReview = vi.fn()
+    const brief: RunReview = { ...review, brief: true, runItself: null, comparison: null }
+    render(<RunReviewPanel state={{ status: 'ready', review: brief }} reviewing={false} onReview={onReview} />)
+
+    expect(screen.getByRole('heading', { name: '安定した10km' })).toBeInTheDocument()
+    expect(screen.getByText(/取り込み時の一言/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '評価し直す' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: '詳しく評価してもらう' }))
     expect(onReview).toHaveBeenCalledOnce()
   })
 

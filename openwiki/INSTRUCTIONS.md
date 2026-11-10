@@ -91,6 +91,8 @@ Wiki に載っているかを調べます。載せたいものはこの形で書
 - **ランの AI 評価（ADR-0016）**: 比べる対象はアプリが選ぶ（`SimilarRuns`：前 28 日・距離 ±25%・最大 5 本）、
   AI への入力 `RunReviewRequest` は軌跡の型を持たない（座標を送れない）、`RunReviewer` のポートと `SpringAiRunReviewer`、
   保存（`RunReviewRepository`、`run_review`）、`RunReviewService` がモデルをトランザクションの外で呼ぶこと。
+  取り込み時の一言（#36、オプトイン `runbuddy.ai.auto-review`）：`RunsImported` イベント、`ImportedRunsReviewer` が別スレッドで
+  `RunReview.brief` を作ること、AI の失敗が取り込みを失敗させないこと。
 - **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
   ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。

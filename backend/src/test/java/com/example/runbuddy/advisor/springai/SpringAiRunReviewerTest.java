@@ -71,6 +71,33 @@ class SpringAiRunReviewerTest {
                 .hasMessageContaining("incomplete");
     }
 
+    /** The one-liner on import (#36): one sentence from the same numbers, without laps. */
+    @Test
+    void writesAOneLinerFromTheRunAndTheComparison() {
+        ScriptedChatModel model = new ScriptedChatModel("""
+                {"headline":"先週より楽に同じ10km"}""");
+
+        String headline = reviewer(model).headline(new RunReviewRequest(RUN, List.of(), SimilarRuns.forRun(RUN, List.of(EARLIER))));
+
+        assertThat(headline).isEqualTo("先週より楽に同じ10km");
+        var prompt = model.prompts.getFirst();
+        assertThat(prompt.getInstructions().getFirst().getText()).contains("Japanese", "one sentence")
+                .doesNotContain("runItself");
+        assertThat(prompt.getInstructions().get(1).getText()).contains("10.00 km", "12 s/km faster", "Laps: not available");
+    }
+
+    @Test
+    void aBlankOneLinerIsNotAReview() {
+        ScriptedChatModel model = new ScriptedChatModel("""
+                {"headline":"  "}""");
+
+        assertThatThrownBy(() -> reviewer(model).headline(REQUEST))
+                .isInstanceOf(AdvisorUnavailableException.class)
+                .hasMessageContaining("incomplete");
+        assertThatThrownBy(() -> reviewer(new ScriptedChatModel()).headline(REQUEST))
+                .isInstanceOf(AdvisorUnavailableException.class);
+    }
+
     @Test
     void aFailingModelIsUnavailable() {
         assertThatThrownBy(() -> reviewer(new ScriptedChatModel()).review(REQUEST))

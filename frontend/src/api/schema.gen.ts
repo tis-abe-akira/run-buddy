@@ -320,8 +320,9 @@ export interface components {
         };
         ReviewBody: {
             headline: string;
-            runItself: string;
-            comparison: string;
+            brief: boolean;
+            runItself: string | null;
+            comparison: string | null;
             reviewer: string;
             model: string;
             /** Format: date-time */

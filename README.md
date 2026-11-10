@@ -59,6 +59,7 @@ cp .env.example .env
 | 設定 | 内容 |
 |---|---|
 | `GEMINI_API_KEY` | AI 相談で Gemini を使うときの API キー（空なら開発用の Fake だけが使える） |
+| `RUNBUDDY_AI_AUTO_REVIEW` | `true` にすると、新しく取り込んだランに AI の一言を自動で付ける（既定 `false`。ADR-0016） |
 | `RUNBUDDY_ACTIVITY_SOURCE` | ランの記録をどこから取り込むか。`dummy`（既定、生成したデータ）か `garmin` |
 | `GARMIN_API_KEY` | Garmin Connect Personal API のキー（`RUNBUDDY_ACTIVITY_SOURCE=garmin` のとき必須） |
 | `RUNBUDDY_LOG_LEVEL` | backend のログの詳しさ。`INFO`（既定。取り込み元、取り込みごとの件数、AI の回答）か `DEBUG`（Garmin へのページごとのリクエストなども出る） |
@@ -253,7 +254,7 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 | `GET /api/activity-source` | 今の取り込み元（`dummy` / `garmin`） |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |
 | `GET /api/runs/{activityId}/detail` | ランのラップ、軌跡の点の数、地図用に間引いたコース（`route`、約 300 点。各点にラップ番号 `lap`）。初めて開いたときだけ Garmin から FIT ファイルをダウンロードして DB に保存し、以後は保存した原本を読む（ADR-0012、地図は ADR-0013）。ダミーのランは `available: false`。FIT を読めなければ 502（`reason: UNREADABLE_FILE`） |
-| `GET /api/runs/{activityId}/review` | ランの AI 評価（保存済み）。まだなら `review: null`（ADR-0016） |
+| `GET /api/runs/{activityId}/review` | ランの AI 評価（保存済み）。まだなら `review: null`（ADR-0016）。取り込み時の一言だけなら `brief: true`（`runItself`・`comparison` は null） |
 | `POST /api/runs/{activityId}/review` | ランを AI に評価してもらい、保存する（作り直しも同じ）。比べる対象（前 28 日・距離 ±25%・最大 5 本）はアプリが選ぶ。AI の失敗は 502、利用上限は 429、`runbuddy.ai.review-timeout`（既定 60 秒）を超えたら 504 |
 | `GET /api/days/{YYYY-MM-DD}` | その日の予定とラン（走った順）。ランには最大心拍・ケイデンス・歩幅・上昇も入る（記録がなければ null）。画面の日別詳細ページ `/days/{YYYY-MM-DD}` が使う |
 | `GET` / `POST /api/races`、`PUT` / `DELETE /api/races/{id}` | 目標のレース（大会名・日付・距離・目標タイム）。一覧は日付順で、今日からの残り日数 `daysUntil` と、目標タイムに必要なペースが入る。AI 相談もこれを読んでプランを考える |

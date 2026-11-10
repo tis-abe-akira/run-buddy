@@ -28,6 +28,9 @@ class RunImportServiceTest {
     /** Remembers the days it was asked for and answers with the given runs that fall in them. */
     private final List<DateRange> asked = new ArrayList<>();
 
+    /** Events the service published. */
+    private final List<Object> published = new ArrayList<>();
+
     private ActivitySource sourceOf(RunResult... runs) {
         return days -> {
             asked.add(days);
@@ -39,7 +42,7 @@ class RunImportServiceTest {
     void importStoresFetchedRuns() {
         ActivitySource source = month -> List.of(run("r1", 3), run("r2", 5));
 
-        var result = new RunImportService(source, repository, clock).importRuns(NOVEMBER);
+        var result = new RunImportService(source, repository, clock, published::add).importRuns(NOVEMBER);
 
         assertThat(result.fetched()).isEqualTo(2);
         assertThat(result.added()).isEqualTo(2);
@@ -49,7 +52,7 @@ class RunImportServiceTest {
     @Test
     void importingTwiceDoesNotDuplicateRuns() {
         ActivitySource source = month -> List.of(run("r1", 3));
-        RunImportService service = new RunImportService(source, repository, clock);
+        RunImportService service = new RunImportService(source, repository, clock, published::add);
 
         service.importRuns(NOVEMBER);
         var second = service.importRuns(NOVEMBER);
@@ -62,7 +65,7 @@ class RunImportServiceTest {
     void theLatestImportStartsTheDayBeforeTheLatestStoredRun() {
         repository.saveAll(List.of(run("r1", 3)));
         RunImportService service = new RunImportService(sourceOf(run("r1", 3), run("r2", 5)), repository,
-                Clock.fixed(Instant.parse("2026-11-06T03:00:00Z"), ZoneOffset.UTC));
+                Clock.fixed(Instant.parse("2026-11-06T03:00:00Z"), ZoneOffset.UTC), published::add);
 
         var result = service.importLatest();
 
@@ -75,19 +78,40 @@ class RunImportServiceTest {
         assertThat(repository.findByMonth(NOVEMBER)).extracting(RunResult::activityId).containsExactly("r1", "r2");
     }
 
+    /** Only the runs not stored before are announced, e.g. for the automatic one-liner (#36). */
+    @Test
+    void announcesOnlyTheNewRuns() {
+        repository.saveAll(List.of(run("r1", 3)));
+        RunImportService service = new RunImportService(sourceOf(run("r1", 3), run("r2", 5)), repository,
+                Clock.fixed(Instant.parse("2026-11-06T03:00:00Z"), ZoneOffset.UTC), published::add);
+
+        service.importLatest();
+
+        assertThat(published).containsExactly(new RunsImported(List.of(run("r2", 5))));
+    }
+
+    @Test
+    void anImportThatAddsNothingAnnouncesNothing() {
+        repository.saveAll(List.of(run("r1", 3)));
+
+        new RunImportService(month -> List.of(run("r1", 3)), repository, clock, published::add).importRuns(NOVEMBER);
+
+        assertThat(published).isEmpty();
+    }
+
     @Test
     void theLatestImportCrossesMonths() {
         repository.saveAll(List.of(new RunResult("oct", LocalDateTime.of(2026, 10, 30, 7, 0),
                 Distance.ofKilometers(8), Duration.ofMinutes(48), 150)));
 
-        new RunImportService(sourceOf(), repository, clock).importLatest();
+        new RunImportService(sourceOf(), repository, clock, published::add).importLatest();
 
         assertThat(asked).containsExactly(new DateRange(LocalDate.of(2026, 10, 29), LocalDate.of(2026, 11, 2)));
     }
 
     @Test
     void withNothingStoredTheLatestImportStartsAtTheFirstOfThisMonth() {
-        new RunImportService(sourceOf(), repository, clock).importLatest();
+        new RunImportService(sourceOf(), repository, clock, published::add).importLatest();
 
         assertThat(asked).containsExactly(new DateRange(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 2)));
     }
@@ -97,7 +121,7 @@ class RunImportServiceTest {
         // A run recorded abroad can be "tomorrow" in local time; the range must not start after it ends.
         repository.saveAll(List.of(run("ahead", 4)));
 
-        new RunImportService(sourceOf(), repository, clock).importLatest();
+        new RunImportService(sourceOf(), repository, clock, published::add).importLatest();
 
         assertThat(asked).containsExactly(new DateRange(LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 2)));
     }

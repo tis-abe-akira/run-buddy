@@ -7,6 +7,7 @@ import java.time.YearMonth;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,11 +18,15 @@ public class RunImportService {
     private final ActivitySource activitySource;
     private final RunResultRepository runResultRepository;
     private final Clock clock;
+    private final ApplicationEventPublisher events;
 
-    public RunImportService(ActivitySource activitySource, RunResultRepository runResultRepository, Clock clock) {
+    /** @param events receives {@link RunsImported} when an import added runs */
+    public RunImportService(ActivitySource activitySource, RunResultRepository runResultRepository, Clock clock,
+            ApplicationEventPublisher events) {
         this.activitySource = activitySource;
         this.runResultRepository = runResultRepository;
         this.clock = clock;
+        this.events = events;
     }
 
     /** Pulls the month's runs from the source again, e.g. after a run was edited there. Safe to repeat. */
@@ -57,10 +62,13 @@ public class RunImportService {
             log.warn("Import {}: {} failed ({}): {}", days, source, e.reason(), e.getMessage());
             throw e;
         }
-        int added = runResultRepository.saveAll(fetched);
+        List<RunResult> added = runResultRepository.saveAll(fetched);
         log.info("Import {}: {} runs from {}, {} new, {} already stored ({} ms)", days, fetched.size(), source,
-                added, fetched.size() - added, (System.nanoTime() - started) / 1_000_000);
-        return new Counts(fetched.size(), added);
+                added.size(), fetched.size() - added.size(), (System.nanoTime() - started) / 1_000_000);
+        if (!added.isEmpty()) {
+            events.publishEvent(new RunsImported(added));
+        }
+        return new Counts(fetched.size(), added.size());
     }
 
     private record Counts(int fetched, int added) {

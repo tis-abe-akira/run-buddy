@@ -89,6 +89,11 @@ changing the structure.
   not saved).
   Model output becomes a `RunReview` only through its checks; an incomplete answer is an
   `AdvisorUnavailableException` (502, 429 for a rate limit, 504 for a timeout, from `ApiExceptionHandler`).
+- The one-liner on import (#36) is opt-in (`runbuddy.ai.auto-review`, off by default). `RunImportService`
+  publishes `RunsImported` with only the newly stored runs; `ImportedRunsReviewer` writes a brief review
+  (`RunReview.brief`, headline only) for each on a background thread, after the import has returned. An
+  AI failure there is logged, never thrown into the import. A brief review never replaces a review, and
+  never reads or downloads the FIT file. `activity` must not depend on `review`.
 
 ## Garmin (ADR-0009)
 

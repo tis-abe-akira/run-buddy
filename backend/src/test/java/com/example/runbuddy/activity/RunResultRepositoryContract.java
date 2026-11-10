@@ -39,19 +39,19 @@ public interface RunResultRepositoryContract {
     }
 
     @Test
-    default void newRunsAreCounted() {
-        assertThat(repository().saveAll(List.of(run("a", 2), run("b", 3)))).isEqualTo(2);
+    default void newRunsAreReturned() {
+        assertThat(repository().saveAll(List.of(run("a", 2), run("b", 3)))).containsExactly(run("a", 2), run("b", 3));
     }
 
     @Test
-    default void savingTheSameRunAgainReplacesItWithoutCountingIt() {
+    default void savingTheSameRunAgainReplacesItWithoutReturningIt() {
         repository().saveAll(List.of(run("a", 2)));
         RunResult corrected = new RunResult(
                 "a", LocalDateTime.of(2026, 11, 2, 7, 0), Distance.ofKilometers(9.5), Duration.ofMinutes(57), 151);
 
-        int added = repository().saveAll(List.of(corrected, run("b", 3)));
+        List<RunResult> added = repository().saveAll(List.of(corrected, run("b", 3)));
 
-        assertThat(added).isEqualTo(1);
+        assertThat(added).containsExactly(run("b", 3));
         assertThat(repository().findByMonth(NOVEMBER)).containsExactly(corrected, run("b", 3));
     }
 
@@ -60,15 +60,15 @@ public interface RunResultRepositoryContract {
         RunResult first = run("a", 2);
         RunResult second = new RunResult("a", first.startedAt(), Distance.ofKilometers(7), Duration.ofMinutes(40), null);
 
-        int added = repository().saveAll(List.of(first, second));
+        List<RunResult> added = repository().saveAll(List.of(first, second));
 
-        assertThat(added).isEqualTo(1);
+        assertThat(added).containsExactly(second);
         assertThat(repository().findByMonth(NOVEMBER)).containsExactly(second);
     }
 
     @Test
     default void emptyBatchStoresNothing() {
-        assertThat(repository().saveAll(List.of())).isZero();
+        assertThat(repository().saveAll(List.of())).isEmpty();
         assertThat(repository().findByMonth(NOVEMBER)).isEmpty();
     }
 

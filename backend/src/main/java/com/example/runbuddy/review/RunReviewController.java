@@ -49,15 +49,23 @@ public class RunReviewController {
     }
 
     /**
-     * @param runItself  the run on its own (viewpoint A)
-     * @param comparison against similar recent runs (viewpoint C)
+     * @param brief      true for the one-liner written on import (#36): only the headline, until the detailed
+     *                   review is asked for
+     * @param runItself  the run on its own (viewpoint A); null when brief
+     * @param comparison against similar recent runs (viewpoint C); null when brief
      */
     public record ReviewBody(
-            String headline, String runItself, String comparison, String reviewer, String model, Instant reviewedAt) {
+            String headline,
+            boolean brief,
+            @Schema(types = {"string", "null"}) String runItself,
+            @Schema(types = {"string", "null"}) String comparison,
+            String reviewer,
+            String model,
+            Instant reviewedAt) {
 
         static ReviewBody from(RunReview review) {
-            return new ReviewBody(review.headline(), review.runItself(), review.comparison(), review.reviewer(),
-                    review.model(), review.reviewedAt());
+            return new ReviewBody(review.headline(), review.isBrief(), review.runItself(), review.comparison(),
+                    review.reviewer(), review.model(), review.reviewedAt());
         }
     }
 }
