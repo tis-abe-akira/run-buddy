@@ -114,7 +114,7 @@ public class SpringAiRunReviewer implements RunReviewer {
                         AdvisorUnavailableException.Reason.RATE_LIMITED, id + " rate limit or quota exceeded", e);
             }
             log.warn("{} ({}) could not review the run", id, model, e);
-            throw new AdvisorUnavailableException(id + " could not review the run: " + e.getMessage(), e);
+            throw new AdvisorUnavailableException(id + " could not review the run: " + ProviderFailures.reason(e), e);
         }
     }
 

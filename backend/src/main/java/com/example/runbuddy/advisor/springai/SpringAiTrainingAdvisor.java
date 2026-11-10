@@ -175,7 +175,7 @@ public class SpringAiTrainingAdvisor implements TrainingAdvisor {
                         AdvisorUnavailableException.Reason.RATE_LIMITED, info.displayName() + " rate limit or quota exceeded", e);
             }
             log.warn("{} ({}) could not answer", info.id(), model, e);
-            throw new AdvisorUnavailableException(info.id() + " could not answer: " + e.getMessage(), e);
+            throw new AdvisorUnavailableException(info.id() + " could not answer: " + ProviderFailures.reason(e), e);
         }
     }
 
