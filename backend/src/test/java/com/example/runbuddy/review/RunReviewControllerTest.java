@@ -135,6 +135,15 @@ class RunReviewControllerTest {
     }
 
     @Test
+    void aModelThatTakesTooLongIsAGatewayTimeout() throws Exception {
+        failure.set(new AdvisorUnavailableException(AdvisorUnavailableException.Reason.TIMED_OUT, "gemini did not answer within 60 s", null));
+
+        mockMvc.perform(post("/api/runs/garmin-1/review"))
+                .andExpect(status().isGatewayTimeout())
+                .andExpect(jsonPath("$.detail").value("gemini did not answer within 60 s"));
+    }
+
+    @Test
     void aRateLimitIsTooManyRequests() throws Exception {
         failure.set(new AdvisorUnavailableException(AdvisorUnavailableException.Reason.RATE_LIMITED, "gemini rate limit or quota exceeded", null));
 

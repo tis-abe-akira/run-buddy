@@ -6,6 +6,8 @@ public class AdvisorUnavailableException extends RuntimeException {
     public enum Reason {
         /** The provider's rate limit or quota was hit; trying again later may work. */
         RATE_LIMITED,
+        /** The provider did not answer in time; trying again may work. */
+        TIMED_OUT,
         FAILED
     }
 

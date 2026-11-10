@@ -8,14 +8,22 @@ import com.example.runbuddy.activity.RunResultRepository;
 import com.example.runbuddy.activity.UnreadableActivityFileException;
 import com.example.runbuddy.advisor.AdvisorUnavailableException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,15 +44,25 @@ public class RunReviewService {
     private final RunReviewRepository reviews;
     private final List<RunReviewer> reviewers;
     private final Clock clock;
+    private final Duration timeout;
 
+    /** Model calls run here, so a call that takes too long can be abandoned (and interrupted). */
+    private static final ExecutorService MODEL_CALLS = Executors.newVirtualThreadPerTaskExecutor();
+
+    /**
+     * @param timeout how long to wait for the model; then the review fails as timed out and a late answer
+     *                is not saved (runbuddy.ai.review-timeout)
+     */
     public RunReviewService(RunResultRepository runs, RunFileRepository files, ActivityFileReader reader,
-            RunReviewRepository reviews, List<RunReviewer> reviewers, Clock clock) {
+            RunReviewRepository reviews, List<RunReviewer> reviewers, Clock clock,
+            @Value("${runbuddy.ai.review-timeout:60s}") Duration timeout) {
         this.runs = runs;
         this.files = files;
         this.reader = reader;
         this.reviews = reviews;
         this.reviewers = List.copyOf(reviewers);
         this.clock = clock;
+        this.timeout = timeout;
     }
 
     /**
@@ -66,7 +84,7 @@ public class RunReviewService {
         RunReviewer reviewer = chooseReviewer();
         RunReviewRequest request = new RunReviewRequest(run, storedLaps(activityId), SimilarRuns.forRun(run, recentRuns(run)));
 
-        RunReviewer.Written written = reviewer.review(request);
+        RunReviewer.Written written = withinTimeout(reviewer, request);
 
         RunReview review = new RunReview(activityId, written.headline(), written.runItself(), written.comparison(),
                 reviewer.id(), reviewer.model(), Instant.now(clock));
@@ -74,6 +92,29 @@ public class RunReviewService {
         log.info("Run {} reviewed by {} ({}), compared with {} similar runs, {} laps",
                 activityId, reviewer.id(), reviewer.model(), request.similar().runs().size(), request.laps().size());
         return review;
+    }
+
+    /** Waits for the model at most {@code timeout}; the answer is saved only by the caller, so a late one is dropped. */
+    private RunReviewer.Written withinTimeout(RunReviewer reviewer, RunReviewRequest request) {
+        Future<RunReviewer.Written> call = MODEL_CALLS.submit(() -> reviewer.review(request));
+        try {
+            return call.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            call.cancel(true);
+            log.warn("{} ({}) did not review run {} within {} s", reviewer.id(), reviewer.model(),
+                    request.run().activityId(), timeout.toSeconds());
+            throw new AdvisorUnavailableException(AdvisorUnavailableException.Reason.TIMED_OUT,
+                    reviewer.id() + " did not answer within " + timeout.toSeconds() + " s", e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException failure) {
+                throw failure;
+            }
+            throw new AdvisorUnavailableException(reviewer.id() + " could not review the run: " + e.getCause(), e.getCause());
+        } catch (InterruptedException e) {
+            call.cancel(true);
+            Thread.currentThread().interrupt();
+            throw new AdvisorUnavailableException(reviewer.id() + " review was interrupted", e);
+        }
     }
 
     private RunResult requireRun(String activityId) {

@@ -8,6 +8,8 @@ export function describeReviewError(error: Error): string {
         return 'AI の利用上限に達しました。1分ほど待ってから、もう一度評価してもらってください。'
       case 502:
         return `AI が評価できませんでした（${error.detail ?? error.status}）。時間をおいて、もう一度試してください。`
+      case 504:
+        return 'AI の応答に時間がかかりすぎました。少し待ってから、もう一度評価してもらってください。'
       case 404:
         return 'このランが見つかりません。取り込み直してから開いてください。'
     }

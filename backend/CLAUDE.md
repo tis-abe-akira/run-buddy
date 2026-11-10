@@ -84,9 +84,11 @@ changing the structure.
   boundary tests first. Everything a `RunReviewer` may use is in `RunReviewRequest`, which has no track
   type: positions never go to the model. A review uses laps only when the FIT file is already stored and
   never downloads it.
-- `RunReviewService` is not transactional: the model is called between short repository transactions.
+- `RunReviewService` is not transactional: the model is called between short repository transactions,
+  on its own thread with a time limit (`runbuddy.ai.review-timeout`, 504 when exceeded; a late answer is
+  not saved).
   Model output becomes a `RunReview` only through its checks; an incomplete answer is an
-  `AdvisorUnavailableException` (502, or 429 for a rate limit, from `ApiExceptionHandler`).
+  `AdvisorUnavailableException` (502, 429 for a rate limit, 504 for a timeout, from `ApiExceptionHandler`).
 
 ## Garmin (ADR-0009)
 

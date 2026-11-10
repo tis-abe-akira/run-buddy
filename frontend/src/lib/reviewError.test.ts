@@ -14,6 +14,12 @@ describe('describeReviewError', () => {
     )
   })
 
+  it('says the AI took too long', () => {
+    expect(describeReviewError(new ApiError(504, 'gemini did not answer within 60 s'))).toBe(
+      'AI の応答に時間がかかりすぎました。少し待ってから、もう一度評価してもらってください。',
+    )
+  })
+
   it('says the run is gone', () => {
     expect(describeReviewError(new ApiError(404, 'no run x'))).toBe('このランが見つかりません。取り込み直してから開いてください。')
   })

@@ -94,6 +94,39 @@ class RunReviewServiceTest {
     }
 
     @Test
+    void aModelThatTakesTooLongTimesOutAndALateAnswerIsNotSaved() throws InterruptedException {
+        runs.saveAll(List.of(run("r1", LocalDateTime.of(2026, 11, 1, 6, 0))));
+        RunReviewer slow = new RunReviewer() {
+            @Override
+            public String id() {
+                return "gemini";
+            }
+
+            @Override
+            public String model() {
+                return "flash";
+            }
+
+            @Override
+            public Written review(RunReviewRequest request) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return new Written("late", "late", "late");
+            }
+        };
+
+        assertThatThrownBy(() -> service(Duration.ofMillis(100), slow).review("r1"))
+                .isInstanceOfSatisfying(AdvisorUnavailableException.class,
+                        e -> assertThat(e.reason()).isEqualTo(AdvisorUnavailableException.Reason.TIMED_OUT))
+                .hasMessageContaining("did not answer");
+        Thread.sleep(700);
+        assertThat(reviews.find("r1")).isEmpty();
+    }
+
+    @Test
     void anUnknownRunCannotBeReviewed() {
         assertThatThrownBy(() -> service(gemini).review("nope")).isInstanceOf(NoSuchElementException.class);
         assertThatThrownBy(() -> service(gemini).saved("nope")).isInstanceOf(NoSuchElementException.class);
@@ -116,13 +149,17 @@ class RunReviewServiceTest {
     }
 
     private RunReviewService service(RunReviewer... reviewers) {
+        return service(Duration.ofSeconds(5), reviewers);
+    }
+
+    private RunReviewService service(Duration timeout, RunReviewer... reviewers) {
         ActivityFileReader reader = zip -> {
             if (zip[0] == 0) {
                 throw new UnreadableActivityFileException("broken", null);
             }
             return new RunDetail(List.of(LAP), List.of());
         };
-        return new RunReviewService(runs, files, reader, reviews, List.of(reviewers), Clock.fixed(NOW, ZoneOffset.UTC));
+        return new RunReviewService(runs, files, reader, reviews, List.of(reviewers), Clock.fixed(NOW, ZoneOffset.UTC), timeout);
     }
 
     private RunReviewer reviewer(String id, String model) {

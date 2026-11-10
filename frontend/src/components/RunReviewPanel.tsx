@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import type { RunReview } from '../api/client'
 import { formatDate } from '../lib/format'
 
@@ -49,11 +50,20 @@ function Body({ state, reviewing, reviewError, onReview }: Props) {
   return (
     <>
       {review === null ? (
-        <p className="body-sm muted" style={{ margin: 0 }}>
-          このランはまだ評価していません。
-        </p>
+        reviewing ? (
+          <ReviewSkeleton />
+        ) : (
+          <p className="body-sm muted" style={{ margin: 0 }}>
+            このランはまだ評価していません。
+          </p>
+        )
       ) : (
-        <div className="stack" style={{ gap: 'var(--spacing-xs)' }}>
+        <div className={reviewing ? 'stack review-body review-stale' : 'stack review-body'} aria-busy={reviewing} style={{ gap: 'var(--spacing-xs)' }}>
+          {reviewing && (
+            <p className="caption muted" style={{ margin: 0 }}>
+              評価し直しています。終わるまで前の評価を表示しています。
+            </p>
+          )}
           <h4 className="title-md" style={{ margin: 0 }}>
             {review.headline}
           </h4>
@@ -77,12 +87,36 @@ function Body({ state, reviewing, reviewError, onReview }: Props) {
         <button type="button" className="button button-secondary" disabled={reviewing} onClick={onReview}>
           {review === null ? 'AI に評価してもらう' : '評価し直す'}
         </button>
-        {reviewing && (
-          <span className="body-sm muted" role="status">
-            AI が評価しています…
-          </span>
-        )}
+        {reviewing && <Elapsed />}
       </div>
     </>
+  )
+}
+
+/**
+ * How long the AI has been at it. A review takes from a few seconds to tens of seconds, so the runner
+ * sees that it is still going. Mounted only while reviewing, so every review counts from zero.
+ */
+function Elapsed() {
+  const [seconds, setSeconds] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setSeconds((s) => s + 1), 1000)
+    return () => clearInterval(timer)
+  }, [])
+  return (
+    <span className="body-sm muted numeric" role="status">
+      AI が評価しています…{seconds > 0 && `（${seconds} 秒）`}
+    </span>
+  )
+}
+
+/** Where the first review will appear: the headline and the two parts, as placeholder bars. */
+function ReviewSkeleton() {
+  return (
+    <div className="stack review-skeleton" aria-hidden="true" style={{ gap: 'var(--spacing-xs)' }}>
+      <span className="skeleton-bar" style={{ width: '45%', height: '1.2em' }} />
+      <span className="skeleton-bar" style={{ width: '90%' }} />
+      <span className="skeleton-bar" style={{ width: '80%' }} />
+    </div>
   )
 }

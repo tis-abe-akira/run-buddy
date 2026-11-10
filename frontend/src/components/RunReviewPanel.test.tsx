@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { RunReview } from '../api/client'
 import { RunReviewPanel } from './RunReviewPanel'
@@ -41,6 +41,40 @@ describe('RunReviewPanel', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('AI が評価しています')
     expect(screen.getByRole('button', { name: 'AI に評価してもらう' })).toBeDisabled()
+  })
+
+  it('counts the seconds while the AI is reviewing, and starts again from zero next time', () => {
+    vi.useFakeTimers()
+    try {
+      const props = { state: { status: 'ready', review: null } as const, onReview: vi.fn() }
+      const { rerender } = render(<RunReviewPanel {...props} reviewing />)
+
+      act(() => vi.advanceTimersByTime(12_000))
+      expect(screen.getByRole('status')).toHaveTextContent('AI が評価しています…（12 秒）')
+
+      rerender(<RunReviewPanel {...props} reviewing={false} />)
+      rerender(<RunReviewPanel {...props} reviewing />)
+      act(() => vi.advanceTimersByTime(3_000))
+      expect(screen.getByRole('status')).toHaveTextContent('（3 秒）')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('holds the place of the first review while it is being written', () => {
+    const { container } = render(<RunReviewPanel state={{ status: 'ready', review: null }} reviewing onReview={vi.fn()} />)
+
+    expect(container.querySelector('.review-skeleton')).not.toBeNull()
+    expect(screen.queryByText('このランはまだ評価していません。')).not.toBeInTheDocument()
+  })
+
+  it('marks the old review as being replaced while it is reviewed again', () => {
+    render(<RunReviewPanel state={{ status: 'ready', review }} reviewing onReview={vi.fn()} />)
+
+    const old = screen.getByRole('heading', { name: '安定した10km' }).closest('.review-body')
+    expect(old).toHaveClass('review-stale')
+    expect(old).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByText('評価し直しています。終わるまで前の評価を表示しています。')).toBeInTheDocument()
   })
 
   it('explains a failed review and keeps the button to try again', () => {
