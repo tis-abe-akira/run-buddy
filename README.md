@@ -132,7 +132,9 @@ http://localhost:5173 を開きます。
 
 [Google AI Studio](https://aistudio.google.com/) で API キーを取得し、`.env` の `GEMINI_API_KEY=` に書いて backend を起動し直します。画面のプロバイダに「Gemini」が出て、既定になります。
 
-- モデルの候補は `gemini-2.5-flash`（既定、速い）と `gemini-3.5-flash`（遅いが分析が詳しい）です。
+- モデルの既定は `gemini-3.8-flash`、もう一つの候補は `gemini-3.5-flash` です（`gemini-2.5-flash` は 2026-11 に新規ユーザーへの提供が終わり、404 になります）。
+  `.env` に `GEMINI_MODELS=gemini-3.8-flash,gemini-3.5-flash` とカンマ区切りで書くと変えられます（先頭が既定で、ランの評価にも使います）。
+  AI が「no longer available」と答えたら、そのモデルは提供が終わっています。
 - 相談内容とランの記録は Google に送信されます。利用料がかかることがあります。
 - 無料枠には1分あたりの利用上限があり、AI がツールを呼ぶたびに1回分を使います。「利用上限に達しました」と出たら、1分ほど待ってから送り直してください。
 

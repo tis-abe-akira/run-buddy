@@ -8,6 +8,7 @@ import com.example.runbuddy.advisor.ChatTurn;
 import com.example.runbuddy.advisor.Consultation;
 import com.example.runbuddy.activity.RunImportService;
 import com.example.runbuddy.persistence.DatabaseTest;
+import java.time.Clock;
 import java.time.YearMonth;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,12 +28,18 @@ class GeminiLiveTest extends DatabaseTest {
     @Autowired
     RunImportService imports;
 
+    @Autowired
+    Clock clock;
+
     @Test
     void proposesAValidPlanFromTheRunnersData() {
-        imports.importRuns(YearMonth.of(2026, 9));
-        YearMonth october = YearMonth.of(2026, 10);
-        Consultation consultation = new Consultation(october, List.of(
-                ChatTurn.user("2026年9月の走りを振り返って、10月のプランを作ってください。")));
+        // Next month, so every day of it is from today on: the prompt keeps the model off past days (#31),
+        // so a fixed month in the past would rightly get an empty plan.
+        YearMonth thisMonth = YearMonth.now(clock);
+        YearMonth next = thisMonth.plusMonths(1);
+        imports.importRuns(thisMonth.minusMonths(1));
+        Consultation consultation = new Consultation(next, List.of(
+                ChatTurn.user(thisMonth.minusMonths(1) + " の走りを振り返って、" + next + " のプランを作ってください。")));
         String model = advisors.available().stream()
                 .filter(info -> info.id().equals("gemini")).findFirst().orElseThrow().models().getFirst();
 
@@ -40,7 +47,7 @@ class GeminiLiveTest extends DatabaseTest {
 
         assertThat(advice.reply()).isNotBlank();
         assertThat(advice.plan()).hasValueSatisfying(plan -> {
-            assertThat(plan.month()).isEqualTo(october);
+            assertThat(plan.month()).isEqualTo(next);
             assertThat(plan.workouts()).isNotEmpty();
         });
     }
