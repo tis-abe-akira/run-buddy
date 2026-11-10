@@ -25,6 +25,11 @@ public class JooqPersistenceConfig {
     }
 
     @Bean
+    JooqRunReviewRepository runReviewRepository(DSLContext dsl) {
+        return new JooqRunReviewRepository(dsl);
+    }
+
+    @Bean
     JooqRaceRepository raceRepository(DSLContext dsl) {
         return new JooqRaceRepository(dsl);
     }

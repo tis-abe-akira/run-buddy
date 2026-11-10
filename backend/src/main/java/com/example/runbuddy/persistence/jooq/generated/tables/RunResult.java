@@ -8,6 +8,7 @@ import com.example.runbuddy.persistence.jooq.generated.Indexes;
 import com.example.runbuddy.persistence.jooq.generated.Keys;
 import com.example.runbuddy.persistence.jooq.generated.Public;
 import com.example.runbuddy.persistence.jooq.generated.tables.RunFitFile.RunFitFilePath;
+import com.example.runbuddy.persistence.jooq.generated.tables.RunReview.RunReviewPath;
 import com.example.runbuddy.persistence.jooq.generated.tables.records.RunResultRecord;
 
 import java.time.LocalDateTime;
@@ -204,6 +205,19 @@ public class RunResult extends TableImpl<RunResultRecord> {
             _runFitFile = new RunFitFilePath(this, null, Keys.RUN_FIT_FILE__RUN_FIT_FILE_USER_ID_ACTIVITY_ID_FKEY.getInverseKey());
 
         return _runFitFile;
+    }
+
+    private transient RunReviewPath _runReview;
+
+    /**
+     * Get the implicit to-many join path to the <code>public.run_review</code>
+     * table
+     */
+    public RunReviewPath runReview() {
+        if (_runReview == null)
+            _runReview = new RunReviewPath(this, null, Keys.RUN_REVIEW__RUN_REVIEW_USER_ID_ACTIVITY_ID_FKEY.getInverseKey());
+
+        return _runReview;
     }
 
     @Override

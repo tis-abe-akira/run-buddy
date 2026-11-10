@@ -14,4 +14,9 @@ public class FakeAdvisorConfig {
     FakeTrainingAdvisor fakeAdvisor(AdvisorTools tools) {
         return new FakeTrainingAdvisor(tools);
     }
+
+    @Bean
+    FakeRunReviewer fakeRunReviewer() {
+        return new FakeRunReviewer();
+    }
 }

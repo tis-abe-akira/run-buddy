@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { dayQuery, runDetailQuery } from '../api/queries'
+import { dayQuery, runDetailQuery, runReviewQuery, useReviewRun } from '../api/queries'
 import { DayDetailView } from '../components/DayDetailView'
 import { ErrorBand } from '../components/ErrorBand'
 import { RunDetailPanel } from '../components/RunDetailPanel'
 import { RunLaps } from '../components/RunLaps'
+import { RunReviewPanel } from '../components/RunReviewPanel'
 import { formatDayHeading, isIsoDate, monthOfDate, shiftDay } from '../lib/day'
 import { describeDetailError } from '../lib/importError'
+import { describeReviewError } from '../lib/reviewError'
 
 export const Route = createFileRoute('/days/$date')({
   beforeLoad: ({ params }) => {
@@ -55,7 +57,12 @@ function DayPage() {
       </section>
       <section className="band">
         <div className="container">
-          <DayDetailView day={day.data} renderDetail={(run) => <RunDetailLoader activityId={run.activityId} />} />
+          <DayDetailView day={day.data} renderDetail={(run) => (
+              <>
+                <RunReviewLoader activityId={run.activityId} />
+                <RunDetailLoader activityId={run.activityId} />
+              </>
+            )} />
         </div>
       </section>
     </>
@@ -72,4 +79,23 @@ function RunDetailLoader({ activityId }: { activityId: string }) {
     return <RunLaps state={{ status: 'error', message: describeDetailError(detail.error), onRetry: () => void detail.refetch() }} />
   }
   return <RunDetailPanel detail={detail.data} />
+}
+
+/** Loads a run's saved AI review and asks for a new one on request (#35); apart from the course and laps. */
+function RunReviewLoader({ activityId }: { activityId: string }) {
+  const saved = useQuery(runReviewQuery(activityId))
+  const reviewRun = useReviewRun(activityId)
+  const state = saved.isPending
+    ? ({ status: 'loading' } as const)
+    : saved.isError
+      ? ({ status: 'error', message: describeReviewError(saved.error) } as const)
+      : ({ status: 'ready', review: saved.data.review } as const)
+  return (
+    <RunReviewPanel
+      state={state}
+      reviewing={reviewRun.isPending}
+      reviewError={reviewRun.error ? describeReviewError(reviewRun.error) : undefined}
+      onReview={() => reviewRun.mutate()}
+    />
+  )
 }

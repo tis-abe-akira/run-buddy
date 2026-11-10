@@ -6,7 +6,7 @@ changing the structure.
 
 ## Design
 
-- Domain types (`plan`, `activity`, `dashboard`, `day`, `race`, `shared`) are immutable records or final classes
+- Domain types (`plan`, `activity`, `dashboard`, `day`, `race`, `review`, `shared`) are immutable records or final classes
   that check their own invariants. Do not add setters, no-arg constructors or persistence
   annotations to them.
 - Repositories are ports (interfaces in the domain packages). Adapters live in `persistence/`.
@@ -77,6 +77,18 @@ changing the structure.
   repositories, one short transaction per call.
 - Tests must not call real providers except the `*LiveTest` classes, which are skipped unless the
   provider's API key is set. Use `ScriptedChatModel` or the fake advisor elsewhere.
+
+## Run reviews (ADR-0016)
+
+- `SimilarRuns` (the app, not the model) picks what a run is compared with; change the rule with its
+  boundary tests first. Everything a `RunReviewer` may use is in `RunReviewRequest`, which has no track
+  type: positions never go to the model. A review uses laps only when the FIT file is already stored and
+  never downloads it.
+- `RunReviewService` is not transactional: the model is called between short repository transactions,
+  on its own thread with a time limit (`runbuddy.ai.review-timeout`, 504 when exceeded; a late answer is
+  not saved).
+  Model output becomes a `RunReview` only through its checks; an incomplete answer is an
+  `AdvisorUnavailableException` (502, 429 for a rate limit, 504 for a timeout, from `ApiExceptionHandler`).
 
 ## Garmin (ADR-0009)
 

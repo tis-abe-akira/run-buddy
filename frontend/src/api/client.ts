@@ -12,6 +12,7 @@ export type RunDetail = Schemas['RunDetailResponse']
 export type Lap = Schemas['LapResponse']
 export type RoutePoint = Schemas['RoutePoint']
 export type NextStepCard = Schemas['NextStepCard']
+export type RunReview = Schemas['ReviewBody']
 export type Race = Schemas['RaceResponse']
 export type RaceInput = Schemas['RaceBody']
 export type Plan = Schemas['PlanBody']
@@ -66,6 +67,9 @@ export const api = {
   runs: (month: Month) => request<Run[]>(`/api/runs/${month}`),
   day: (date: IsoDate) => request<DayDetail>(`/api/days/${date}`),
   runDetail: (activityId: string) => request<RunDetail>(`/api/runs/${encodeURIComponent(activityId)}/detail`),
+  runReview: (activityId: string) => request<Schemas['SavedReviewBody']>(`/api/runs/${encodeURIComponent(activityId)}/review`),
+  reviewRun: (activityId: string) =>
+    request<RunReview>(`/api/runs/${encodeURIComponent(activityId)}/review`, { method: 'POST' }),
   races: () => request<Race[]>('/api/races'),
   nextSteps: () => request<Schemas['NextStepsResponse']>('/api/next-steps'),
   createRace: (race: RaceInput) => request<Race>('/api/races', { method: 'POST', body: JSON.stringify(race) }),
