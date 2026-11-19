@@ -93,6 +93,9 @@ Wiki に載っているかを調べます。載せたいものはこの形で書
   保存（`RunReviewRepository`、`run_review`）、`RunReviewService` がモデルをトランザクションの外で呼ぶこと。
   取り込み時の一言（#36、オプトイン `runbuddy.ai.auto-review`）：`RunsImported` イベント、`ImportedRunsReviewer` が別スレッドで
   `RunReview.brief` を作ること、AI の失敗が取り込みを失敗させないこと。
+- **新しいランの通知（ADR-0017）**: `GET /api/runs/latest/check`、`RunImportService.findNewRuns`（保存しない）、`NewRunChecker` が
+  `runbuddy.activity.check-interval` ごとに 1 回だけ取り込み元に問い合わせて答えを共有すること、ヘッダーの `NewRunsNotice` と、
+  押したら取り込んで一番新しいランの日へ移ること。
 - **目標のレース**: `Race` の不変条件、目標タイムから必要なペースを切り捨てで出す理由（表示のペースで走れば目標に届く）、
   ダッシュボードのカウントダウンと、プラン画面での表示。
 - **設定と秘密情報**: リポジトリ直下の `.env` を docker compose と Spring の両方が読む仕組み（`spring.config.import`）。

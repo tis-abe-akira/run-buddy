@@ -19,13 +19,13 @@ describe('ImportControls', () => {
   })
 
   it('says which days the latest import looked at and what it found', () => {
-    render(<ImportControls {...idle} lastLatest={{ from: '2026-10-31', to: '2026-11-02', fetched: 2, added: 1 }} />)
+    render(<ImportControls {...idle} lastLatest={{ from: '2026-10-31', to: '2026-11-02', fetched: 2, added: 1, newRuns: [] }} />)
 
     expect(screen.getByRole('status')).toHaveTextContent('10/31〜11/2 を確認し、新しく 1 件を取り込みました')
   })
 
   it('says so when nothing was new', () => {
-    render(<ImportControls {...idle} lastLatest={{ from: '2026-11-01', to: '2026-11-02', fetched: 1, added: 0 }} />)
+    render(<ImportControls {...idle} lastLatest={{ from: '2026-11-01', to: '2026-11-02', fetched: 1, added: 0, newRuns: [] }} />)
 
     expect(screen.getByRole('status')).toHaveTextContent('11/1〜11/2 に新しいランはありませんでした')
   })

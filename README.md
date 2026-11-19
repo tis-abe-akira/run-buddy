@@ -105,7 +105,7 @@ http://localhost:5173 を開きます。
 
 ### 6. 画面で一通り試す
 
-1. **ダッシュボード:** 「最新を取り込む」を押す（既定はダミーデータ。本物の Garmin は下の「Garmin から取り込む」を参照）。最後に取り込んだランの前日から今日までのランが取り込まれ（初回は今月の1日から）、グラフと記録が表示されます。過去の月は、その月に移動して「○月を取り込み直す」で取り込めます。
+1. **ダッシュボード:** 画面の右上に「新しいラン N 件を取り込む」が出ていたら押す（取り込んで、一番新しいランの日のページに移ります。数分おきに確かめています）。または「最新を取り込む」を押す（既定はダミーデータ。本物の Garmin は下の「Garmin から取り込む」を参照）。最後に取り込んだランの前日から今日までのランが取り込まれ（初回は今月の1日から）、グラフと記録が表示されます。過去の月は、その月に移動して「○月を取り込み直す」で取り込めます。
 2. **プラン:** 上部の「プラン」で、月間目標と予定ワークアウトを入力して保存します。ダッシュボードに計画の線と達成率が出ます。
 3. **AI相談:** 上部の「AI相談」で、プロバイダに「Fake（開発用）」を選び、「先月の走りを振り返って」→「プランを作って」と送ります。プラン案の「このプランを採用」で、その月のプランとして保存されます。
 
@@ -249,7 +249,8 @@ GARMIN_API_KEY=$(grep '^GARMIN_API_KEY=' ../.env | cut -d= -f2-) ./mvnw test -Dt
 | `GET /api/dashboard/{YYYY-MM}` | 計画と実績の比較（達成率、日ごとの累積など） |
 | `GET /api/next-steps` | 今日やること（目標からの遅れ・レース前・しばらく走っていない・次月の計画がまだ）を急ぐ順に。`kind` で区別するカードの一覧（ADR-0014） |
 | `GET /api/runs/{YYYY-MM}` | ランの記録（最大心拍・ケイデンス・歩幅・上昇を含む） |
-| `POST /api/runs/latest/import` | 最新を取り込む：保存済みの最新のランの前日〜今日（何もなければ今月の1日〜今日）を ActivitySource から取り込む。月をまたいでもよい。結果に確認した期間 `from` / `to` が入る |
+| `POST /api/runs/latest/import` | 最新を取り込む：保存済みの最新のランの前日〜今日（何もなければ今月の1日〜今日）を ActivitySource から取り込む。月をまたいでもよい。結果に確認した期間 `from` / `to` と、取り込んだラン `newRuns` が入る |
+| `GET /api/runs/latest/check` | 最新を取り込んだら増えるラン（`newRuns`、新しい順）を返す。保存はしない。ActivitySource に問い合わせるのは `runbuddy.activity.check-interval`（既定 3 分）ごとに 1 回までで、その間隔を `checkIntervalSeconds` で返す。画面のヘッダーの通知が使う（ADR-0017） |
 | `POST /api/runs/{YYYY-MM}/import` | ActivitySource（ダミーか Garmin）から取り込む。何度呼んでも重複しない。失敗すると ProblemDetail の `reason` に `CREDENTIALS_REJECTED` / `RATE_LIMITED` / `UNAVAILABLE` |
 | `GET /api/activity-source` | 今の取り込み元（`dummy` / `garmin`） |
 | `GET` / `PUT /api/plans/{YYYY-MM}` | 月次プラン |

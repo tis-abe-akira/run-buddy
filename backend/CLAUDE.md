@@ -108,6 +108,9 @@ changing the structure.
   FIT files in bulk. FIT SDK types (`com.garmin.fit`) stay in `activity/fit`; the rest of the code
   sees `RunDetail`, `Lap` and `TrackPoint`. `RunDetail.route` thins the track for the map (ADR-0013). Track points locate the runner: never send them to the
   AI advisor, and build test files with `SyntheticFit` (positions near 0°N 0°E), never real ones.
+- The header's notice of new runs (#40, ADR-0017) asks `GET /api/runs/latest/check`. `NewRunChecker` asks the
+  source at most once per `runbuddy.activity.check-interval` (3 minutes by default), keeps the answer or the
+  failure for that long and forgets it on `RunsImported`. Do not add another path that asks Garmin on a timer.
 
 ## Local settings
 
