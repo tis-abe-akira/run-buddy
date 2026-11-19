@@ -164,6 +164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/latest/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/next-steps": {
         parameters: {
             query?: never;
@@ -337,6 +353,12 @@ export interface components {
             fetched: number;
             /** Format: int32 */
             added: number;
+            newRuns: components["schemas"]["NewRun"][];
+        };
+        NewRun: {
+            activityId: string;
+            /** Format: date */
+            date: string;
         };
         ConsultationBody: {
             provider: string;
@@ -460,6 +482,13 @@ export interface components {
             /** Format: int32 */
             trackPoints: number;
             route: components["schemas"]["RoutePoint"][];
+        };
+        NewRunsBody: {
+            newRuns: components["schemas"]["NewRun"][];
+            /** Format: date-time */
+            checkedAt: string;
+            /** Format: int64 */
+            checkIntervalSeconds: number;
         };
         BehindTargetCard: {
             /** @enum {string} */
@@ -882,6 +911,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RunDetailResponse"];
+                };
+            };
+        };
+    };
+    check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NewRunsBody"];
                 };
             };
         };

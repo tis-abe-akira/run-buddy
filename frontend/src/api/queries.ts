@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import { api, type ConsultationRequest, type Plan, type RaceInput } from './client'
 import type { IsoDate } from '../lib/day'
 import type { Month } from '../lib/month'
+import { nextCheckMillis } from '../lib/newRuns'
 
 export const dashboardQuery = (month: Month) =>
   queryOptions({ queryKey: ['dashboard', month], queryFn: () => api.dashboard(month) })
@@ -47,9 +48,25 @@ export function useImportRuns(month: Month) {
         queryClient.invalidateQueries({ queryKey: ['dashboard', month] }),
         queryClient.invalidateQueries({ queryKey: ['runs', month] }),
         queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
+        queryClient.invalidateQueries({ queryKey: ['new-runs'] }),
       ]),
   })
 }
+
+/**
+ * Runs in Garmin not imported yet (#40). Asked again every checkIntervalSeconds the backend sends (less
+ * often after a failure), only while the page is visible (TanStack Query pauses the interval in a hidden
+ * tab) and once when it comes back into view. The backend asks Garmin at most once per interval anyway.
+ */
+export const newRunsQuery = () =>
+  queryOptions({
+    queryKey: ['new-runs'],
+    queryFn: api.checkNewRuns,
+    retry: false,
+    refetchInterval: (query) => nextCheckMillis(query.state.data?.checkIntervalSeconds, query.state.status === 'error'),
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  })
 
 /** Imports what is new since the latest stored run. It can touch any month, so every month's data is refreshed. */
 export function useImportLatest() {
@@ -62,6 +79,7 @@ export function useImportLatest() {
         queryClient.invalidateQueries({ queryKey: ['runs'] }),
         queryClient.invalidateQueries({ queryKey: ['day'] }),
         queryClient.invalidateQueries({ queryKey: ['next-steps'] }),
+        queryClient.invalidateQueries({ queryKey: ['new-runs'] }),
       ]),
   })
 }

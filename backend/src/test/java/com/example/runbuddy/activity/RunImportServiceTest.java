@@ -90,6 +90,32 @@ class RunImportServiceTest {
         assertThat(published).containsExactly(new RunsImported(List.of(run("r2", 5))));
     }
 
+    /** The check behind the header's notice (#40): what importLatest would add, without adding it. */
+    @Test
+    void findsTheNewRunsWithoutStoringOrAnnouncingThem() {
+        repository.saveAll(List.of(run("r1", 3)));
+        RunImportService service = new RunImportService(sourceOf(run("r1", 3), run("r2", 4), run("r3", 5)), repository,
+                Clock.fixed(Instant.parse("2026-11-06T03:00:00Z"), ZoneOffset.UTC), published::add);
+
+        List<NewRun> found = service.findNewRuns();
+
+        assertThat(found).containsExactly(new NewRun("r3", LocalDate.of(2026, 11, 5)), new NewRun("r2", LocalDate.of(2026, 11, 4)));
+        assertThat(asked).containsExactly(new DateRange(LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 6)));
+        assertThat(repository.findByMonth(NOVEMBER)).extracting(RunResult::activityId).containsExactly("r1");
+        assertThat(published).isEmpty();
+    }
+
+    @Test
+    void theLatestImportListsTheRunsItAdded() {
+        repository.saveAll(List.of(run("r1", 3)));
+        RunImportService service = new RunImportService(sourceOf(run("r3", 5), run("r1", 3), run("r2", 4)), repository,
+                Clock.fixed(Instant.parse("2026-11-06T03:00:00Z"), ZoneOffset.UTC), published::add);
+
+        var result = service.importLatest();
+
+        assertThat(result.newRuns()).containsExactly(new NewRun("r2", LocalDate.of(2026, 11, 4)), new NewRun("r3", LocalDate.of(2026, 11, 5)));
+    }
+
     @Test
     void anImportThatAddsNothingAnnouncesNothing() {
         repository.saveAll(List.of(run("r1", 3)));

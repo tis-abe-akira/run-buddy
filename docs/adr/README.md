@@ -20,6 +20,7 @@
 | [0014](0014-next-steps-situations-in-code-presentation-by-ai.md) | ダッシュボードの「いまやること」は、状況の判定をコードで、見せ方を AI でする | Accepted |
 | [0015](0015-generate-wiki-from-claude-code.md) | Wiki の生成を CI（Gemini）から Claude Code（Claude）に移す | Accepted |
 | [0016](0016-ai-run-review.md) | ランの AI 評価は、比べる対象をアプリが選び、頼んだときに作って保存する | Accepted |
+| [0017](0017-check-for-new-runs.md) | 新しいランは画面が定期的に確かめ、ヘッダーの通知から取り込む | Accepted |
 
 ## テンプレート
 

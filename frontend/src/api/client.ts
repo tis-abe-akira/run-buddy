@@ -20,6 +20,8 @@ export type Workout = Schemas['WorkoutBody']
 export type WorkoutType = Workout['type']
 export type ImportResult = Schemas['ImportResult']
 export type LatestImportResult = Schemas['LatestImportResult']
+export type NewRun = Schemas['NewRun']
+export type NewRunsCheck = Schemas['NewRunsBody']
 export type AdvisorInfo = Schemas['AdvisorInfo']
 export type ChatMessage = Schemas['MessageBody']
 export type Advice = Schemas['AdviceBody']
@@ -79,6 +81,7 @@ export const api = {
   activitySource: () => request<ActivitySourceInfo>('/api/activity-source'),
   importRuns: (month: Month) => request<ImportResult>(`/api/runs/${month}/import`, { method: 'POST' }),
   importLatest: () => request<LatestImportResult>('/api/runs/latest/import', { method: 'POST' }),
+  checkNewRuns: () => request<NewRunsCheck>('/api/runs/latest/check'),
   plan: (month: Month) => request<Plan>(`/api/plans/${month}`),
   savePlan: (month: Month, plan: Plan) =>
     request<Plan>(`/api/plans/${month}`, { method: 'PUT', body: JSON.stringify(plan) }),

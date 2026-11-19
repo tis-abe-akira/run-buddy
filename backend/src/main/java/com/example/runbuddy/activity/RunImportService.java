@@ -4,7 +4,10 @@ import com.example.runbuddy.shared.DateRange;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,14 +44,42 @@ public class RunImportService {
      * first of this month. Safe to repeat.
      */
     public LatestImportResult importLatest() {
+        DateRange days = sinceLatest();
+        Counts counts = importDays(days);
+        return new LatestImportResult(days.first(), days.last(), counts.fetched(), counts.added(),
+                counts.newRuns().stream().sorted(Comparator.comparing(RunResult::startedAt)).map(NewRun::of).toList());
+    }
+
+    /**
+     * Which runs {@link #importLatest()} would add now (#40): the same days are asked for, but nothing is
+     * stored and nothing is announced. Newest first.
+     *
+     * @throws ActivitySourceUnavailableException when the source cannot be reached
+     */
+    public List<NewRun> findNewRuns() {
+        DateRange days = sinceLatest();
+        Map<String, RunResult> byId = new LinkedHashMap<>();
+        activitySource.fetchRuns(days).forEach(run -> byId.put(run.activityId(), run));
+        List<NewRun> found = byId.values().stream()
+                .filter(run -> runResultRepository.findById(run.activityId()).isEmpty())
+                .sorted(Comparator.comparing(RunResult::startedAt).reversed())
+                .map(NewRun::of)
+                .toList();
+        log.debug("Check {}: {} new runs", days, found.size());
+        return found;
+    }
+
+    /**
+     * From the day before the latest stored run (a run near midnight or in another time zone can land a
+     * day either side) up to today; with nothing stored yet, from the first of this month.
+     */
+    private DateRange sinceLatest() {
         LocalDate today = LocalDate.now(clock);
         LocalDate from = runResultRepository.latestStart()
                 .map(latest -> latest.toLocalDate().minusDays(1))
                 .orElse(today.withDayOfMonth(1));
         // A run stored with a local date after ours (recorded abroad) must not push the start past today.
-        DateRange days = new DateRange(from.isAfter(today) ? today : from, today);
-        Counts counts = importDays(days);
-        return new LatestImportResult(days.first(), days.last(), counts.fetched(), counts.added());
+        return new DateRange(from.isAfter(today) ? today : from, today);
     }
 
     private Counts importDays(DateRange days) {
@@ -68,16 +99,24 @@ public class RunImportService {
         if (!added.isEmpty()) {
             events.publishEvent(new RunsImported(added));
         }
-        return new Counts(fetched.size(), added.size());
+        return new Counts(fetched.size(), added);
     }
 
-    private record Counts(int fetched, int added) {
+    private record Counts(int fetched, List<RunResult> newRuns) {
+
+        int added() {
+            return newRuns.size();
+        }
     }
 
     public record ImportResult(YearMonth month, int fetched, int added) {
     }
 
-    /** The days looked at (both included) and what was found there. */
-    public record LatestImportResult(LocalDate from, LocalDate to, int fetched, int added) {
+    /**
+     * The days looked at (both included) and what was found there.
+     *
+     * @param newRuns the runs stored for the first time, oldest first
+     */
+    public record LatestImportResult(LocalDate from, LocalDate to, int fetched, int added, List<NewRun> newRuns) {
     }
 }

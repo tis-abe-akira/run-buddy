@@ -126,6 +126,32 @@ a.text-link,
 /* category-tab-active */
 .nav-link[data-status='active'] { background: var(--color-surface-card); color: var(--color-ink); }
 
+/* The notice of new runs (#40): at the right end of the header on every page. The coral dot is the one
+   accent in the header, so a new run is noticed as soon as the app is opened. */
+.top-nav-aside { margin-left: auto; display: flex; align-items: center; min-width: 0; }
+.top-nav-aside:empty { display: none; }
+.new-runs { display: flex; align-items: center; gap: var(--spacing-xs); min-width: 0; }
+.new-runs-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: 999px;
+  padding: 6px 14px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.new-runs-notice:hover:not(:disabled) { border-color: var(--color-hairline); }
+.new-runs-notice:disabled { color: var(--color-muted); cursor: default; }
+.new-runs-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); flex: none; }
+.new-runs-notice:disabled .new-runs-dot { background: var(--color-muted-soft); }
+.new-runs-error { font-size: 12px; max-width: 18rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* ---------- buttons ---------- */
 
 .button {
@@ -416,6 +442,15 @@ a.text-link,
   /* Three nav links and the wordmark do not fit: keep the mark, drop the word. */
   .top-nav .wordmark .wordmark-text { display: none; }
   .nav-link { padding: 8px 8px; }
+}
+/* On a phone the nav links fill the header, so the notice gets a line of its own under them. */
+@media (max-width: 767px) {
+  .top-nav { height: auto; min-height: 64px; }
+  .top-nav .container { flex-wrap: wrap; row-gap: 0; min-height: 64px; }
+  .top-nav .wordmark, .top-nav .nav-links { height: 64px; align-items: center; }
+  .top-nav-aside { flex-basis: 100%; margin-left: 0; padding-bottom: var(--spacing-sm); }
+  .new-runs { flex-wrap: wrap; }
+  .new-runs-error { white-space: normal; max-width: none; }
 }
 
 /* ---------- weekdays ---------- */

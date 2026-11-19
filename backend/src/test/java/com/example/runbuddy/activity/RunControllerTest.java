@@ -18,11 +18,14 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** How a failing ActivitySource reaches the client: a problem detail whose "reason" says what to do. */
 @WebMvcTest({RunController.class, LatestImportController.class, ActivitySourceController.class})
-@Import({RunImportService.class, InMemoryRunResultRepository.class, RunControllerTest.FailingSource.class})
+// NewRunChecker keeps its answer for the interval, so each test starts with a fresh one.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Import({RunImportService.class, NewRunChecker.class, InMemoryRunResultRepository.class, RunControllerTest.FailingSource.class})
 class RunControllerTest {
 
     @Autowired
@@ -78,7 +81,27 @@ class RunControllerTest {
                 .andExpect(jsonPath("$.from").value("2026-11-01"))
                 .andExpect(jsonPath("$.to").value("2026-11-02"))
                 .andExpect(jsonPath("$.fetched").value(0))
-                .andExpect(jsonPath("$.added").value(0));
+                .andExpect(jsonPath("$.added").value(0))
+                .andExpect(jsonPath("$.newRuns").isEmpty());
+    }
+
+    /** What the header asks every few minutes (#40): the runs to import, and when to ask again. */
+    @Test
+    void theCheckSaysWhatIsNewAndWhenToAskAgain() throws Exception {
+        mockMvc.perform(get("/api/runs/latest/check"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newRuns").isEmpty())
+                .andExpect(jsonPath("$.checkedAt").value("2026-11-02T03:00:00Z"))
+                .andExpect(jsonPath("$.checkIntervalSeconds").value(180));
+    }
+
+    @Test
+    void theCheckReportsAFailingSourceTheSameWay() throws Exception {
+        failure.set(Reason.CREDENTIALS_REJECTED);
+
+        mockMvc.perform(get("/api/runs/latest/check"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.reason").value("CREDENTIALS_REJECTED"));
     }
 
     @Test

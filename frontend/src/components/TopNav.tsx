@@ -1,8 +1,14 @@
 import { Link } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { currentMonth } from '../lib/month'
 import { Wordmark } from './Wordmark'
 
-export function TopNav() {
+type Props = {
+  /** Shown at the right end on every page, e.g. the notice of new runs (#40). */
+  aside?: ReactNode
+}
+
+export function TopNav({ aside }: Props) {
   const month = currentMonth()
   return (
     <header className="top-nav">
@@ -24,6 +30,7 @@ export function TopNav() {
             AI相談
           </Link>
         </nav>
+        {aside && <div className="top-nav-aside">{aside}</div>}
       </div>
     </header>
   )
